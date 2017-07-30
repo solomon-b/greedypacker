@@ -11,16 +11,10 @@ heuristic. Layouts are returned as nested lists of namedtuples.
 Each item is returned with its dimensions, xy position (top left 
 corner referenced), and bin ID. 
 
-## Example Usage:
+### Example Usage:
+```
+>>> BINSET = BinPack(bin_dims=(4,8))
+>>> BINSET.insert((2, 4), (2, 2), (4, 5), (4, 4), (2, 2), (3, 2), heuristic='best_fit')
+>>> BINSET.print_layouts()
+```
 
-### Instantiate a bin set. Mode selects heuristic, first fit is default
-BINSET = BinPack(bin_dims=(4,8))
-
-#### Add items to the binset
-#### Any number of items can be inserted as *args, heuristic choices are
-#### currently next_fit and best_fit. Items are automatically sorted in 
-#### decreasing order by item area.
-BINSET.insert((2, 4), (2, 2), (4, 5), (4, 4), (2, 2), (3, 2), heuristic='best_fit')
-
-#### Return Bin Layouts
-BINSET.print_layouts()
