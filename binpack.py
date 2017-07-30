@@ -18,7 +18,7 @@ from collections import deque
 from operator import mul as product
 import avl_tree, bintree
 
-class BinRank:
+class BinPack:
     """
     Bin Ranking System. the product of BinTree.largest_child
     is used as a key value in an AVL Tree for ranking the bins.
@@ -42,6 +42,14 @@ class BinRank:
         self.bin_count += 1
 
 
+    def insert(self, *items: tuple, heuristic: str = 'best_fit') -> None:
+        for item in sorted(items, key=lambda a: product(*a), reverse=True):
+            if heuristic == 'best_fit':
+                self.best_fit(item)
+            elif heuristic == 'next_fit':
+                self.next_fit(item)
+
+
     def best_fit(self, item_dims: tuple) -> bool:
         """
         First Fit Bin Selection
@@ -58,13 +66,12 @@ class BinRank:
         while queue:
             current_node = queue.popleft()
             current_bintree = self.bin_dict[current_node.data[-1]]
-            if current_node.key >= item_area:
-                largest_child = current_bintree.largest_child
-                if (largest_child[0] >= item.width and
-                        largest_child[1] >= item.height):
-                    if not best_fit or largest_child < best_fit.largest_child:
-                        best_fit = current_bintree
-                        best_fit_node = current_node
+            largest_child = current_bintree.largest_child
+            if (largest_child[0] >= item.width and
+                    largest_child[1] >= item.height):
+                if not best_fit or largest_child < best_fit.largest_child:
+                    best_fit = current_bintree
+                    best_fit_node = current_node
                 if current_node.left:
                     queue.append(current_node.left)
             else:
@@ -83,6 +90,8 @@ class BinRank:
         else:
             self._add_bin()
             self.bin_dict[self.bin_count-1].insert(item)
+            #avl_tree.traverse(self.tree.root)
+            #print("...")
             return True
 
 
@@ -130,11 +139,7 @@ class BinRank:
             bin.print_layout()
 
 if __name__ == '__main__':
-    BRANK = BinRank()
-    BRANK.best_fit((2, 4))
-    BRANK.best_fit((2, 2))
-    BRANK.best_fit((4, 5))
-    BRANK.best_fit((4, 4))
-    BRANK.best_fit((2, 2))
+    BRANK = BinPack()
+    BRANK.insert((2, 4), (2, 2), (4, 5), (4, 4), (2, 2), (3, 2), heuristic='best_fit')
     avl_tree.traverse(BRANK.tree.root)
     BRANK.print_layouts()

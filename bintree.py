@@ -52,12 +52,11 @@ class BinTree:
     Each BinTree instance has two children (left and bottom)
     and width (int), height (int), and occupied (bool) properties.
     """
-    def __init__(self, width: int = 4, height: int = 8,
-                 occupied: bool = False, corner: CornerPoint = CornerPoint(0, 0)) -> None:
-        self.corner = corner
+    def __init__(self, width: int = 4, height: int = 8) -> None:
+        self.corner = CornerPoint(0, 0)
         self.width = width
         self.height = height
-        self.occupied = occupied
+        self.occupied = False
         self.parent = None
         self.right = None
         self.bottom = None
@@ -82,17 +81,19 @@ class BinTree:
                 self.right = BinTree(width=self.width-item.width, height=item.height)
                 self.right.parent = self
             self.height, self.width = item.height, item.width
-            self.occupied = True
+            self.occupied = item
             if self.right:
-                self.right.corner = CornerPoint(self.width, self.corner.x)
+                self.right.corner = CornerPoint(self.width + self.corner.x, self.corner.y)
             if self.bottom:
-                self.bottom.corner = CornerPoint(self.corner.y, self.height)
+                self.bottom.corner = CornerPoint(self.corner.x, self.height + self.corner.y)
             self.calc_largest_child()
             return True
         else:
-            if self.right and self.right.width >= item.width:
+            if (self.right and self.right.largest_child[0] >= item.width and
+                    self.right.largest_child[1] >= item.height):
                 self.right.insert(item)
-            elif self.bottom and self.bottom.height >= item.height:
+            elif (self.bottom and self.bottom.largest_child[0] >= item.width and
+                  self.bottom.largest_child[1] >= item.height):
                 self.bottom.insert(item)
             else:
                 return False
@@ -107,15 +108,15 @@ class BinTree:
         if not self.occupied:
             choices.append((self.width, self.height))
         else:
-            choices.append((0,0))
+            choices.append((0, 0))
         if self.right:
             choices.append(self.right.largest_child)
         else:
-            choices.append((0,0))
+            choices.append((0, 0))
         if self.bottom:
             choices.append(self.bottom.largest_child)
         else:
-            choices.append((0,0))
+            choices.append((0, 0))
         self.largest_child = max(choices, key=lambda t: t[0]*t[1])
 
         if self.parent:
@@ -134,7 +135,7 @@ class BinTree:
         while stack:
             node = stack.popleft()
             if node.occupied:
-                result.append((node.corner, (node.width, node.height)))
+                result.append((node.corner, node.occupied))
             if print_stats:
                 node.node_stats()
             if node.right:
@@ -161,13 +162,12 @@ class BinTree:
 
 if __name__ == '__main__':
     ROOT = BinTree()
-    ITEM1 = Item(width=2, height=4)
-    ITEM2 = Item(width=4, height=4)
+    ITEM1 = Item(width=4, height=4)
+    ITEM2 = Item(width=2, height=4)
     ITEM3 = Item(width=2, height=2)
-    ITEM4 = Item(width=1, height=1)
-    ITEM5 = Item(width=1, height=1)
-    ITEM6 = Item(width=2, height=1)
+    ITEM4 = Item(width=2, height=2)
     ROOT.insert(ITEM1)
     ROOT.insert(ITEM2)
     ROOT.insert(ITEM3)
-    ROOT.print_layout(print_stats=True)
+    ROOT.insert(ITEM4)
+    ROOT.print_layout()
