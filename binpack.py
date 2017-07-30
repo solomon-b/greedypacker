@@ -109,19 +109,18 @@ class BinPack:
         while queue:
             current_node = queue.popleft()
             current_bintree = self.bin_dict[current_node.data[-1]]
-            if current_node.key >= item_area:
-                largest_child = current_bintree.largest_child
-                if (largest_child[0] >= item.width and
-                        largest_child[1] >= item.height):
-                    current_bintree.insert(item)
-                    # delete and reinsert node to update position in tree
-                    nodeid = current_node.data[-1]
-                    old_key = current_node.key
-                    new_key = product(*current_bintree.largest_child)
-                    self.tree.delete(key=old_key)
-                    self.tree.insert(key=new_key)
-                    self.tree[new_key].data.append(nodeid)
-                    return True
+            largest_child = current_bintree.largest_child
+            if (largest_child[0] >= item.width and
+                    largest_child[1] >= item.height):
+                current_bintree.insert(item)
+                # delete and reinsert node to update position in tree
+                nodeid = current_node.data[-1]
+                old_key = current_node.key
+                new_key = product(*current_bintree.largest_child)
+                self.tree.delete(key=old_key)
+                self.tree.insert(key=new_key)
+                self.tree[new_key].data.append(nodeid)
+                return True
             else:
                 if current_node.right:
                     queue.append(current_node.right)
@@ -139,7 +138,6 @@ class BinPack:
             bin.print_layout()
 
 if __name__ == '__main__':
-    BRANK = BinPack()
-    BRANK.insert((2, 4), (2, 2), (4, 5), (4, 4), (2, 2), (3, 2), heuristic='best_fit')
-    avl_tree.traverse(BRANK.tree.root)
-    BRANK.print_layouts()
+    BINPACK = BinPack()
+    BINPACK.insert((2, 4), (2, 2), (4, 5), (4, 4), (2, 2), (3, 2), heuristic='next_fit')
+    BINPACK.print_layouts()
