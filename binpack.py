@@ -23,10 +23,11 @@ class BinPack:
     Bin Ranking System. the product of BinTree.largest_child
     is used as a key value in an AVL Tree for ranking the bins.
     """
-    def __init__(self):
+    def __init__(self, sorting: bool = True):
         self.bin_dict = {}
         self.tree = avl_tree.AvlTree()
         self.bin_count = 0
+        self.sorting = sorting
         self._add_bin()
 
 
@@ -43,7 +44,10 @@ class BinPack:
 
 
     def insert(self, *items: tuple, heuristic: str = 'best_fit') -> None:
-        for item in sorted(items, key=lambda a: product(*a), reverse=True):
+        if self.sorting == True:
+            items = sorted(items, key=lambda a: product(*a), reverse=True)
+
+        for item in items:
             if heuristic == 'best_fit':
                 self.best_fit(item)
             elif heuristic == 'next_fit':
