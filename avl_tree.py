@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" Class based AVL balanced binary search tree.  
+""" Class based AVL balanced binary search tree.
 A tree constists of a single AVL_Tree object and
 many Node objects.
 
@@ -9,8 +9,6 @@ deleted, the balance factors of the affected nodes are checked
 and Nodes are rotated to maintain balance in the tree. This
 ensures O(logN) insertion, deletion, and search performance.
 """
-import time
-import random
 from typing import Optional
 
 class Node(object):
@@ -326,53 +324,9 @@ def traverse(rootnode: Node) -> None:
         thislevel = nextlevel
 
 
-def timeit(method):
-    """ timeit decorator """
-    def timed(*args, **kw):
-        """ inner timeit function """
-        ts = time.time()
-        result = method(*args, **kw)
-        te = time.time()
-        if 'log_time' in kw:
-            name = kw.get('log_name', method.__name__.upper())
-            kw['log_time'][name] = int((te - ts) * 1000)
-        else:
-            print('%r  %2.2f ms' % \
-                  (method.__name__, (te - ts) * 1000))
-        return result
-    return timed
-
-
-@timeit
-def avl_inserter(tree_object, items):
-    """ Tree insertion speed test """
-    samples = random.sample(range(1, 1000000), items)
-    sample_tree = tree_object
-    for sample in samples:
-        sample_tree.insert(sample)
-    return None
-
-@timeit
-def avl_deleter(tree_object):
-    """ delete every node in the tree iteratively """
-    while tree_object.root is not None:
-        if tree_object.root:
-            tree_object.delete(tree_object.root.key)
-@timeit
-def list_inserter(items):
-    """ List Insertion speed test """
-    samples = random.sample(range(1, 1000000), items)
-    sample_list = []
-    for sample in samples:
-        sample_list.insert(0, sample)
-    return None
-
 if __name__ == '__main__':
-    tree = AvlTree()
-    #avl_inserter(tree, 100000)
-    #avl_deleter(tree)
-    #list_inserter(500000)
-    tree.insert(5)
-    tree.insert(10)
-    tree.insert(10)
-    traverse(tree.root)
+    TREE = AvlTree()
+    TREE .insert(10)
+    TREE .insert(20)
+    TREE .insert(15)
+    traverse(TREE .root)
