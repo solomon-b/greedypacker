@@ -134,14 +134,14 @@ class BinPack:
         return False
 
 
-    def print_layouts(self) -> None:
+    def print_stats(self) -> None:
         """
         Returns layouts for all BinTrees
         """
         for key, bin in self.bin_dict.items():
-            bin.print_layout()
+            bintree.bin_stats(bin)
 
 if __name__ == '__main__':
     BINPACK = BinPack()
     BINPACK.insert((2, 4), (2, 2), (4, 5), (4, 4), (2, 2), (3, 2), heuristic='next_fit')
-    BINPACK.print_layouts()
+    BINPACK.print_stats()

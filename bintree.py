@@ -123,7 +123,7 @@ class BinTree:
             self.parent.calc_largest_child()
 
 
-    def print_layout(self, print_stats=False) -> list:
+    def print_layout(self) -> list:
         """
         Iterative preorder tree traversal
         Returns items as a list of nested tuples:
@@ -136,8 +136,6 @@ class BinTree:
             node = stack.popleft()
             if node.occupied:
                 result.append((node.corner, node.occupied))
-            if print_stats:
-                node.node_stats()
             if node.right:
                 stack.append(node.right)
             if node.bottom:
@@ -146,18 +144,50 @@ class BinTree:
         return result
 
 
-    def node_stats(self) -> None:
-        """
-        Node Property Viewer
-        """
-        print('width: %s,  height: %s' % (self.width, self.height))
-        print('position: %s, %s' % (self.corner))
-        print('Node %s occupied' % ('is' if self.occupied else 'is not'))
-        print('Node parent: %s' % (True if self.parent else False))
-        print('Node right child: %s' % (True if self.right else False))
-        print('Node bottom child: %s' % (True if self.bottom else False))
-        print('Largest Child: (%s,%s)' % (self.largest_child))
-        print("")
+
+def bin_stats(root: BinTree) -> dict:
+    """
+    Returns a dictionary with compiled stats on the bin tree
+    """
+    stats = {
+                'width': 0,
+                'height': 0,
+                'area': 0,
+                'efficiency': 1.0,
+                'items': [],
+            }
+
+    stack = deque([root])
+    while stack:
+        node = stack.popleft()
+        stats['width'] += node.width
+        if node.right:
+            stack.append(node.right)
+
+    stack = deque([root])
+    while stack:
+        node = stack.popleft()
+        stats['height'] += node.height
+        if node.bottom:
+            stack.append(node.bottom)
+
+    stats['area'] = stats['width'] * stats['height']
+
+    stack = deque([root])
+    occupied = 0
+    while stack:
+        node = stack.popleft()
+        if node.occupied:
+            stats['items'].append((node.corner, node.occupied))
+            occupied += node.width*node.height
+
+        if node.right:
+            stack.append(node.right)
+        if node.bottom:
+            stack.append(node.bottom)
+    stats['efficiency'] = occupied / stats['area']
+    print(stats)
+    return stats
 
 
 if __name__ == '__main__':
@@ -170,4 +200,5 @@ if __name__ == '__main__':
     ROOT.insert(ITEM2)
     ROOT.insert(ITEM3)
     ROOT.insert(ITEM4)
-    ROOT.print_layout()
+    #ROOT.print_layout()
+    bin_stats(ROOT)
