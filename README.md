@@ -22,10 +22,10 @@ corner referenced), and bin ID.
 ```
 
 Heuristic choices are:
-    -next_fit:
+    *next_fit:
         When processing the next item, see if it fits in the same bin
         as the last item. Start a new bin only if it does not.
-    -best_fit:
+    *best_fit:
         When processing the next item, place it in the bin that results
         in the smallest remaining space. Start a new bin if it fits no
         bins.
