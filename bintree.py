@@ -123,28 +123,6 @@ class BinTree:
             self.parent.calc_largest_child()
 
 
-    def print_layout(self) -> list:
-        """
-        Iterative preorder tree traversal
-        Returns items as a list of nested tuples:
-            [((x,y),(width,height)),..,((x,y),(width,height)]
-        """
-
-        stack = deque([self])
-        result = []
-        while stack:
-            node = stack.popleft()
-            if node.occupied:
-                result.append((node.corner, node.occupied))
-            if node.right:
-                stack.append(node.right)
-            if node.bottom:
-                stack.append(node.bottom)
-        print(result)
-        return result
-
-
-
 def bin_stats(root: BinTree) -> dict:
     """
     Returns a dictionary with compiled stats on the bin tree
@@ -200,5 +178,4 @@ if __name__ == '__main__':
     ROOT.insert(ITEM2)
     ROOT.insert(ITEM3)
     ROOT.insert(ITEM4)
-    #ROOT.print_layout()
     bin_stats(ROOT)
