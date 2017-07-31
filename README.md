@@ -14,7 +14,7 @@ corner referenced), and bin ID.
 
 ### Example Usage:
 ```
->>> BINSET = binpack.BinPack()
+>>> BINSET = binpack.BinPack(bin_size=(4,8))
 >>> BINSET.insert((2, 4), (2, 2), (4, 5), (4, 4), (2, 2), (3, 2), heuristic='best_fit')
 >>> BINSET.print_layouts()
 {'width': 4, 'height': 8, 'area': 32, 'efficiency': 0.8125, 'items': [(CornerPoint(x=0, y=0), Item(width=4, height=5)), (CornerPoint(x=0, y=5), Item(width=3, height=2))]}
