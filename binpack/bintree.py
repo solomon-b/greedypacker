@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 """
+BinTree Class:
+
 2 dimensional Bin Packing Data Structure
 
 BinTrees have right and bottom children. Items
@@ -11,12 +13,12 @@ space to the left.
 
 Example:
     Item := (2,4)
-    Tree := (4,8, occoupied == False)
+    Tree := ((4,8), occoupied == False)
 
     After Insertion:
-    Tree :=     (2,4, occupied == True)
+    Tree :=     ((2,4), occupied == True)
                 /                     \
-      (4,4, occupied == False)  (2,4, occupied == False)
+      ((4,4), occupied == False)  ((2,4), occupied == False)
 
 Items are namedtuples with x and y values. When
 Items are inserted into a bin tree, insert()
