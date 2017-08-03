@@ -19,7 +19,7 @@ class BinPack:
     is used as a key value in an AVL Tree for ranking the bins.
     """
     def __init__(self, bin_size: tuple = (4, 8), sorting: bool = True):
-        self.bin_dict = {}
+        self.bin_dict = {'oversized': []}
         self.bin_size = bin_size
         self.tree = avl_tree.AvlTree()
         self.bin_count = 0
@@ -50,9 +50,19 @@ class BinPack:
                 self.next_fit(item)
 
 
+    def _check_oversized(self, item: bintree.Item) -> bool:
+        """
+        Catch oversized items
+        """
+        if item[0] > self.bin_size[0] or item[1] > self.bin_size[1]:
+            self.bin_dict['oversized'].append(item)
+            return False
+        return True
+
+
     def best_fit(self, item_dims: tuple) -> bool:
         """
-        First Fit Bin Selection
+        Best Fit Bin Selection
         Public method.
         Selects optimal BinTree (or creates
         a new BinTree) for item insertion using first fit.
@@ -60,6 +70,11 @@ class BinPack:
         """
         item_area = product(*item_dims)
         item = bintree.Item(*item_dims)
+
+        # Catch oversized items:
+        if self._check_oversized(item) == False:
+            return False
+
         queue = deque([self.tree.root])
         best_fit = None
         best_fit_node = None
@@ -103,6 +118,11 @@ class BinPack:
         """
         item_area = product(*item_dims)
         item = bintree.Item(*item_dims)
+
+        # Catch oversized items:
+        if self._check_oversized(item) == False:
+            return False
+
         queue = deque([self.tree.root])
         while queue:
             current_node = queue.popleft()
@@ -132,8 +152,13 @@ class BinPack:
         """
         Returns layouts for all BinTrees
         """
+        result = {}
         for key, bin in self.bin_dict.items():
-            bintree.bin_stats(bin)
+            if key != 'oversized':
+                result[key] = bintree.bin_stats(bin)
+        result['oversized'] = self.bin_dict['oversized']
+        return result
+
 
 if __name__ == '__main__':
     BINPACK = BinPack(bin_size=(4,8))
