@@ -166,7 +166,6 @@ def bin_stats(root: BinTree) -> dict:
         if node.bottom:
             stack.append(node.bottom)
     stats['efficiency'] = occupied / stats['area']
-    #print(stats)
     return stats
 
 

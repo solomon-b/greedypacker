@@ -2,6 +2,7 @@
 """
 BinPack Class:
 
+
 The main program logic for the package. BinPack manages
 creation and ranking of BinTrees, houses methods for the
 greedy heuristic choices, and returns layout dictionaries
