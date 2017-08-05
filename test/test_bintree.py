@@ -26,6 +26,7 @@ class SingleInsertion(BaseTestCase):
     def testBottom(self):
         self.assertIsNotNone(self.ROOT.bottom)
 
+
 class TwoInsertion(BaseTestCase):
     def setUp(self):
         self.ROOT = bintree.BinTree()

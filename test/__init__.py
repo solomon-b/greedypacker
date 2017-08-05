@@ -1,6 +1,6 @@
 import unittest
 
-from . import api as api_tests
+from . import test_api
 from . import test_bintree
 
 def load_tests(loader, standard_tests, pattern):
@@ -8,7 +8,7 @@ def load_tests(loader, standard_tests, pattern):
         pattern = None
     suite = unittest.TestSuite()
     for test_module in [
-        api_tests,
+        test_api,
         test_bintree,
     ]:
         tests = (unittest.defaultTestLoader
