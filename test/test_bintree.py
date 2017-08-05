@@ -17,11 +17,8 @@ class SingleInsertion(BaseTestCase):
     def testLargestChild(self):
         self.assertEqual(self.ROOT.largest_child, (4, 4))
 
-    def testWidth(self):
-        self.assertEqual(self.ROOT.width, 4)
-
-    def testHeight(self):
-        self.assertEqual(self.ROOT.height, 4)
+    def testDims(self):
+        self.assertEqual((self.ROOT.width, self.ROOT.height), (4, 4))
 
     def testRight(self):
         self.assertIsNone(self.ROOT.right)
@@ -42,29 +39,18 @@ class TwoInsertion(BaseTestCase):
     def testLargestChild(self):
         self.assertEqual(self.ROOT.largest_child, (4, 2))
 
-    def testWidth(self):
-        self.assertEqual(self.CHILD.width, 2)
+    def testDims(self):
+        self.assertEqual((self.CHILD.width, self.CHILD.height), (2, 2))
 
-    def testHeight(self):
-        self.assertEqual(self.CHILD.height, 2)
-
-    def testRight(self):
+    def testChildren(self):
         self.assertIsNotNone(self.CHILD.right)
-
-    def testBottom(self):
         self.assertIsNotNone(self.CHILD.bottom)
 
-    def testChildRightWidth(self):
-        self.assertEqual(self.CHILD.right.width, 2)
+    def testChildRightDims(self):
+        self.assertEqual((self.CHILD.right.width, self.CHILD.right.height), (2, 2))
 
-    def testChildRightHeight(self):
-        self.assertEqual(self.CHILD.right.height, 2)
-
-    def testChildBottomWidth(self):
-        self.assertEqual(self.CHILD.bottom.width, 4)
-
-    def testChildBottomHeight(self):
-        self.assertEqual(self.CHILD.bottom.height, 2)
+    def testChildBottomDims(self):
+        self.assertEqual((self.CHILD.bottom.width, self.CHILD.bottom.height), (4, 2))
 
 
 def load_tests(loader, tests, pattern):
