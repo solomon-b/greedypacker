@@ -54,18 +54,25 @@ class BinTree:
     Each BinTree instance has two children (left and bottom)
     and width (int), height (int), and occupied (bool) properties.
     """
-    def __init__(self, width: int = 4, height: int = 8) -> None:
+    def __init__(self, dims: tuple = (4, 8)) -> None:
         self.corner = CornerPoint(0, 0)
-        self.width = width
-        self.height = height
+        self.dims = dims
         self.occupied = False
         self.parent = None
         self.right = None
         self.bottom = None
         if not self.occupied:
-            self.largest_child = (self.width, self.height)
+            self.largest_child = tuple(self.dims)
         else:
             self.largest_child = None
+
+
+    def _check_dim(item_dim: int, bin_dim: int) -> bool:
+        """
+        Checks if the item will fit the bin in the specified
+        dimension.
+        """
+        pass
 
 
     def insert(self, item: Item) -> bool:
@@ -75,19 +82,19 @@ class BinTree:
         Inserts recursively as a side-effect
         Returns True or False if Item fit in bin
         """
-        if not self.occupied and item.width <= self.width and item.height <= self.height:
-            if self.height - item.height > 0:
-                self.bottom = BinTree(width=self.width, height=self.height-item.height)
+        if not self.occupied and item.width <= self.dims[0] and item.height <= self.dims[1]:
+            if self.dims[1] - item.height > 0:
+                self.bottom = BinTree(dims=[self.dims[0], self.dims[1]-item.height])
                 self.bottom.parent = self
-            if self.width - item.width > 0:
-                self.right = BinTree(width=self.width-item.width, height=item.height)
+            if self.dims[0] - item.width > 0:
+                self.right = BinTree(dims=[self.dims[0]-item.width, item.height])
                 self.right.parent = self
-            self.height, self.width = item.height, item.width
+            self.dims = (item.width, item.height)
             self.occupied = item
             if self.right:
-                self.right.corner = CornerPoint(self.width + self.corner.x, self.corner.y)
+                self.right.corner = CornerPoint(self.dims[0] + self.corner.x, self.corner.y)
             if self.bottom:
-                self.bottom.corner = CornerPoint(self.corner.x, self.height + self.corner.y)
+                self.bottom.corner = CornerPoint(self.corner.x, self.dims[1] + self.corner.y)
             self.calc_largest_child()
             return True
         else:
@@ -108,7 +115,7 @@ class BinTree:
         """
         choices = []
         if not self.occupied:
-            choices.append((self.width, self.height))
+            choices.append(self.dims)
         else:
             choices.append((0, 0))
         if self.right:
@@ -140,14 +147,14 @@ def bin_stats(root: BinTree) -> dict:
     stack = deque([root])
     while stack:
         node = stack.popleft()
-        stats['width'] += node.width
+        stats['width'] += node.dims[0]
         if node.right:
             stack.append(node.right)
 
     stack = deque([root])
     while stack:
         node = stack.popleft()
-        stats['height'] += node.height
+        stats['height'] += node.dims[1]
         if node.bottom:
             stack.append(node.bottom)
 
@@ -159,7 +166,7 @@ def bin_stats(root: BinTree) -> dict:
         node = stack.popleft()
         if node.occupied:
             stats['items'].append((node.corner, node.occupied))
-            occupied += node.width*node.height
+            occupied += node.dims[0]*node.dims[1]
 
         if node.right:
             stack.append(node.right)
@@ -172,11 +179,19 @@ def bin_stats(root: BinTree) -> dict:
 if __name__ == '__main__':
     ROOT = BinTree()
     ITEM1 = Item(width=4, height=4)
-    ITEM2 = Item(width=2, height=4)
+    #ITEM2 = Item(width=2, height=4)
     ITEM3 = Item(width=2, height=2)
-    ITEM4 = Item(width=2, height=2)
+    #ITEM4 = Item(width=2, height=2)
     ROOT.insert(ITEM1)
-    ROOT.insert(ITEM2)
-    ROOT.insert(ITEM3)
-    ROOT.insert(ITEM4)
-    bin_stats(ROOT)
+    #ROOT.insert(ITEM2)
+    #ROOT.insert(ITEM3)
+    ##ROOT.insert(ITEM4)
+    #print(bin_stats(ROOT))
+    print(ROOT.largest_child)
+
+    foo = BinTree()
+    bar = Item(width=4, height=4)
+    print(foo.dims)
+    foo.insert(bar)
+    print(foo.largest_child)
+

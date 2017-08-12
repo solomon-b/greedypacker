@@ -11,6 +11,9 @@ class SingleInsertion(BaseTestCase):
         self.ROOT = bintree.BinTree()
         self.ROOT.insert(bintree.Item(4, 4))
 
+    def tearDown(self):
+        del self.ROOT
+
     def testOccupied(self):
         self.assertEqual(self.ROOT.occupied, bintree.Item(4, 4))
 
@@ -18,7 +21,7 @@ class SingleInsertion(BaseTestCase):
         self.assertEqual(self.ROOT.largest_child, (4, 4))
 
     def testDims(self):
-        self.assertEqual((self.ROOT.width, self.ROOT.height), (4, 4))
+        self.assertEqual(self.ROOT.dims, (4, 4))
 
     def testRight(self):
         self.assertIsNone(self.ROOT.right)
@@ -34,6 +37,10 @@ class TwoInsertion(BaseTestCase):
         self.ROOT.insert(bintree.Item(2, 2))
         self.CHILD = self.ROOT.bottom
 
+    def tearDown(self):
+        del self.ROOT
+        del self.CHILD
+
     def testOccupied(self):
         self.assertEqual(self.CHILD.occupied, bintree.Item(2, 2))
 
@@ -41,17 +48,17 @@ class TwoInsertion(BaseTestCase):
         self.assertEqual(self.ROOT.largest_child, (4, 2))
 
     def testDims(self):
-        self.assertEqual((self.CHILD.width, self.CHILD.height), (2, 2))
+        self.assertEqual(self.CHILD.dims, (2, 2))
 
     def testChildren(self):
         self.assertIsNotNone(self.CHILD.right)
         self.assertIsNotNone(self.CHILD.bottom)
 
     def testChildRightDims(self):
-        self.assertEqual((self.CHILD.right.width, self.CHILD.right.height), (2, 2))
+        self.assertEqual(self.CHILD.right.dims, [2, 2])
 
     def testChildBottomDims(self):
-        self.assertEqual((self.CHILD.bottom.width, self.CHILD.bottom.height), (4, 2))
+        self.assertEqual(self.CHILD.bottom.dims, [4, 2])
 
 
 class BinStats(BaseTestCase):

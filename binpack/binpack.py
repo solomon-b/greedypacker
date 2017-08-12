@@ -33,7 +33,7 @@ class BinPack:
         private method. Creates a new BinTree and adds
         it to bin_dict and the AVL tree.
         """
-        self.bin_dict[self.bin_count] = bintree.BinTree(width=self.bin_size[0], height=self.bin_size[1])
+        self.bin_dict[self.bin_count] = bintree.BinTree(list(self.bin_size))
         bin_key = product(*self.bin_dict[self.bin_count].largest_child)
         self.tree.insert(bin_key)
         self.tree[bin_key].data.append(self.bin_count)
