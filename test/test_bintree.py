@@ -23,11 +23,11 @@ class SingleInsertion(BaseTestCase):
     def testDims(self):
         self.assertEqual(self.ROOT.dims, (4, 4))
 
-    def testRight(self):
-        self.assertIsNone(self.ROOT.right)
+    def testX(self):
+        self.assertIsNone(self.ROOT.children[0])
 
-    def testBottom(self):
-        self.assertIsNotNone(self.ROOT.bottom)
+    def testY(self):
+        self.assertIsNotNone(self.ROOT.children[1])
 
 
 class TwoInsertion(BaseTestCase):
@@ -35,7 +35,7 @@ class TwoInsertion(BaseTestCase):
         self.ROOT = bintree.BinTree()
         self.ROOT.insert(bintree.Item(4, 4))
         self.ROOT.insert(bintree.Item(2, 2))
-        self.CHILD = self.ROOT.bottom
+        self.CHILD = self.ROOT.children[1]
 
     def tearDown(self):
         del self.ROOT
@@ -51,14 +51,14 @@ class TwoInsertion(BaseTestCase):
         self.assertEqual(self.CHILD.dims, (2, 2))
 
     def testChildren(self):
-        self.assertIsNotNone(self.CHILD.right)
-        self.assertIsNotNone(self.CHILD.bottom)
+        self.assertIsNotNone(self.CHILD.children[0])
+        self.assertIsNotNone(self.CHILD.children[1])
 
     def testChildRightDims(self):
-        self.assertEqual(self.CHILD.right.dims, [2, 2])
+        self.assertEqual(self.CHILD.children[0].dims, [2, 2])
 
     def testChildBottomDims(self):
-        self.assertEqual(self.CHILD.bottom.dims, [4, 2])
+        self.assertEqual(self.CHILD.children[1].dims, [4, 2])
 
 
 class BinStats(BaseTestCase):
