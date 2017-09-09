@@ -242,20 +242,59 @@ class Sheet:
         return False
 
 
+    def best_height_fit(self, item) -> bool:
+        if item.x <= self.x and item.y <= self.y:
+            if not self.shelves:
+                new_shelf = Shelf(self.x, item.y)
+                self.shelves.append(new_shelf)
+                self.available_height -= new_shelf.y
+                new_shelf.insert(item)
+                return True
+            else:
+                best_shelf = False
+                rotate = False
+                for shelf in self.shelves:
+                    fit_score = shelf.item_best_fit(item)
+                    if fit_score == 1:
+                        if not best_shelf:
+                            best_shelf = shelf
+                        elif shelf.y - item.y < best_shelf.y:
+                            best_shelf = shelf
+                    elif fit_score == 2:
+                        if not best_shelf:
+                            best_shelf = shelf
+                            rotate = True
+                        elif shelf.y - item.x < best_shelf.y:
+                            best_shelf = shelf
+                            rotate = True
+
+                if best_shelf:
+                    if rotate: item.rotate()
+                    best_shelf.insert(item)
+                    return True
+                # No shelf fit but sheet fit
+                if item.y <= self.available_height:
+                    new_shelf = Shelf(self.x, item.y)
+                    new_shelf.insert(item)
+                    self.shelves.append(new_shelf)
+                    return True
+                # No sheet fit
+                else:
+                    return False
+        return False
 
 
     def insert(self, item: Item) -> bool:
-        return self.best_width_fit(item)
+        return self.best_height_fit(item)
 
 if __name__ == '__main__':
-    s = Sheet(8, 4)
-    i = Item(2, 6)
-    i2 = Item(3, 2)
+    s = Sheet(8, 5)
+    i = Item(3, 6)
+    i2 = Item(2, 6)
     i3 = Item(1, 1)
     print(s.insert(i))
     print(s.insert(i2))
     print(s.insert(i3))
     print(s)
-    print(s.shelves[0].items)
-    print(s.shelves[1].items)
-    #print(s.shelves[2].items)
+    for i, shelf in enumerate(s.shelves):
+        print('Shelf #%s: %r' % (i, str(shelf.items)))
