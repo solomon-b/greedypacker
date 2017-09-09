@@ -67,14 +67,6 @@ class BinTree:
             self.largest_child = None
 
 
-    def _check_dim(item_dim: int, bin_dim: int) -> bool:
-        """
-        Checks if the item will fit the bin in the specified
-        dimension.
-        """
-        pass
-
-
     def insert(self, item: Item) -> bool:
         """
         Recursive item insertion

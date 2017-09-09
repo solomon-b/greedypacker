@@ -55,7 +55,8 @@ class BinPack:
         """
         Catch oversized items
         """
-        if item[0] > self.bin_size[0] or item[1] > self.bin_size[1]:
+        if (item[0] > self.bin_size[0] or item[1] > self.bin_size[1]) and \
+          (item[1] > self.bin_size[0] or item[0] > self.bin_size[1]):
             self.bin_dict['oversized'].append(item)
             return False
         return True
