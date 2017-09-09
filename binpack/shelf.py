@@ -179,9 +179,8 @@ class Sheet:
                 new_shelf.insert(item)
                 return True
             else:
-                current_shelf = self.shelves[-1]
-                fit_score = current_shelf.item_best_fit(item)
                 for shelf in self.shelves:
+                    fit_score = shelf.item_best_fit(item)
                     if fit_score == 1:
                         shelf.insert(item)
                         return True
@@ -199,6 +198,18 @@ class Sheet:
                 else:
                     return False
         return False
+
+
+    def best_width_fit(self, item) -> bool:
+        if item.x <= self.x and item.y <= self.y:
+            if not self.shelves:
+                new_shelf = Shelf(self.x, item.y)
+                self.shelves.append(new_shelf)
+                self.available_height -= new_shelf.y
+                new_shelf.insert(item)
+                return True
+            else:
+                return
 
 
     def insert(self, item: Item) -> bool:
