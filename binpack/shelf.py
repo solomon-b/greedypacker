@@ -147,14 +147,6 @@ class Sheet:
             item.rotate()
             current_shelf.insert(item)
             return True
-        # No shelf fit but sheet fit
-        elif item.y <= self.available_height:
-            new_shelf = Shelf(self.x, item.y)
-            new_shelf.insert(item)
-            self.shelves.append(new_shelf)
-            return True
-        # No sheet fit
-        return False
 
 
     def first_fit(self, item) -> bool:
@@ -167,13 +159,14 @@ class Sheet:
                 item.rotate()
                 current_shelf .insert(item)
                 return True
-        # No shelf fit but sheet fit
-        if item.y <= self.available_height:
-            new_shelf = Shelf(self.x, item.y)
-            new_shelf.insert(item)
-            self.shelves.append(new_shelf)
+
+
+    def _loop_result_helper(self, flag_shelf, rotate, item):
+        if flag_shelf:
+            if rotate:
+                item.rotate()
+            flag_shelf.insert(item)
             return True
-        # No sheet fit
         return False
 
 
@@ -194,20 +187,7 @@ class Sheet:
                 elif current_shelf.available_width - item.y < best_shelf.available_width:
                     best_shelf = current_shelf
                     rotate = True
-
-        if best_shelf:
-            if rotate:
-                item.rotate()
-            best_shelf.insert(item)
-            return True
-        # No shelf fit but sheet fit
-        if item.y <= self.available_height:
-            new_shelf = Shelf(self.x, item.y)
-            new_shelf.insert(item)
-            self.shelves.append(new_shelf)
-            return True
-        # No sheet fit
-        return False
+        return self._loop_result_helper(best_shelf, rotate, item)
 
 
     def best_height_fit(self, item) -> bool:
@@ -228,19 +208,7 @@ class Sheet:
                     best_shelf = current_shelf
                     rotate = True
 
-        if best_shelf:
-            if rotate:
-                item.rotate()
-            best_shelf.insert(item)
-            return True
-        # No shelf fit but sheet fit
-        if item.y <= self.available_height:
-            new_shelf = Shelf(self.x, item.y)
-            new_shelf.insert(item)
-            self.shelves.append(new_shelf)
-            return True
-        # No sheet fit
-        return False
+        return self._loop_result_helper(best_shelf, rotate, item)
 
 
     def best_area_fit(self, item) -> bool:
@@ -260,19 +228,7 @@ class Sheet:
                 if fit_score == 2:
                     rotate = True
 
-        if best_shelf:
-            if rotate:
-                item.rotate()
-            best_shelf.insert(item)
-            return True
-        # No shelf fit but sheet fit
-        if item.y <= self.available_height:
-            new_shelf = Shelf(self.x, item.y)
-            new_shelf.insert(item)
-            self.shelves.append(new_shelf)
-            return True
-        # No sheet fit
-        return False
+        return self._loop_result_helper(best_shelf, rotate, item)
 
 
     def worst_width_fit(self, item) -> bool:
@@ -293,19 +249,7 @@ class Sheet:
                     worst_shelf = current_shelf
                     rotate = True
 
-        if worst_shelf:
-            if rotate:
-                item.rotate()
-            worst_shelf.insert(item)
-            return True
-        # No shelf fit but sheet fit
-        if item.y <= self.available_height:
-            new_shelf = Shelf(self.x, item.y)
-            new_shelf.insert(item)
-            self.shelves.append(new_shelf)
-            return True
-        # No sheet fit
-        return False
+        return self._loop_result_helper(worst_shelf, rotate, item)
 
 
     def insert(self, item: Item) -> bool:
@@ -316,8 +260,15 @@ class Sheet:
                 self.available_height -= new_shelf.y
                 new_shelf.insert(item)
                 return True
-            self.worst_width_fit(item)
-            return True
+            if self.worst_width_fit(item):
+                return True
+            # No shelf fit but sheet fit
+            if item.y <= self.available_height:
+                new_shelf = Shelf(self.x, item.y)
+                new_shelf.insert(item)
+                self.shelves.append(new_shelf)
+                return True
+        # No sheet fit
         return False
 
 if __name__ == '__main__':
