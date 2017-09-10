@@ -37,30 +37,40 @@ class BinManager:
         if family == 'shelf':
             self.algorithm = shelf.Sheet(self.bin_width, self.bin_height)
             if heuristic == 'next_fit':
-                return
-            #elif heuristic == 'first_fit':
-
-            #elif heuristic == 'best_width_fit':
-
-            #elif heuristic == 'best_height_fit':
-
-            #elif heuristic == 'best_area_fit':
-
-            #elif heuristic == 'worst_area_fit':
+                self.heuristic = 'next_fit'
+                return True
+            elif heuristic == 'first_fit':
+                self.heuristic = 'first_fit'
+                return True
+            elif heuristic == 'best_width_fit':
+                self.heuristic = 'best_width_fit'
+                return True
+            elif heuristic == 'best_height_fit':
+                self.heuristic = 'best_height_fit'
+                return True
+            elif heuristic == 'best_area_fit':
+                self.heuristic = 'best_area_fit'
+                return True
+            elif heuristic == 'worst_area_fit':
+                self.heuristic = 'worst_area_fit'
+                return True
 
         elif family == 'guillotine':
             return
         else:
             return 'sorry we dont support that algorithm'
 
-    def execute(self):
+    def execute(self) -> None:
         for item in self.items:
             self.algorithm.insert(item, self.heuristic)
+
         print(self.algorithm)
+        for i, shelf in enumerate(self.algorithm.shelves):
+            print('Shelf #%s: %r' % (i, str(shelf.items)))
 
 
 if __name__ == '__main__':
     MANAGER = BinManager()
-    MANAGER.add_items(Item(1,2), Item(2,2), Item(2,4))
-    MANAGER.set_algorthim('shelf', 'next_fit')
+    MANAGER.add_items(Item(2,6), Item(3,2), Item(1,1))
+    MANAGER.set_algorthim('shelf', 'worst_width_fit')
     MANAGER.execute()

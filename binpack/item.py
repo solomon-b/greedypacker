@@ -8,10 +8,11 @@ class Item:
     def __init__(self, x, y) -> None:
         self.x = x if x > y else y
         self.y = y if y < x else x
+        self.CornerPoint = (0, 0)
 
 
     def __repr__(self):
-        return 'Item(x=%r, y=%r)' % (self.x, self.y)
+        return 'Item(x=%r, y=%r, CornerPoint=%r)' % (self.x, self.y, self.CornerPoint)
 
 
     def rotate(self) -> None:

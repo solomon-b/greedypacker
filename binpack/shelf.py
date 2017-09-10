@@ -5,59 +5,18 @@ Shelf Style 2D Bin Algorithm and Data Structure
 Solomon Bothwell
 ssbothwell@gmail.com
 """
-
-
-class Item:
-    """
-    Items class for rectangles inserted into sheets
-    """
-    def __init__(self, x, y) -> None:
-        self.x = x if x > y else y
-        self.y = y if y < x else x
-
-
-    def __repr__(self):
-        return 'Item(x=%r, y=%r)' % (self.x, self.y)
-
-
-    def rotate(self) -> None:
-        self.x, self.y = self.y, self.x
-
-
-    def area(self) -> int:
-        return self.x * self.y
-    def __lt__(self, other: 'Item') -> bool:
-        return True if self.y < other.y else False
-
-
-    def __le__(self, other: 'Item') -> bool:
-        return True if self.y <= other.y else False
-
-
-    def __eq__(self, other: 'Item') -> bool:
-        return True if self.y == other.y else False
-
-
-    def __ne__(self, other: 'Item') -> bool:
-        return True if self.y != other.y else False
-
-
-    def __gt__(self, other: 'Item') -> bool:
-        return True if self.y > other.y else False
-
-
-    def __ge__(self, other: 'Item') -> bool:
-        return True if self.y >= other.y else False
+from item import Item
 
 
 class Shelf:
     """
     Shelf class represents of row of items on the sheet
     """
-    def __init__(self, x: int, y: int) -> None:
+    def __init__(self, x: int, y: int, v_offset: int = 0) -> None:
         self.y = y
         self.x = x
         self.available_width = self.x
+        self.vertical_offset = v_offset
         self.items = [] # type: List[Item]
 
 
@@ -92,6 +51,13 @@ class Shelf:
     def insert(self, item: Item) -> bool:
         if item.x <= self.available_width and item.y <= self.y:
             self.available_width -= item.x
+            if len(self.items) == 0:
+                item.CornerPoint = (0, self.vertical_offset)
+            elif len(self.items) == 1:
+                item.CornerPoint = (self.items[0].x, self.vertical_offset)
+            else:
+                item.CornerPoint = (self.items[-1].CornerPoint[0] +
+                                    self.items[-1].x, self.vertical_offset)
             self.items.append(item)
             return True
         return False
@@ -129,6 +95,7 @@ class Sheet:
         self.y = y if y < x else x
         self.available_height = self.y
         self.shelves = [] # type: List[Shelf]
+        self.items = [] # type: List[tuple]
 
 
     def __repr__(self) -> str:
@@ -259,42 +226,81 @@ class Sheet:
                 self.shelves.append(new_shelf)
                 self.available_height -= new_shelf.y
                 new_shelf.insert(item)
+                self.items.append(item)
                 return True
             if heuristic == 'next_fit':
                 if self.next_fit(item):
+                    self.items.append(item)
                     return True
             elif heuristic == 'first_fit':
                 if self.first_fit(item):
+                    self.items.append(item)
                     return True
             elif heuristic == 'best_width_fit':
                 if self.best_width_fit(item):
+                    self.items.append(item)
                     return True
             elif heuristic == 'best_height_fit':
                 if self.best_height_fit(item):
+                    self.items.append(item)
                     return True
             elif heuristic == 'best_area_fit':
                 if self.best_area_fit(item):
+                    self.items.append(item)
                     return True
             elif heuristic == 'worst_width_fit':
                 if self.worst_width_fit(item):
+                    self.items.append(item)
                     return True
             # No shelf fit but sheet fit
             if item.y <= self.available_height:
-                new_shelf = Shelf(self.x, item.y)
+
+                if len(self.shelves) == 1:
+                    v_offset = self.shelves[0].y
+                else:
+                    last_shelf = self.shelves[-1]
+                    v_offset = last_shelf.vertical_offset + last_shelf.y
+
+                new_shelf = Shelf(self.x, item.y, v_offset = v_offset)
                 new_shelf.insert(item)
                 self.shelves.append(new_shelf)
+                self.items.append(item)
+                self.available_height -= item.y
                 return True
         # No sheet fit
         return False
+
+
+    def bin_stats(self) -> dict:
+        """
+        Returns a dictionary with compiled stats on the bin tree
+        """
+
+        stats = {
+                'width': self.x,
+                'height': self.y,
+                'area': self.x * self.y,
+                'efficiency': sum([i.x*i.y for i in SHEET.items])/(self.x*self.y),
+                'items': self.items,
+                }
+
+        return stats
 
 if __name__ == '__main__':
     SHEET = Sheet(8, 5)
     ITEM = Item(2, 6)
     ITEM2 = Item(3, 2)
     ITEM3 = Item(1, 1)
-    print(SHEET.insert(ITEM, heuristic='worst_width_fit'))
-    print(SHEET.insert(ITEM2, heuristic='worst_width_fit'))
-    print(SHEET.insert(ITEM3, heuristic='worst_width_fit'))
+    ITEM4 = Item(4, 2)
+    ITEM5 = Item(1, 8)
+    SHEET.insert(ITEM, heuristic='worst_width_fit')
+    SHEET.insert(ITEM2, heuristic='worst_width_fit')
+    SHEET.insert(ITEM3, heuristic='worst_width_fit')
+    SHEET.insert(ITEM4, heuristic='worst_width_fit')
+    SHEET.insert(ITEM5, heuristic='worst_width_fit')
     print(SHEET)
+    print()
     for i, shelf in enumerate(SHEET.shelves):
         print('Shelf #%s: %r' % (i, str(shelf.items)))
+    print()
+    print(SHEET.bin_stats())
