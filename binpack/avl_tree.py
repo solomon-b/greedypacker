@@ -330,3 +330,4 @@ if __name__ == '__main__':
     TREE .insert(20)
     TREE .insert(15)
     traverse(TREE .root)
+

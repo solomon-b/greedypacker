@@ -252,7 +252,7 @@ class Sheet:
         return self._loop_result_helper(worst_shelf, rotate, item)
 
 
-    def insert(self, item: Item) -> bool:
+    def insert(self, item: Item, heuristic: 'str' = 'next_fit') -> bool:
         if item.x <= self.x and item.y <= self.y:
             if not self.shelves:
                 new_shelf = Shelf(self.x, item.y)
@@ -260,8 +260,24 @@ class Sheet:
                 self.available_height -= new_shelf.y
                 new_shelf.insert(item)
                 return True
-            if self.worst_width_fit(item):
-                return True
+            if heuristic == 'next_fit':
+                if self.next_fit(item):
+                    return True
+            elif heuristic == 'first_fit':
+                if self.first_fit(item):
+                    return True
+            elif heuristic == 'best_width_fit':
+                if self.best_width_fit(item):
+                    return True
+            elif heuristic == 'best_height_fit':
+                if self.best_height_fit(item):
+                    return True
+            elif heuristic == 'best_area_fit':
+                if self.best_area_fit(item):
+                    return True
+            elif heuristic == 'worst_width_fit':
+                if self.worst_width_fit(item):
+                    return True
             # No shelf fit but sheet fit
             if item.y <= self.available_height:
                 new_shelf = Shelf(self.x, item.y)
@@ -276,9 +292,9 @@ if __name__ == '__main__':
     ITEM = Item(2, 6)
     ITEM2 = Item(3, 2)
     ITEM3 = Item(1, 1)
-    print(SHEET.insert(ITEM))
-    print(SHEET.insert(ITEM2))
-    print(SHEET.insert(ITEM3))
+    print(SHEET.insert(ITEM, heuristic='worst_width_fit'))
+    print(SHEET.insert(ITEM2, heuristic='worst_width_fit'))
+    print(SHEET.insert(ITEM3, heuristic='worst_width_fit'))
     print(SHEET)
     for i, shelf in enumerate(SHEET.shelves):
         print('Shelf #%s: %r' % (i, str(shelf.items)))
