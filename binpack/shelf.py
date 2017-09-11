@@ -51,9 +51,10 @@ class Shelf:
     def insert(self, item: Item) -> bool:
         if item.x <= self.available_width and item.y <= self.y:
             self.available_width -= item.x
-            if len(self.items) == 0:
+            item_length = len(self.items)
+            if item_length == 0:
                 item.CornerPoint = (0, self.vertical_offset)
-            elif len(self.items) == 1:
+            elif item_length == 1:
                 item.CornerPoint = (self.items[0].x, self.vertical_offset)
             else:
                 item.CornerPoint = (self.items[-1].CornerPoint[0] +
@@ -95,7 +96,7 @@ class Sheet:
         self.y = y if y < x else x
         self.available_height = self.y
         self.shelves = [] # type: List[Shelf]
-        self.items = [] # type: List[tuple]
+        self.items = [] # type: List[Item]
 
 
     def __repr__(self) -> str:
@@ -138,7 +139,7 @@ class Sheet:
 
 
     def best_width_fit(self, item) -> bool:
-        best_shelf = False
+        best_shelf = False # type: Any
         rotate = False
         for current_shelf in self.shelves:
             fit_score = current_shelf.item_best_fit(item)
@@ -158,7 +159,7 @@ class Sheet:
 
 
     def best_height_fit(self, item) -> bool:
-        best_shelf = False
+        best_shelf = False # type: Any
         rotate = False
         for current_shelf in self.shelves:
             fit_score = current_shelf.item_best_fit(item)
@@ -179,7 +180,7 @@ class Sheet:
 
 
     def best_area_fit(self, item) -> bool:
-        best_shelf = False
+        best_shelf = False # type: Any
         rotate = False
         for current_shelf  in self.shelves:
             fit_score = current_shelf.item_best_fit(item)
@@ -199,7 +200,7 @@ class Sheet:
 
 
     def worst_width_fit(self, item) -> bool:
-        worst_shelf = False
+        worst_shelf = False # type: Any
         rotate = False
         for current_shelf in self.shelves:
             fit_score = current_shelf.item_best_fit(item)
@@ -261,7 +262,7 @@ class Sheet:
                     last_shelf = self.shelves[-1]
                     v_offset = last_shelf.vertical_offset + last_shelf.y
 
-                new_shelf = Shelf(self.x, item.y, v_offset = v_offset)
+                new_shelf = Shelf(self.x, item.y, v_offset=v_offset)
                 new_shelf.insert(item)
                 self.shelves.append(new_shelf)
                 self.items.append(item)
@@ -277,12 +278,12 @@ class Sheet:
         """
 
         stats = {
-                'width': self.x,
-                'height': self.y,
-                'area': self.x * self.y,
-                'efficiency': sum([i.x*i.y for i in SHEET.items])/(self.x*self.y),
-                'items': self.items,
-                }
+            'width': self.x,
+            'height': self.y,
+            'area': self.x * self.y,
+            'efficiency': sum([i.x*i.y for i in SHEET.items])/(self.x*self.y),
+            'items': self.items,
+            }
 
         return stats
 
