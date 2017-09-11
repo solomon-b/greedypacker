@@ -24,6 +24,13 @@ class BinManager:
         self.bins = []
         self.bin_count = 0
         self.algorithm = 'shelf'
+        self.h_choices = ['next_fit',
+                          'first_fit',
+                          'best_width_fit',
+                          'best_height_fit',
+                          'best_area_fit',
+                          'worst_width_fit'
+                         ]
         self.heuristic = 'next_fit'
 
 
@@ -36,29 +43,15 @@ class BinManager:
     def set_algorthim(self, family: str, heuristic: str) -> bool:
         if family == 'shelf':
             self.algorithm = shelf.Sheet(self.bin_width, self.bin_height)
-            if heuristic == 'next_fit':
-                self.heuristic = 'next_fit'
+            if heuristic in self.h_choices:
+                self.heuristic = heuristic
                 return True
-            elif heuristic == 'first_fit':
-                self.heuristic = 'first_fit'
-                return True
-            elif heuristic == 'best_width_fit':
-                self.heuristic = 'best_width_fit'
-                return True
-            elif heuristic == 'best_height_fit':
-                self.heuristic = 'best_height_fit'
-                return True
-            elif heuristic == 'best_area_fit':
-                self.heuristic = 'best_area_fit'
-                return True
-            elif heuristic == 'worst_area_fit':
-                self.heuristic = 'worst_area_fit'
-                return True
+            return False
 
         elif family == 'guillotine':
-            return
+            return True
         else:
-            return 'sorry we dont support that algorithm'
+            return False
 
     def execute(self) -> None:
         for item in self.items:
