@@ -21,30 +21,6 @@ class Shelf:
         self.items = [] # type: List[Item]
 
 
-    def __lt__(self, other: 'Shelf') -> bool:
-        return True if self.available_width < other.available_width else False
-
-
-    def __le__(self, other: 'Shelf') -> bool:
-        return True if self.available_width <= other.available_width else False
-
-
-    def __eq__(self, other: 'Shelf') -> bool:
-        return True if self.available_width == other.available_width else False
-
-
-    def __ne__(self, other: 'Shelf') -> bool:
-        return True if self.available_width != other.available_width else False
-
-
-    def __gt__(self, other: 'Shelf') -> bool:
-        return True if self.available_width > other.available_width else False
-
-
-    def __ge__(self, other: 'Shelf') -> bool:
-        return True if self.available_width >= other.available_width else False
-
-
     def __repr__(self):
         return "Shelf(Available Width=%r, Height=%r)" % (self.available_width, self.y)
 
@@ -104,7 +80,7 @@ class Sheet:
                 return True
             elif fit_score == 2:
                 item.rotate()
-                current_shelf .insert(item)
+                current_shelf.insert(item)
                 return True
 
 
