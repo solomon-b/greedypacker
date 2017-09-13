@@ -65,28 +65,6 @@ class Shelf:
         return False
 
 
-    def check_item_fit(self, item: Item) -> bool:
-        return item.y <= self.y and item.x <= self.available_width
-
-
-    def check_reverse_item_fit(self, item: Item) -> bool:
-        return item.x <= self.y and item.y <= self.available_width
-
-
-    def item_best_fit(self, item: Item) -> int:
-        """
-        Find optimal item fit.
-        1 = default, 2 = rotated, 0 = no fit
-        """
-        if self.check_item_fit(item) and self.check_reverse_item_fit(item):
-            return 2 if item.x > item.y else 1
-        elif self.check_item_fit(item):
-            return 1
-        elif self.check_reverse_item_fit(item):
-            return 2
-        return 0
-
-
 class Sheet:
     """
     Sheet class represents a sheet of material to be subdivided.
@@ -130,15 +108,6 @@ class Sheet:
                 return True
 
 
-    def _loop_result_helper(self, flag_shelf, rotate, item):
-        if flag_shelf:
-            if rotate:
-                item.rotate()
-            flag_shelf.insert(item)
-            return True
-        return False
-
-
     def best_width_fit(self, item: Item) -> bool:
         fitted_shelves = [shelf for shelf in self.shelves if shelf.available_width >= item.x and shelf.y >= item.y]
         if not fitted_shelves:
@@ -147,7 +116,7 @@ class Sheet:
                 item.rotate()
             else:
                 return False
-        best_shelf = reduce(lambda a,b: a if (a.available_width < b.available_width) else b, fitted_shelves)
+        best_shelf = reduce(lambda a, b: a if (a.available_width < b.available_width) else b, fitted_shelves)
         best_shelf.insert(item)
         return True
 
@@ -160,7 +129,7 @@ class Sheet:
                 item.rotate()
             else:
                 return False
-        best_shelf = reduce(lambda a,b: a if (a.y < b.y) else b, fitted_shelves)
+        best_shelf = reduce(lambda a, b: a if (a.y < b.y) else b, fitted_shelves)
         best_shelf.insert(item)
         return True
 
@@ -173,7 +142,7 @@ class Sheet:
                 item.rotate()
             else:
                 return False
-        best_shelf = reduce(lambda a,b: a if ((a.y * a.available_width) < (b.y * b.available_width)) else b, fitted_shelves)
+        best_shelf = reduce(lambda a, b: a if ((a.y * a.available_width) < (b.y * b.available_width)) else b, fitted_shelves)
         best_shelf.insert(item)
         return True
 
@@ -186,7 +155,7 @@ class Sheet:
                 item.rotate()
             else:
                 return False
-        best_shelf = reduce(lambda a,b: a if (a.available_width > b.available_width) else b, fitted_shelves)
+        best_shelf = reduce(lambda a, b: a if (a.available_width > b.available_width) else b, fitted_shelves)
         best_shelf.insert(item)
         return True
 
