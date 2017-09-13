@@ -1,5 +1,5 @@
 """
-    2D Item class.
+2D Item class.
 """
 class Item:
     """
