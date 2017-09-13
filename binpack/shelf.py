@@ -64,11 +64,13 @@ class Sheet:
         # Optimal fit is default
         if fit_score == 1:
             current_shelf.insert(item)
+            self.items.append(item)
             return True
         # Optimal fit is rotated
         elif fit_score == 2:
             item.rotate()
             current_shelf.insert(item)
+            self.items.append(item)
             return True
 
 
@@ -77,10 +79,12 @@ class Sheet:
             fit_score = current_shelf.item_best_fit(item)
             if fit_score == 1:
                 current_shelf.insert(item)
+                self.items.append(item)
                 return True
             elif fit_score == 2:
                 item.rotate()
                 current_shelf.insert(item)
+                self.items.append(item)
                 return True
 
 
@@ -94,6 +98,7 @@ class Sheet:
                 return False
         best_shelf = reduce(lambda a, b: a if (a.available_width < b.available_width) else b, fitted_shelves)
         best_shelf.insert(item)
+        self.items.append(item)
         return True
 
 
@@ -107,6 +112,7 @@ class Sheet:
                 return False
         best_shelf = reduce(lambda a, b: a if (a.y < b.y) else b, fitted_shelves)
         best_shelf.insert(item)
+        self.items.append(item)
         return True
 
 
@@ -120,6 +126,7 @@ class Sheet:
                 return False
         best_shelf = reduce(lambda a, b: a if ((a.y * a.available_width) < (b.y * b.available_width)) else b, fitted_shelves)
         best_shelf.insert(item)
+        self.items.append(item)
         return True
 
 
@@ -133,6 +140,7 @@ class Sheet:
                 return False
         best_shelf = reduce(lambda a, b: a if (a.available_width > b.available_width) else b, fitted_shelves)
         best_shelf.insert(item)
+        self.items.append(item)
         return True
 
 
@@ -145,29 +153,17 @@ class Sheet:
                 new_shelf.insert(item)
                 self.items.append(item)
                 return True
-            if heuristic == 'next_fit':
-                if self.next_fit(item):
-                    self.items.append(item)
-                    return True
-            elif heuristic == 'first_fit':
-                if self.first_fit(item):
-                    self.items.append(item)
-                    return True
-            elif heuristic == 'best_width_fit':
-                if self.best_width_fit(item):
-                    self.items.append(item)
-                    return True
-            elif heuristic == 'best_height_fit':
-                if self.best_height_fit(item):
-                    self.items.append(item)
-                    return True
-            elif heuristic == 'best_area_fit':
-                if self.best_area_fit(item):
-                    self.items.append(item)
-                    return True
-            elif heuristic == 'worst_width_fit':
-                if self.worst_width_fit(item):
-                    self.items.append(item)
+
+            heuristics = {'next_fit': self.next_fit,
+                          'first_fit': self.first_fit,
+                          'best_width_fit': self.best_width_fit,
+                          'best_height_fit': self.best_height_fit,
+                          'best_area_fit': self.best_area_fit,
+                          'worst_width_fit': self.worst_width_fit }
+
+            if heuristic in heuristics:
+                res = heuristics[heuristic](item)
+                if res:
                     return True
             # No shelf fit but sheet fit
             if item.y <= self.available_height:
