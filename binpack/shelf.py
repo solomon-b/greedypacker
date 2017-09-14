@@ -162,7 +162,9 @@ class Sheet:
                           'worst_width_fit': self.worst_width_fit }
 
             if heuristic in heuristics:
+                # Call Heuristic
                 res = heuristics[heuristic](item)
+                # If item inserted successfully
                 if res:
                     return True
             # No shelf fit but sheet fit
