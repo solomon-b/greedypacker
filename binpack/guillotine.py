@@ -262,22 +262,28 @@ class Guillotine:
         for freerect in self.freerects:
             matching_widths = list(filter(lambda r: (r.width == freerect.width and
                                                      r.x == freerect.x), self.freerects))
-            matching_heights = list(filter(lambda r: (r.height  == freerect.height and
+            matching_heights = list(filter(lambda r: (r.height == freerect.height and
                                                       r.y == freerect.y), self.freerects))
             if matching_widths:
-                matching_widths_adjacent = list(filter(lambda r: r.y == freerect.y + freerect.height, self.freerects))
-                if matching_widths_adjacent:
-                    match_rect = matching_widths_adjacent[0]
-                    merged_rect = FreeRectangle(freerect.width, freerect.height+match_rect.height, freerect.x, freerect.y)
+                widths_adjacent = list(filter(lambda r: r.y == freerect.y + freerect.height, self.freerects))
+                if widths_adjacent:
+                    match_rect = widths_adjacent[0]
+                    merged_rect = FreeRectangle(freerect.width,
+                                                freerect.height+match_rect.height,
+                                                freerect.x,
+                                                freerect.y)
                     self.freerects.remove(freerect)
                     self.freerects.remove(match_rect)
                     self.freerects.append(merged_rect)
 
             if matching_heights:
-                matching_heights_adjacent = list(filter(lambda r: r.x == freerect.x + freerect.width, self.freerects))
-                if matching_heights_adjacent:
-                    match_rect = matching_heights_adjacent[0]
-                    merged_rect = FreeRectangle(freerect.width+match_rect.width, freerect.height, freerect.x, freerect.y)
+                heights_adjacent = list(filter(lambda r: r.x == freerect.x + freerect.width, self.freerects))
+                if heights_adjacent:
+                    match_rect = heights_adjacent[0]
+                    merged_rect = FreeRectangle(freerect.width+match_rect.width,
+                                                freerect.height,
+                                                freerect.x,
+                                                freerect.y)
                     self.freerects.remove(freerect)
                     self.freerects.remove(match_rect)
                     self.freerects.append(merged_rect)
@@ -318,9 +324,9 @@ class Guillotine:
 
 if __name__ == '__main__':
     G = Guillotine(8, 4)
-    I = Item(2,5)
-    I2 = Item(2,5)
-    I3 = Item(2,2)
+    I = Item(2, 5)
+    I2 = Item(2, 5)
+    I3 = Item(2, 2)
     G.insert(I)
     G.insert(I2)
     #G.insert(I3)
