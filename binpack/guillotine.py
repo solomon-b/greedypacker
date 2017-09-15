@@ -10,7 +10,11 @@ from collections import namedtuple
 from item import Item
 
 
-FreeRectangle = namedtuple('FreeRectangle', ['width', 'height', 'x', 'y'])
+class FreeRectangle(namedtuple('FreeRectangle', ['width', 'height', 'x', 'y'])):
+    __slots__ = ()
+    @property
+    def area(self):
+        return self.width*self.height
 
 
 class Guillotine:
@@ -26,7 +30,13 @@ class Guillotine:
 
 
     def first_fit(self, item: Item) -> bool:
-        fitted_rects = [rect for rect in self.freerects if rect.width >= item.x and rect.height >= item.y]
+        """
+        Select first indexed FreeRectangle (that fits item)
+        """
+        fitted_rects = [rect for rect
+                        in self.freerects
+                        if rect.width >= item.x
+                        and rect.height >= item.y]
         for freerect in fitted_rects:
             item.CornerPoint = (freerect.x, freerect.y)
             self.items.append(item)
@@ -57,7 +67,13 @@ class Guillotine:
 
 
     def best_width_fit(self, item) -> bool:
-        fitted_rects = [rect for rect in self.freerects if rect.width >= item.x and rect.height >= item.y]
+        """
+        Select FreeRectangle with width closest to item.width
+        """
+        fitted_rects = [rect for rect
+                        in self.freerects
+                        if rect.width >= item.x
+                        and rect.height >= item.y]
         best = reduce(lambda a, b: a if (a.width < b.width) else b, fitted_rects)
 
         if best:
@@ -90,28 +106,34 @@ class Guillotine:
 
 
     def best_height_fit(self, item) -> bool:
-        fitted_rects = [rect for rect in self.freerects if rect.width >= item.x and rect.height >= item.y]
+        """
+        Select FreeRectangle with height closest to item.height
+        """
+        fitted_rects = [rect for rect
+                        in self.freerects
+                        if rect.width >= item.x
+                        and rect.height >= item.y]
         best = reduce(lambda a, b: a if (a.height < b.height) else b, fitted_rects)
 
         if best:
-            item.CornerPoint = (freerect.x, freerect.y)
+            item.CornerPoint = (best.x, best.y)
             self.items.append(item)
             self.freerects.remove(best)
-            if item.x < best .width:
+            if item.x < best.width:
                 # generate free rectangle for remaining width
                 right_width = best .width - item.x
                 right_height = item.y
-                right_x = best .x + item.x
-                right_y = best .y
+                right_x = best.x + item.x
+                right_y = best.y
                 right_rect = FreeRectangle(right_width,
                                            right_height,
                                            right_x,
                                            right_y)
                 self.freerects.append(right_rect)
-            if item.y < best .height:
-                top_width = best .width
-                top_height = best .height - item.y
-                top_x = best .x
+            if item.y < best.height:
+                top_width = best.width
+                top_height = best.height - item.y
+                top_x = best.x
                 top_y = item.y
                 top_rect = FreeRectangle(top_width,
                                          top_height,
@@ -123,8 +145,15 @@ class Guillotine:
 
 
     def best_area_fit(self, item) -> bool:
-        fitted_rects = [rect for rect in self.freerects if rect.width >= item.x and rect.height >= item.y]
-        best = reduce(lambda a, b: a if ((a.width*a.height) < (b.width*b.height)) else b, fitted_rects)
+        """
+        Select FreeRectangle with area closest to item.area
+        """
+        fitted_rects = [rect for rect in
+                        self.freerects
+                        if rect.width >= item.x
+                        and rect.height >= item.y]
+        area_compare = lambda a, b: a if (a.area < b.area) else b
+        best = reduce(area_compare, fitted_rects)
 
         if best:
             item.CornerPoint = (best.x, best.y)
@@ -156,7 +185,13 @@ class Guillotine:
 
 
     def worst_width_fit(self, item) -> bool:
-        fitted_rects = [rect for rect in self.freerects if rect.width >= item.x and rect.height >= item.y]
+        """
+        Select FreeRectangle with width greatest compared to item.width
+        """
+        fitted_rects = [rect for rect
+                        in self.freerects
+                        if rect.width >= item.x
+                        and rect.height >= item.y]
         best = reduce(lambda a, b: a if (a.width > b.width) else b, fitted_rects)
 
         if best:
@@ -189,8 +224,15 @@ class Guillotine:
 
 
     def worst_height_fit(self, item) -> bool:
-        fitted_rects = [rect for rect in self.freerects if rect.width >= item.x and rect.height >= item.y]
-        best = reduce(lambda a, b: a if (a.height > b.height) else b, fitted_rects)
+        """
+        Select FreeRectangle with height greatest compared to item.height
+        """
+        fitted_rects = [rect for rect
+                        in self.freerects
+                        if rect.width >= item.x
+                        and rect.height >= item.y]
+        area_compare = lambda a, b: a if (a.area < b.area) else b
+        best = reduce(area_compare, fitted_rects)
 
         if best:
             item.CornerPoint = (best.x, best.y)
@@ -222,7 +264,13 @@ class Guillotine:
 
 
     def worst_area_fit(self, item) -> bool:
-        fitted_rects = [rect for rect in self.freerects if rect.width >= item.x and rect.height >= item.y]
+        """
+        Select FreeRectangle with area greatest compared to item.area
+        """
+        fitted_rects = [rect for rect
+                        in self.freerects
+                        if rect.width >= item.x
+                        and rect.height >= item.y]
         best = reduce(lambda a, b: a if ((a.height*a.width) > (b.height*b.width)) else b, fitted_rects)
 
         if best:
@@ -290,6 +338,9 @@ class Guillotine:
 
 
     def insert(self, item: Item, heuristic: str = 'best_area_fit') -> bool:
+        """
+        Public method for selecting heuristic and inserting item
+        """
         heuristics = {'first_fit': self.first_fit,
                       'best_width_fit': self.best_width_fit,
                       'best_height_fit': self.best_height_fit,
@@ -329,9 +380,9 @@ if __name__ == '__main__':
     I3 = Item(2, 2)
     G.insert(I)
     G.insert(I2)
-    #G.insert(I3)
-    print(G.items)
-    print(G.freerects)
+    G.insert(I3)
+    #print(G.items)
+    #print(G.freerects)
     print(G.bin_stats())
-    G.rectangle_merge()
+    #G.rectangle_merge()
     print(G.freerects)
