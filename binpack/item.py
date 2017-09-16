@@ -5,10 +5,10 @@ class Item:
     """
     Items class for rectangles inserted into sheets
     """
-    def __init__(self, x, y) -> None:
+    def __init__(self, x, y, CornerPoint: tuple = (0, 0)) -> None:
         self.x = x if x > y else y
         self.y = y if y < x else x
-        self.CornerPoint = (0, 0)
+        self.CornerPoint = CornerPoint 
 
 
     def __repr__(self):
@@ -29,12 +29,12 @@ class Item:
         return True if self.y <= other.y else False
 
 
-    def __eq__(self, other: 'Item') -> bool:
-        return True if self.y == other.y else False
+    #def __eq__(self, other: 'Item') -> bool:
+    #    return True if self.y == other.y else False
 
 
-    def __ne__(self, other: 'Item') -> bool:
-        return True if self.y != other.y else False
+    #def __ne__(self, other: 'Item') -> bool:
+    #    return True if self.y != other.y else False
 
 
     def __gt__(self, other: 'Item') -> bool:

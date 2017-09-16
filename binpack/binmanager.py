@@ -9,8 +9,9 @@ for packed bins.
 
 """
 from typing import List
-from item import Item
-import shelf
+from . import item
+from . import shelf
+from . import guillotine
 
 
 class BinManager:
@@ -34,7 +35,7 @@ class BinManager:
         self.heuristic = 'next_fit'
 
 
-    def add_items(self, *items: List[Item]) -> bool:
+    def add_items(self, *items: List[item.Item]) -> bool:
         for item in items:
             self.items.append(item)
         self.items.sort(key=lambda el: el.x*el.y, reverse=True)
@@ -64,6 +65,6 @@ class BinManager:
 
 if __name__ == '__main__':
     MANAGER = BinManager()
-    MANAGER.add_items(Item(2,6), Item(3,2), Item(1,1))
+    MANAGER.add_items(item.Item(2,6), item.Item(3,2), item.Item(1,1))
     MANAGER.set_algorthim('shelf', 'worst_width_fit')
     MANAGER.execute()

@@ -13,6 +13,7 @@ from collections import deque
 from operator import mul as product
 from . import avl_tree
 from . import bintree
+from . import item
 
 class BinPack:
     """

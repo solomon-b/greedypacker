@@ -7,7 +7,7 @@ ssbothwell@gmail.com
 """
 from functools import reduce
 from collections import namedtuple
-from item import Item
+from . import item
 
 
 class FreeRectangle(namedtuple('FreeRectangle', ['width', 'height', 'x', 'y'])):
@@ -29,7 +29,7 @@ class Guillotine:
         return "Guillotine(%r)" % (self.items)
 
 
-    def first_fit(self, item: Item) -> bool:
+    def first_fit(self, item: item.Item) -> bool:
         """
         Select first indexed FreeRectangle (that fits item)
         """
@@ -337,7 +337,7 @@ class Guillotine:
                     self.freerects.append(merged_rect)
 
 
-    def insert(self, item: Item, heuristic: str = 'best_area_fit') -> bool:
+    def insert(self, item: item.Item, heuristic: str = 'best_area_fit') -> bool:
         """
         Public method for selecting heuristic and inserting item
         """

@@ -14,5 +14,6 @@ Node payloads hold IDs and Node keys are the BinTree's max
 unoccupied scores.
 """
 
-from .binpack import BinPack
+from .binmanager import BinManager
+#from .binpack import BinPack
 #from .layoutrender import layoutrender
