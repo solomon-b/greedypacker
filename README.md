@@ -3,7 +3,7 @@ Solomon Bothwell
 
 ssbothwell@gmail.com
 
-A 2D binpacking library bason on Jukka Jylänki's article 
+A 2D binpacking library based on on Jukka Jylänki's article 
 "A Thousand Ways to Pack the Bin - A Practical Approach to 
 Two-Dimensional Rectangle Bin Packing."
 
