@@ -565,9 +565,37 @@ class WorstAreaFit(BaseTestCase):
             self.assertEqual(self.BIN.items, [ITEM, ITEM2, ITEM3])
 
 
+class RectMerge(BaseTestCase):
+    def setUp(self):
+        self.BIN = guillotine.Guillotine(10, 5)
+        self.freeRectangle = guillotine.FreeRectangle
+        self.BIN.rMerge = True
+
+
+    def tearDown(self):
+        del self.BIN
+        del self.freeRectangle
+
+
+    def testMatchingWidths(self):
+        """
+        Two item insert testing for item CornerPoints
+        and new FreeRectangles.
+        """
+        ITEM = item.Item(4, 2)
+        ITEM2 = item.Item(4, 3)
+        self.BIN.insert(ITEM, 'best_height_fit')
+        self.BIN.insert(ITEM2, 'best_height_fit')
+        self.assertEqual(self.BIN.freerects, [self.freeRectangle(6, 5, 4, 0)])
+
+
 class BinStats(BaseTestCase):
     def setUp(self):
         self.BIN = guillotine.Guillotine(10, 5)
+
+
+    def tearDown(self):
+        del self.BIN
 
 
     def testReturn(self):
@@ -596,6 +624,7 @@ def load_tests(loader, tests, pattern):
         suite.addTests(loader.loadTestsFromTestCase(WorstWidthFit))
         suite.addTests(loader.loadTestsFromTestCase(WorstHeightFit))
         suite.addTests(loader.loadTestsFromTestCase(WorstAreaFit))
+        suite.addTests(loader.loadTestsFromTestCase(RectMerge))
         suite.addTests(loader.loadTestsFromTestCase(BinStats))
     else:
         tests = loader.loadTestsFromName(pattern,

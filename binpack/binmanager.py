@@ -2,8 +2,7 @@
 """
 BinManager
 
-
-The main program logic for the package. BinPack manages
+The main program interface for the package. BinPack manages
 creation and ranking of bins and returns layout dictionaries
 for packed bins.
 

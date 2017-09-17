@@ -21,6 +21,7 @@ class Guillotine:
     def __init__(self, x: int = 8, y: int = 4) -> None:
         self.x = x
         self.y = y
+        self.rMerge = False
         self.freerects = [FreeRectangle(self.x, self.y, 0, 0)] # type: List[tuple]
         self.items = [] # type: List[Item]
 
@@ -315,9 +316,9 @@ class Guillotine:
         """
         for freerect in self.freerects:
             matching_widths = list(filter(lambda r: (r.width == freerect.width and
-                                                     r.x == freerect.x), self.freerects))
+                                                     r.x == freerect.x) and r != freerect, self.freerects))
             matching_heights = list(filter(lambda r: (r.height == freerect.height and
-                                                      r.y == freerect.y), self.freerects))
+                                                      r.y == freerect.y) and r != freerect, self.freerects))
             if matching_widths:
                 widths_adjacent = list(filter(lambda r: r.y == freerect.y + freerect.height, self.freerects))
                 if widths_adjacent:
@@ -360,6 +361,8 @@ class Guillotine:
             res = heuristics[heuristic](item)
             # If item inserted successfully
             if res:
+                if self.rMerge:
+                    self.rectangle_merge()
                 return True
         return False
 
@@ -387,8 +390,4 @@ if __name__ == '__main__':
     G.insert(I)
     G.insert(I2)
     G.insert(I3)
-    #print(G.items)
-    #print(G.freerects)
     print(G.bin_stats())
-    #G.rectangle_merge()
-    print(G.freerects)
