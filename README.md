@@ -23,8 +23,7 @@ See TODO.md for complete list of in progress features.
 ```
 In [13]: import binpack
 
-In [14]: M.set_algorthim('shelf', 'best_width_fit')
-Out[14]: True
+In [14]: M = binpack.binmanager.BinManager(8, 4)
 
 In [15]: M.set_algorthim('shelf', 'best_width_fit')
 Out[15]: True
