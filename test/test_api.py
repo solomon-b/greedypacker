@@ -10,22 +10,18 @@ class APITests(BaseTestCase):
 
     def testReadme(self):
         """
-        mostly naive test of documented functionality
+        Example insertion from README.md
         """
-        BINSET = binpack.BinPack(bin_size=(4,8))
-        BINSET.insert(
-            (2, 4), (2, 2), (4, 5), (4, 4), (2, 2), (3, 2),
-            heuristic='best_fit')
-        print_out = BINSET.print_stats()
-        expected_out = {
-                        0: {'width': 4, 'height': 8, 'area': 32, 'efficiency': 0.8125, 'items': [(binpack.bintree.CornerPoint(x=0, y=0), binpack.bintree.Item(width=4, height=5)), (binpack.bintree.CornerPoint(x=0, y=5), binpack.bintree.Item(width=3, height=2))]},
-                        1: {'width': 4, 'height': 8, 'area': 32, 'efficiency': 1.0, 'items': [(binpack.bintree.CornerPoint(x=0, y=0), binpack.bintree.Item(width=4, height=4)), (binpack.bintree.CornerPoint(x=0, y=4), binpack.bintree.Item(width=2, height=4)), (binpack.bintree.CornerPoint(x=2, y=4), binpack.bintree.Item(width=2, height=2)), (binpack.bintree.CornerPoint(x=2, y=6), binpack.bintree.Item(width=2, height=2))]},
-                        'oversized': []}
+        M = binpack.binmanager.BinManager(8, 4)
+        M.set_algorthim('shelf', 'best_width_fit')
+        ITEM = binpack.item.Item(4, 2)
+        ITEM2 = binpack.item.Item(5, 2)
+        ITEM3 = binpack.item.Item(2, 2)
+        M.add_items(ITEM, ITEM2, ITEM3)
+        M.execute()
 
-        self.assertEqual(
-            print_out,
-            expected_out
-            )
+        correct = [ITEM2, ITEM, ITEM3]
+        self.assertEqual(M.items, correct)
 
 
 def load_tests(loader, tests, pattern):
