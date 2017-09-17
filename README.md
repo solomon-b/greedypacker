@@ -1,4 +1,4 @@
-# Two Dimensional Bin Packing
+# Two Dimensional Bin Packing [![Build Status](https://travis-ci.org/ssbothwell/BinPack.svg?branch=master)](https://travis-ci.org/ssbothwell/BinPack)
 Solomon Bothwell
 
 ssbothwell@gmail.com
