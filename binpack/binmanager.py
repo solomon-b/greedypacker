@@ -48,9 +48,13 @@ class BinManager:
                 self.heuristic = heuristic
                 return True
             return False
-
         elif family == 'guillotine':
-            return True
+            self.algorithm = guillotine.Guillotine(self.bin_width,
+                                                   self.bin_height)
+            if heuristic in self.h_choices:
+                self.heuristic = heuristic
+                return True
+            return False
         else:
             return False
 
@@ -58,9 +62,8 @@ class BinManager:
         for item in self.items:
             self.algorithm.insert(item, self.heuristic)
 
-        print(self.algorithm)
-        for i, shelf in enumerate(self.algorithm.shelves):
-            print('Shelf #%s: %r' % (i, str(shelf.items)))
+        #for i, shelf in enumerate(self.algorithm.shelves):
+        #    print('Shelf #%s: %r' % (i, str(shelf.items)))
 
 
 if __name__ == '__main__':

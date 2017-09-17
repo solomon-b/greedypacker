@@ -56,7 +56,7 @@ class Guillotine:
                 top_width = freerect.width
                 top_height = freerect.height - item.y
                 top_x = freerect.x
-                top_y = item.y
+                top_y = item.y + item.CornerPoint[1]
                 top_rect = FreeRectangle(top_width,
                                          top_height,
                                          top_x,
@@ -74,34 +74,34 @@ class Guillotine:
                         in self.freerects
                         if rect.width >= item.x
                         and rect.height >= item.y]
-        best = reduce(lambda a, b: a if (a.width < b.width) else b, fitted_rects)
-
-        if best:
-            item.CornerPoint = (best.x, best.y)
-            self.items.append(item)
-            self.freerects.remove(best)
-            if item.x < best.width:
-                # generate free rectangle for remaining width
-                right_width = best.width - item.x
-                right_height = item.y
-                right_x = best.x + item.x
-                right_y = best.y
-                right_rect = FreeRectangle(right_width,
-                                           right_height,
-                                           right_x,
-                                           right_y)
-                self.freerects.append(right_rect)
-            if item.y < best.height:
-                top_width = best.width
-                top_height = best.height - item.y
-                top_x = best.x
-                top_y = item.y
-                top_rect = FreeRectangle(top_width,
-                                         top_height,
-                                         top_x,
-                                         top_y)
-                self.freerects.append(top_rect)
-            return True
+        if fitted_rects:
+            best = reduce(lambda a, b: a if (a.width < b.width) else b, fitted_rects)
+            if best:
+                item.CornerPoint = (best.x, best.y)
+                self.items.append(item)
+                self.freerects.remove(best)
+                if item.x < best.width:
+                    # generate free rectangle for remaining width
+                    right_width = best.width - item.x
+                    right_height = item.y
+                    right_x = best.x + item.x
+                    right_y = best.y
+                    right_rect = FreeRectangle(right_width,
+                                               right_height,
+                                               right_x,
+                                               right_y)
+                    self.freerects.append(right_rect)
+                if item.y < best.height:
+                    top_width = best.width
+                    top_height = best.height - item.y
+                    top_x = best.x
+                    top_y = item.y
+                    top_rect = FreeRectangle(top_width,
+                                             top_height,
+                                             top_x,
+                                             top_y)
+                    self.freerects.append(top_rect)
+                return True
         return False
 
 
@@ -113,34 +113,35 @@ class Guillotine:
                         in self.freerects
                         if rect.width >= item.x
                         and rect.height >= item.y]
-        best = reduce(lambda a, b: a if (a.height < b.height) else b, fitted_rects)
+        if fitted_rects:
+            best = reduce(lambda a, b: a if (a.height < b.height) else b, fitted_rects)
 
-        if best:
-            item.CornerPoint = (best.x, best.y)
-            self.items.append(item)
-            self.freerects.remove(best)
-            if item.x < best.width:
-                # generate free rectangle for remaining width
-                right_width = best .width - item.x
-                right_height = item.y
-                right_x = best.x + item.x
-                right_y = best.y
-                right_rect = FreeRectangle(right_width,
-                                           right_height,
-                                           right_x,
-                                           right_y)
-                self.freerects.append(right_rect)
-            if item.y < best.height:
-                top_width = best.width
-                top_height = best.height - item.y
-                top_x = best.x
-                top_y = item.y
-                top_rect = FreeRectangle(top_width,
-                                         top_height,
-                                         top_x,
-                                         top_y)
-                self.freerects.append(top_rect)
-            return True
+            if best:
+                item.CornerPoint = (best.x, best.y)
+                self.items.append(item)
+                self.freerects.remove(best)
+                if item.x < best.width:
+                    # generate free rectangle for remaining width
+                    right_width = best .width - item.x
+                    right_height = item.y
+                    right_x = best.x + item.x
+                    right_y = best.y
+                    right_rect = FreeRectangle(right_width,
+                                               right_height,
+                                               right_x,
+                                               right_y)
+                    self.freerects.append(right_rect)
+                if item.y < best.height:
+                    top_width = best.width
+                    top_height = best.height - item.y
+                    top_x = best.x
+                    top_y = item.y
+                    top_rect = FreeRectangle(top_width,
+                                             top_height,
+                                             top_x,
+                                             top_y)
+                    self.freerects.append(top_rect)
+                return True
         return False
 
 
@@ -153,34 +154,35 @@ class Guillotine:
                         if rect.width >= item.x
                         and rect.height >= item.y]
         area_compare = lambda a, b: a if (a.area < b.area) else b
-        best = reduce(area_compare, fitted_rects)
+        if fitted_rects:
+            best = reduce(area_compare, fitted_rects)
 
-        if best:
-            item.CornerPoint = (best.x, best.y)
-            self.items.append(item)
-            self.freerects.remove(best)
-            if item.x < best.width:
-                # generate free rectangle for remaining width
-                right_width = best.width - item.x
-                right_height = item.y
-                right_x = best.x + item.x
-                right_y = best.y
-                right_rect = FreeRectangle(right_width,
-                                           right_height,
-                                           right_x,
-                                           right_y)
-                self.freerects.append(right_rect)
-            if item.y < best.height:
-                top_width = best.width
-                top_height = best.height - item.y
-                top_x = best.x
-                top_y = item.y
-                top_rect = FreeRectangle(top_width,
-                                         top_height,
-                                         top_x,
-                                         top_y)
-                self.freerects.append(top_rect)
-            return True
+            if best:
+                item.CornerPoint = (best.x, best.y)
+                self.items.append(item)
+                self.freerects.remove(best)
+                if item.x < best.width:
+                    # generate free rectangle for remaining width
+                    right_width = best.width - item.x
+                    right_height = item.y
+                    right_x = best.x + item.x
+                    right_y = best.y
+                    right_rect = FreeRectangle(right_width,
+                                               right_height,
+                                               right_x,
+                                               right_y)
+                    self.freerects.append(right_rect)
+                if item.y < best.height:
+                    top_width = best.width
+                    top_height = best.height - item.y
+                    top_x = best.x
+                    top_y = item.y
+                    top_rect = FreeRectangle(top_width,
+                                             top_height,
+                                             top_x,
+                                             top_y)
+                    self.freerects.append(top_rect)
+                return True
         return False
 
 
@@ -192,34 +194,35 @@ class Guillotine:
                         in self.freerects
                         if rect.width >= item.x
                         and rect.height >= item.y]
-        best = reduce(lambda a, b: a if (a.width > b.width) else b, fitted_rects)
+        if fitted_rects:
+            best = reduce(lambda a, b: a if (a.width > b.width) else b, fitted_rects)
 
-        if best:
-            item.CornerPoint = (best.x, best.y)
-            self.items.append(item)
-            self.freerects.remove(best)
-            if item.x < best.width:
-                # generate free rectangle for remaining width
-                right_width = best.width - item.x
-                right_height = item.y
-                right_x = best.x + item.x
-                right_y = best.y
-                right_rect = FreeRectangle(right_width,
-                                           right_height,
-                                           right_x,
-                                           right_y)
-                self.freerects.append(right_rect)
-            if item.y < best.height:
-                top_width = best.width
-                top_height = best.height - item.y
-                top_x = best.x
-                top_y = item.y
-                top_rect = FreeRectangle(top_width,
-                                         top_height,
-                                         top_x,
-                                         top_y)
-                self.freerects.append(top_rect)
-            return True
+            if best:
+                item.CornerPoint = (best.x, best.y)
+                self.items.append(item)
+                self.freerects.remove(best)
+                if item.x < best.width:
+                    # generate free rectangle for remaining width
+                    right_width = best.width - item.x
+                    right_height = item.y
+                    right_x = best.x + item.x
+                    right_y = best.y
+                    right_rect = FreeRectangle(right_width,
+                                               right_height,
+                                               right_x,
+                                               right_y)
+                    self.freerects.append(right_rect)
+                if item.y < best.height:
+                    top_width = best.width
+                    top_height = best.height - item.y
+                    top_x = best.x
+                    top_y = item.y
+                    top_rect = FreeRectangle(top_width,
+                                             top_height,
+                                             top_x,
+                                             top_y)
+                    self.freerects.append(top_rect)
+                return True
         return False
 
 
@@ -231,35 +234,36 @@ class Guillotine:
                         in self.freerects
                         if rect.width >= item.x
                         and rect.height >= item.y]
-        area_compare = lambda a, b: a if (a.area < b.area) else b
-        best = reduce(area_compare, fitted_rects)
+        if fitted_rects:
+            compare = lambda a, b: a if (a.height > b.height) else b
+            best = reduce(compare, fitted_rects)
 
-        if best:
-            item.CornerPoint = (best.x, best.y)
-            self.items.append(item)
-            self.freerects.remove(best)
-            if item.x < best.width:
-                # generate free rectangle for remaining width
-                right_width = best.width - item.x
-                right_height = item.y
-                right_x = best.x + item.x
-                right_y = best.y
-                right_rect = FreeRectangle(right_width,
-                                           right_height,
-                                           right_x,
-                                           right_y)
-                self.freerects.append(right_rect)
-            if item.y < best.height:
-                top_width = best.width
-                top_height = best.height - item.y
-                top_x = best.x
-                top_y = item.y
-                top_rect = FreeRectangle(top_width,
-                                         top_height,
-                                         top_x,
-                                         top_y)
-                self.freerects.append(top_rect)
-            return True
+            if best:
+                item.CornerPoint = (best.x, best.y)
+                self.items.append(item)
+                self.freerects.remove(best)
+                if item.x < best.width:
+                    # generate free rectangle for remaining width
+                    right_width = best.width - item.x
+                    right_height = item.y
+                    right_x = best.x + item.x
+                    right_y = best.y
+                    right_rect = FreeRectangle(right_width,
+                                               right_height,
+                                               right_x,
+                                               right_y)
+                    self.freerects.append(right_rect)
+                if item.y < best.height:
+                    top_width = best.width
+                    top_height = best.height - item.y
+                    top_x = best.x
+                    top_y = item.y
+                    top_rect = FreeRectangle(top_width,
+                                             top_height,
+                                             top_x,
+                                             top_y)
+                    self.freerects.append(top_rect)
+                return True
         return False
 
 
@@ -271,34 +275,36 @@ class Guillotine:
                         in self.freerects
                         if rect.width >= item.x
                         and rect.height >= item.y]
-        best = reduce(lambda a, b: a if ((a.height*a.width) > (b.height*b.width)) else b, fitted_rects)
+        if fitted_rects:
+            compare = lambda a, b: a if a.area > b.area else b
+            best = reduce(compare, fitted_rects)
 
-        if best:
-            item.CornerPoint = (best.x, best.y)
-            self.items.append(item)
-            self.freerects.remove(best)
-            if item.x < best.width:
-                # generate free rectangle for remaining width
-                right_width = best.width - item.x
-                right_height = item.y
-                right_x = best.x + item.x
-                right_y = best.y
-                right_rect = FreeRectangle(right_width,
-                                           right_height,
-                                           right_x,
-                                           right_y)
-                self.freerects.append(right_rect)
-            if item.y < best.height:
-                top_width = best.width
-                top_height = best.height - item.y
-                top_x = best.x
-                top_y = item.y
-                top_rect = FreeRectangle(top_width,
-                                         top_height,
-                                         top_x,
-                                         top_y)
-                self.freerects.append(top_rect)
-            return True
+            if best:
+                item.CornerPoint = (best.x, best.y)
+                self.items.append(item)
+                self.freerects.remove(best)
+                if item.x < best.width:
+                    # generate free rectangle for remaining width
+                    right_width = best.width - item.x
+                    right_height = item.y
+                    right_x = best.x + item.x
+                    right_y = best.y
+                    right_rect = FreeRectangle(right_width,
+                                               right_height,
+                                               right_x,
+                                               right_y)
+                    self.freerects.append(right_rect)
+                if item.y < best.height:
+                    top_width = best.width
+                    top_height = best.height - item.y
+                    top_x = best.x
+                    top_y = item.y
+                    top_rect = FreeRectangle(top_width,
+                                             top_height,
+                                             top_x,
+                                             top_y)
+                    self.freerects.append(top_rect)
+                return True
         return False
 
 
@@ -346,8 +352,8 @@ class Guillotine:
                       'best_height_fit': self.best_height_fit,
                       'best_area_fit': self.best_area_fit,
                       'worst_width_fit': self.worst_width_fit,
-                      'worst_height_fit': self.worst_width_fit,
-                      'worst_area_fit': self.worst_width_fit}
+                      'worst_height_fit': self.worst_height_fit,
+                      'worst_area_fit': self.worst_area_fit}
 
         if heuristic in heuristics:
             # Call Heuristic

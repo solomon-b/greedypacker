@@ -87,6 +87,7 @@ class NextFit(BaseTestCase):
             self.assertEqual(self.sheet.shelves[0].__dict__,
                              correct.__dict__)
 
+
         with self.subTest():
             correct = [ITEM]
             self.assertEqual(self.sheet.items, correct)
