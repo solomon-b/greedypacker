@@ -3,37 +3,85 @@ Solomon Bothwell
 
 ssbothwell@gmail.com
 
+A 2D binpacking library bason on Jukka Jylänki's article 
+"A Thousand Ways to Pack the Bin - A Practical Approach to 
+Two-Dimensional Rectangle Bin Packing."
 
-A library for two dimensional bin packing using a greedy approach.
+This library is intended for offline binpacking and takes
+a greedy heuristic. Next Fit, First Fit, Best Width, Best
+Height, Best Area, Worst Width, Worst Width, and Worst Area
+heuristics are available for both Shelf and Guillotine style
+cuts. 
 
-Items are tuples of width, height values. A list of Items
-are submitted, sorted, and placed in bins according to the chosen
-heuristic. Layouts are returned as nested lists of namedtuples.
-Each item is returned with its dimensions, xy position (top left 
-corner referenced), and bin ID. 
+The project is still in early development. Multi Bin ranking
+and Maximal Rectangle Cut and Skyline Cuts will be included
+along with the Waste Map and Rectangle Merge improvements.
+See TODO.md for complete list of in progress features. 
+
 
 ### Example Usage:
 ```
->>> BINSET = binpack.BinPack(bin_size=(4,8))
->>> BINSET.insert((2, 4), (2, 2), (4, 5), (4, 4), (2, 2), (3, 2), heuristic='best_fit')
->>> BINSET.print_stats()
-0: {'width': 4, 'height': 8, 'area': 32, 'efficiency': 0.8125, 'items': [(binpack.bintree.CornerPoint(x=0, y=0), binpack.bintree.Item(width=4, height=5)), (binpack.bintree.CornerPoint(x=0, y=5), binpack.bintree.Item(width=3, height=2))]},
-1: {'width': 4, 'height': 8, 'area': 32, 'efficiency': 1.0, 'items': [(binpack.bintree.CornerPoint(x=0, y=0), binpack.bintree.Item(width=4, height=4)), (binpack.bintree.CornerPoint(x=0, y=4), binpack.bintree.Item(width=2, height=4)), (binpack.bintree.CornerPoint(x=2, y=4), binpack.bintree.Item(width=2, height=2)), (binpack.bintree.CornerPoint(x=2, y=6), binpack.bintree.Item(width=2, height=2))]}, 'oversized': []}
+In [13]: import binpack
+
+In [14]: M.set_algorthim('shelf', 'best_width_fit')
+Out[14]: True
+
+In [15]: M.set_algorthim('shelf', 'best_width_fit')
+Out[15]: True
+
+In [16]: ITEM = binpack.item.Item(4, 2)
+
+In [17]: ITEM2 = binpack.item.Item(5, 2)
+
+In [18]: ITEM3 = binpack.item.Item(2, 2)
+
+In [19]: M.add_items(ITEM, ITEM2, ITEM3)
+
+In [20]: M.execute()
+
+In [21]: M.items
+Out[21]:
+[Item(x=5, y=2, CornerPoint=(0, 0)),
+ Item(x=4, y=2, CornerPoint=(0, 2)),
+ Item(x=2, y=2, CornerPoint=(5, 0))]
+
 ```
+
+Algorithm Choices:
+* Shelf:
+  Split the bin into rows based on the height of the first
+  item in the row.
+
+* Guillotine:
+  Make orthogonal cuts into the bin to create areas that 
+  match the sizes of the items.
 
 Heuristic choices are:
 * next_fit:
-    When processing the next item, see if it fits in the same bin
-    as the last item. Start a new bin only if it does not.
-* best_fit:
-    When processing the next item, place it in the bin that results
-    in the smallest remaining space. Start a new bin if it fits no
-    bins.
+  Check the currently open Shelf and insert if the item fits.
+  Otherwise create a new shelf and close the previous shelf.
+* first_fit: 
+  Loop through all the shelves or FreeRectangles and place the 
+  item in the first one it fits.
+* best_width_fit:
+  Place the item in the shelf or FreeRectangle which would result
+  in the least remaining free width.
+* best_height_fit:
+  Place the item in the shelf or FreeRectangle which would result
+  in the least remaining free height.
+* best_area_fit:
+  Place the item in the shelf or FreeRectangle which would result
+  in the least remaining free area.
+* worst_width_fit:
+  Place the item in the shelf or FreeRectangle which would result
+  in the most remaining free width.
+* worst_height_fit:
+  Place the item in the shelf or FreeRectangle which would result
+  in the most remaining free height.
+* worst_area_fit:
+  Place the item in the shelf or FreeRectangle which would result
+  in the most remaining free area.
     
-Items are automatically sorted by area in descending order. Sorting 
-can be disabled by using setting the named argument `sorting=False`
-when you instantiate the binset. This can be desirable for online packing
-applications.
 
 ### install notes
 
