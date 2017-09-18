@@ -105,19 +105,6 @@ class Sheet:
         return False
 
 
-        #for current_shelf in self.shelves:
-        #    fit_score = current_shelf.item_best_fit(item)
-        #    if fit_score == 1:
-        #        current_shelf.insert(item)
-        #        self.items.append(item)
-        #        return True
-        #    elif fit_score == 2:
-        #        item.rotate()
-        #        current_shelf.insert(item)
-        #        self.items.append(item)
-        #        return True
-
-
     def best_width_fit(self, item: item.Item) -> bool:
         fitted_shelves = [shelf for shelf
                           in self.shelves

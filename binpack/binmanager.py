@@ -79,22 +79,48 @@ class BinManager:
         best_rect = None
         best_bin_index = None
         for i, binn in enumerate(self.bins):
-            fitted_rects = [rect for rect
-                            in binn.freerects
-                            if rect.width >= item.x
-                            and rect.height >= item.y]
-            if fitted_rects:
-                compare = lambda a, b: a if a.area > b.area else b
-                best_in_bin = reduce(compare, fitted_rects)
-                if best_in_bin:
-                    if not best_rect:
-                        best_rect = best_in_bin
-                        best_bin_index = i
-                    elif best_in_bin.width < best_rect.width:
-                        best_rect = best_in_bin
-                        best_bin_index = i
-                    self.bins[i].insert(item, self.heuristic)
-                    return
+            if self.algorithm == 'guillotine':
+                fitted_rects = [rect for rect
+                                in binn.freerects
+                                if rect.width >= item.x
+                                and rect.height >= item.y]
+                if fitted_rects:
+                    compare = lambda a, b: a if a.area > b.area else b
+                    best_in_bin = reduce(compare, fitted_rects)
+                    if best_in_bin:
+                        if not best_rect:
+                            best_rect = best_in_bin
+                            best_bin_index = i
+                        elif best_in_bin.width < best_rect.width:
+                            best_rect = best_in_bin
+                            best_bin_index = i
+
+            if self.algorithm == 'shelf':
+                fitted_shelves = [shelf for shelf
+                                  in binn.shelves
+                                  if shelf.available_width >= item.x
+                                  and shelf.y >= item.y]
+                if not fitted_shelves:
+                    fitted_shelves = [shelf for shelf
+                                      in self.shelves
+                                      if shelf.available_width >= item.y
+                                      and shelf.y >= item.x]
+                    if fitted_shelves:
+                        item.rotate()
+                if fitted_shelves:
+                    compare = lambda a, b: a if (a.available_width <
+                                                 b.available_width) else b
+                    best_shelf = reduce(compare, fitted_shelves)
+                    if best_shelf:
+                        if not best_rect:
+                            best_rect = best_shelf
+                            best_bin_index = i
+                        elif best_shelf.available_width < best_rect.available_width:
+                            best_rect = best_shelf
+                            best_bin_index = i
+        if best_rect:
+            self.bins[i].insert(item, self.heuristic)
+            return
         self.bins.append(self.algorithm(self.bin_width, self.bin_height))
         self.bins[-1].insert(item, self.heuristic)
         return
