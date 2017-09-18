@@ -7,6 +7,7 @@ creation and ranking of bins and returns layout dictionaries
 for packed bins.
 
 """
+from functools import reduce
 from typing import List
 from . import item
 from . import shelf
@@ -23,6 +24,7 @@ class BinManager:
         self.items = []
         self.bins = []
         self.bin_count = 0
+        self.bin_sel_algo = self._bin_best_fit
         self.algorithm = 'shelf'
         self.h_choices = ['next_fit',
                           'first_fit',
@@ -56,21 +58,55 @@ class BinManager:
         else:
             return False
 
-    def execute(self) -> None:
-        if not self.bins:
+
+    def _bin_first_fit(self, item: item.Item) -> None:
+        """
+        Insert into the first bin that fits the item
+        """
+        for binn in self.bins:
+            result = binn.insert(item, self.heuristic)
+            if result:
+                break
+        if not result:
             self.bins.append(self.algorithm(self.bin_width, self.bin_height))
+            self.bins[-1].insert(item, self.heuristic)
+
+
+    def _bin_best_fit(self, item: item.Item) -> None:
+        """
+        Insert into the bin that best fits the item
+        """
+        best_rect = None
+        best_bin_index = None
+        for i, binn in enumerate(self.bins):
+            fitted_rects = [rect for rect
+                            in binn.freerects
+                            if rect.width >= item.x
+                            and rect.height >= item.y]
+            if fitted_rects:
+                compare = lambda a, b: a if a.area > b.area else b
+                best_in_bin = reduce(compare, fitted_rects)
+                if best_in_bin:
+                    if not best_rect:
+                        best_rect = best_in_bin
+                        best_bin_index = i
+                    elif best_in_bin.width < best_rect.width:
+                        best_rect = best_in_bin
+                        best_bin_index = i
+                    self.bins[i].insert(item, self.heuristic)
+                    return
+        self.bins.append(self.algorithm(self.bin_width, self.bin_height))
+        self.bins[-1].insert(item, self.heuristic)
+        return
+
+
+    def execute(self) -> None:
+        """
+        Loop over all items and attempt insertion
+        """
+        self.bins = [self.algorithm(self.bin_width, self.bin_height)]
         for item in self.items:
-            for binn in self.bins:
-                result = binn.insert(item, self.heuristic)
-                if result:
-                    break
-            if not result:
-                self.bins.append(self.algorithm(self.bin_width, self.bin_height))
-                self.bins[-1].insert(item, self.heuristic)
-
-
-        #for i, shelf in enumerate(self.algorithm.shelves):
-        #    print('Shelf #%s: %r' % (i, str(shelf.items)))
+            self.bin_sel_algo(item)
 
 
 if __name__ == '__main__':
