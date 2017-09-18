@@ -12,11 +12,11 @@ class APITests(BaseTestCase):
         """
         Example insertion from README.md
         """
-        M = binpack.binmanager.BinManager(8, 4)
+        M = binpack.BinManager(8, 4)
         M.set_algorthim('shelf', 'best_width_fit')
-        ITEM = binpack.item.Item(4, 2)
-        ITEM2 = binpack.item.Item(5, 2)
-        ITEM3 = binpack.item.Item(2, 2)
+        ITEM = binpack.Item(4, 2)
+        ITEM2 = binpack.Item(5, 2)
+        ITEM3 = binpack.Item(2, 2)
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
 

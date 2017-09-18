@@ -25,16 +25,16 @@ See TODO.md for complete list of in progress features.
 ```
 In [13]: import binpack
 
-In [14]: M = binpack.binmanager.BinManager(8, 4)
+In [14]: M = binpack.BinManager(8, 4)
 
 In [15]: M.set_algorthim('shelf', 'best_width_fit')
 Out[15]: True
 
-In [16]: ITEM = binpack.item.Item(4, 2)
+In [16]: ITEM = binpack.Item(4, 2)
 
-In [17]: ITEM2 = binpack.item.Item(5, 2)
+In [17]: ITEM2 = binpack.Item(5, 2)
 
-In [18]: ITEM3 = binpack.item.Item(2, 2)
+In [18]: ITEM3 = binpack.Item(2, 2)
 
 In [19]: M.add_items(ITEM, ITEM2, ITEM3)
 

@@ -15,5 +15,9 @@ unoccupied scores.
 """
 
 from .binmanager import BinManager
+
+from .item import Item
+
+
 #from .binpack import BinPack
 #from .layoutrender import layoutrender
