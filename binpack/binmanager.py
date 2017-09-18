@@ -42,14 +42,13 @@ class BinManager:
 
     def set_algorthim(self, family: str, heuristic: str) -> bool:
         if family == 'shelf':
-            self.algorithm = shelf.Sheet(self.bin_width, self.bin_height)
+            self.algorithm = shelf.Sheet
             if heuristic in self.h_choices:
                 self.heuristic = heuristic
                 return True
             return False
         elif family == 'guillotine':
-            self.algorithm = guillotine.Guillotine(self.bin_width,
-                                                   self.bin_height)
+            self.algorithm = guillotine.Guillotine
             if heuristic in self.h_choices:
                 self.heuristic = heuristic
                 return True
@@ -58,8 +57,17 @@ class BinManager:
             return False
 
     def execute(self) -> None:
+        if not self.bins:
+            self.bins.append(self.algorithm(self.bin_width, self.bin_height))
         for item in self.items:
-            self.algorithm.insert(item, self.heuristic)
+            for binn in self.bins:
+                result = binn.insert(item, self.heuristic)
+                if result:
+                    break
+            if not result:
+                self.bins.append(self.algorithm(self.bin_width, self.bin_height))
+                self.bins[-1].insert(item, self.heuristic)
+
 
         #for i, shelf in enumerate(self.algorithm.shelves):
         #    print('Shelf #%s: %r' % (i, str(shelf.items)))
