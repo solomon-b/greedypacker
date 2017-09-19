@@ -14,7 +14,7 @@ from . import shelf
 from . import guillotine
 
 # Type Aliases:
-Algorithm = Union[Callable[shelf.Sheet], Callable[guillotine.Guillotine]]
+#Algorithm = Union[Callable[shelf.Sheet], Callable[guillotine.Guillotine]]
 
 
 class BinManager:
