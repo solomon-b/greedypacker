@@ -14,29 +14,35 @@ from . import shelf
 from . import guillotine
 
 # Type Aliases:
-#Algorithm = Union[Callable[shelf.Sheet], Callable[guillotine.Guillotine]]
+Algorithm = Union[shelf.Sheet, guillotine.Guillotine]
 
 
 class BinManager:
     """
     Interface Class.
     """
-    def __init__(self, bin_width: int = 8, bin_height: int = 4) -> None:
+    def __init__(self, bin_width: int = 8,
+                 bin_height: int = 4,
+                 algo: str = 'guillotine',
+                 heuristic: str ='best_width_fit') -> None:
         self.bin_width = bin_width
         self.bin_height = bin_height
         self.items = [] # type: List[item.Item]
-        self.bins = [] # type: List[Algorithm]
         self.bin_count = 0
         self.bin_sel_algo = self._bin_best_fit
-        self.algorithm = guillotine.Guillotine # type: Algorithm
+        self.heuristic = heuristic
+        self.algorithm = algo
+        self.defaultBin = self._bin_factory(self.bin_width,
+                                           self.bin_height,
+                                           self.algorithm,
+                                           self.heuristic) # type: Algorithm
+        self.bins = [self.defaultBin] # type: List[Algorithm]
         self.h_choices = ['next_fit',
                           'first_fit',
                           'best_width_fit',
                           'best_height_fit',
                           'best_area_fit',
-                          'worst_width_fit'
-                         ]
-        self.heuristic = 'next_fit'
+                          'worst_width_fit']
 
 
     def add_items(self, *items: item.Item) -> bool:
@@ -45,21 +51,16 @@ class BinManager:
         self.items.sort(key=lambda el: el.x*el.y, reverse=True)
 
 
-    def set_algorthim(self, family: str, heuristic: str) -> bool:
-        if family == 'shelf':
-            self.algorithm = shelf.Sheet
-            if heuristic in self.h_choices:
-                self.heuristic = heuristic
-                return True
-            return False
-        elif family == 'guillotine':
-            self.algorithm = guillotine.Guillotine
-            if heuristic in self.h_choices:
-                self.heuristic = heuristic
-                return True
-            return False
-        else:
-            return False
+    def _bin_factory(self, width: int, height: int, algo: str, heuristic: str) -> Algorithm:
+        """
+        Returns a bin with the desired algorithm,
+        heuristic, and dimensions
+        """
+        if algo == 'guillotine':
+            return guillotine.Guillotine(width, height)
+        elif algo == 'shelf':
+            return shelf.Sheet(width, height)
+        return
 
 
     def _bin_first_fit(self, item: item.Item) -> None:
@@ -79,10 +80,13 @@ class BinManager:
         """
         Insert into the bin that best fits the item
         """
+        if item.x > self.bin_width or item.y > self.bin_height:
+            return "Error! item too big for bins"
+
         best_rect = None # type: Union[guillotine.FreeRectangle, shelf.Shelf]
         best_bin_index = None # type: int
-        for i, binn in enumerate(self.bins):
-            if self.algorithm == 'guillotine':
+        if self.algorithm == 'guillotine':
+            for i, binn in enumerate(self.bins):
                 fitted_rects = [rect for rect
                                 in binn.freerects
                                 if rect.width >= item.x
@@ -90,41 +94,50 @@ class BinManager:
                 if fitted_rects:
                     compare = lambda a, b: a if a.area > b.area else b
                     best_in_bin = reduce(compare, fitted_rects)
-                    if best_in_bin:
-                        if not best_rect:
-                            best_rect = best_in_bin
-                            best_bin_index = i
-                        elif best_in_bin.width < best_rect.width:
-                            best_rect = best_in_bin
-                            best_bin_index = i
+                    if not best_rect:
+                        best_rect = best_in_bin
+                        best_bin_index = i
+                    elif best_in_bin.width < best_rect.width:
+                        best_rect = best_in_bin
+                        best_bin_index = i
 
-            if self.algorithm == 'shelf':
-                fitted_shelves = [shelf for shelf
-                                  in binn.shelves
-                                  if shelf.available_width >= item.x
-                                  and shelf.y >= item.y]
-                if not fitted_shelves:
+            if best_rect:
+                self.bins[i].insert(item, self.heuristic)
+                return
+
+
+        if self.algorithm == 'shelf':
+            bin_scores = [] # type: List[tuple]
+            for i, binn in enumerate(self.bins):
+                if binn.shelves == []:
+                    bin_scores.append((binn.x - item.x, i))
+                else:
                     fitted_shelves = [shelf for shelf
                                       in binn.shelves
-                                      if shelf.available_width >= item.y
-                                      and shelf.y >= item.x]
+                                      if shelf.available_width >= item.x
+                                      and shelf.y >= item.y]
+                    if not fitted_shelves:
+                        fitted_shelves = [shelf for shelf
+                                          in binn.shelves
+                                          if shelf.available_width >= item.y
+                                          and shelf.y >= item.x]
+                        if fitted_shelves:
+                            item.rotate()
                     if fitted_shelves:
-                        item.rotate()
-                if fitted_shelves:
-                    compare = lambda a, b: a if (a.available_width <
-                                                 b.available_width) else b
-                    best_shelf = reduce(compare, fitted_shelves)
-                    if best_shelf:
-                        if not best_rect:
-                            best_rect = best_shelf
-                            best_bin_index = i
-                        elif best_shelf.available_width < best_rect.available_width:
-                            best_rect = best_shelf
-                            best_bin_index = i
-        if best_rect:
-            self.bins[i].insert(item, self.heuristic)
-            return
-        self.bins.append(self.algorithm(self.bin_width, self.bin_height))
+                        compare = lambda a, b: a if (a.available_width <
+                                                     b.available_width) else b
+                        best_shelf = reduce(compare, fitted_shelves)
+                        bin_scores.append((best_shelf.available_width - item.x, i))
+                    elif binn.available_height >= item.y:
+                        bin_scores.append((binn.x - item.x, i))
+            if bin_scores:
+                best_bin_index = min(bin_scores)[1]
+                self.bins[best_bin_index].insert(item, self.heuristic)
+                return
+        self.bins.append(self._bin_factory(self.bin_width,
+                                           self.bin_height,
+                                           self.algorithm,
+                                           self.heuristic))
         self.bins[-1].insert(item, self.heuristic)
         return
 
@@ -133,7 +146,7 @@ class BinManager:
         """
         Loop over all items and attempt insertion
         """
-        self.bins = [self.algorithm(self.bin_width, self.bin_height)]
+        #self.bins = [self.algorithm(self.bin_width, self.bin_height)]
         for item in self.items:
             self.bin_sel_algo(item)
 
@@ -141,5 +154,4 @@ class BinManager:
 if __name__ == '__main__':
     MANAGER = BinManager()
     MANAGER.add_items(item.Item(2,6), item.Item(3,2), item.Item(1,1))
-    MANAGER.set_algorthim('shelf', 'worst_width_fit')
     MANAGER.execute()

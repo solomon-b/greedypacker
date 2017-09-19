@@ -12,16 +12,21 @@ class APITests(BaseTestCase):
         """
         Example insertion from README.md
         """
-        M = binpack.BinManager(8, 4)
-        M.set_algorthim('shelf', 'best_width_fit')
+        M = binpack.BinManager(8, 4, algo='shelf')
         ITEM = binpack.Item(4, 2)
         ITEM2 = binpack.Item(5, 2)
         ITEM3 = binpack.Item(2, 2)
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
-
         correct = [ITEM2, ITEM, ITEM3]
-        self.assertEqual(M.items, correct)
+        with self.subTest():
+            self.assertEqual(M.items, correct)
+        with self.subTest():
+            self.assertEqual(ITEM.CornerPoint, (0,2))
+        with self.subTest():
+            self.assertEqual(ITEM2.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(ITEM3.CornerPoint, (5,0))
 
 
 def load_tests(loader, tests, pattern):
