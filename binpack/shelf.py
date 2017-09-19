@@ -18,7 +18,7 @@ class Shelf:
         self.x = x
         self.available_width = self.x
         self.vertical_offset = v_offset
-        self.items = [] # type: List[Item]
+        self.items = [] # type: List[item.Item]
 
 
     def __repr__(self):
@@ -52,7 +52,7 @@ class Sheet:
         self.y = y if y < x else x
         self.available_height = self.y
         self.shelves = [] # type: List[Shelf]
-        self.items = [] # type: List[Item]
+        self.items = [] # type: List[item.Item]
 
 
     def __repr__(self) -> str:

@@ -5,12 +5,13 @@ Guillotine Style 2D Bin Algorithm
 Solomon Bothwell
 ssbothwell@gmail.com
 """
+import typing
 from functools import reduce
 from collections import namedtuple
 from . import item
 
 
-class FreeRectangle(namedtuple('FreeRectangle', ['width', 'height', 'x', 'y'])):
+class FreeRectangle(typing.NamedTuple('FreeRectangle', [('width', int), ('height', int), ('x', int), ('y', int)])):
     __slots__ = ()
     @property
     def area(self):
@@ -22,11 +23,11 @@ class Guillotine:
         self.x = x
         self.y = y
         self.rMerge = False
-        self.freerects = [FreeRectangle(self.x, self.y, 0, 0)] # type: List[tuple]
-        self.items = [] # type: List[Item]
+        self.freerects = [FreeRectangle(self.x, self.y, 0, 0)] # type: List[FreeRectangle]
+        self.items = [] # type: List[item.Item]
 
 
-    def __repr__(self) -> None:
+    def __repr__(self) -> str:
         return "Guillotine(%r)" % (self.items)
 
 
@@ -37,7 +38,7 @@ class Guillotine:
         fitted_rects = [rect for rect
                         in self.freerects
                         if rect.width >= item.x
-                        and rect.height >= item.y]
+                        and rect.height >= item.y] # type: List[FreeRectangle]
         for freerect in fitted_rects:
             item.CornerPoint = (freerect.x, freerect.y)
             self.items.append(item)
@@ -74,7 +75,8 @@ class Guillotine:
         fitted_rects = [rect for rect
                         in self.freerects
                         if rect.width >= item.x
-                        and rect.height >= item.y]
+                        and rect.height >= item.y] # type: List[FreeRectangle]
+
         if fitted_rects:
             best = reduce(lambda a, b: a if (a.width < b.width) else b, fitted_rects)
             if best:
@@ -113,7 +115,8 @@ class Guillotine:
         fitted_rects = [rect for rect
                         in self.freerects
                         if rect.width >= item.x
-                        and rect.height >= item.y]
+                        and rect.height >= item.y] # type: List[FreeRectangle]
+
         if fitted_rects:
             best = reduce(lambda a, b: a if (a.height < b.height) else b, fitted_rects)
 
@@ -153,7 +156,8 @@ class Guillotine:
         fitted_rects = [rect for rect in
                         self.freerects
                         if rect.width >= item.x
-                        and rect.height >= item.y]
+                        and rect.height >= item.y] # type: List[FreeRectangle]
+
         area_compare = lambda a, b: a if (a.area < b.area) else b
         if fitted_rects:
             best = reduce(area_compare, fitted_rects)
@@ -194,7 +198,8 @@ class Guillotine:
         fitted_rects = [rect for rect
                         in self.freerects
                         if rect.width >= item.x
-                        and rect.height >= item.y]
+                        and rect.height >= item.y] # type: List[FreeRectangle]
+
         if fitted_rects:
             best = reduce(lambda a, b: a if (a.width > b.width) else b, fitted_rects)
 
@@ -234,7 +239,8 @@ class Guillotine:
         fitted_rects = [rect for rect
                         in self.freerects
                         if rect.width >= item.x
-                        and rect.height >= item.y]
+                        and rect.height >= item.y] # type: List[FreeRectangle]
+
         if fitted_rects:
             compare = lambda a, b: a if (a.height > b.height) else b
             best = reduce(compare, fitted_rects)
@@ -275,7 +281,8 @@ class Guillotine:
         fitted_rects = [rect for rect
                         in self.freerects
                         if rect.width >= item.x
-                        and rect.height >= item.y]
+                        and rect.height >= item.y] # type: List[FreeRectangle]
+
         if fitted_rects:
             compare = lambda a, b: a if a.area > b.area else b
             best = reduce(compare, fitted_rects)
@@ -316,11 +323,14 @@ class Guillotine:
         """
         for freerect in self.freerects:
             matching_widths = list(filter(lambda r: (r.width == freerect.width and
-                                                     r.x == freerect.x) and r != freerect, self.freerects))
+                                                     r.x == freerect.x) and r != freerect, self.freerects) # type: List[FreeRectangle]
+                                                     )
             matching_heights = list(filter(lambda r: (r.height == freerect.height and
-                                                      r.y == freerect.y) and r != freerect, self.freerects))
+                                                      r.y == freerect.y) and r != freerect, self.freerects)) # type: List[FreeRectangle]
+
             if matching_widths:
-                widths_adjacent = list(filter(lambda r: r.y == freerect.y + freerect.height, self.freerects))
+                widths_adjacent = list(filter(lambda r: r.y == freerect.y + freerect.height, self.freerects)) # type: List[FreeRectangle]
+
                 if widths_adjacent:
                     match_rect = widths_adjacent[0]
                     merged_rect = FreeRectangle(freerect.width,
@@ -384,9 +394,9 @@ class Guillotine:
 
 if __name__ == '__main__':
     G = Guillotine(8, 4)
-    I = Item(2, 5)
-    I2 = Item(2, 5)
-    I3 = Item(2, 2)
+    I = item.Item(2, 5) # type: item.Item
+    I2 = item.Item(2, 5) # type: item.Item
+    I3 = item.Item(2, 2) # type: item.Item
     G.insert(I)
     G.insert(I2)
     G.insert(I3)

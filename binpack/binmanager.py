@@ -8,10 +8,13 @@ for packed bins.
 
 """
 from functools import reduce
-from typing import List
+from typing import List, Union, Callable
 from . import item
 from . import shelf
 from . import guillotine
+
+# Type Aliases:
+Algorithm = Union[Callable[shelf.Sheet], Callable[guillotine.Guillotine]]
 
 
 class BinManager:
@@ -21,11 +24,11 @@ class BinManager:
     def __init__(self, bin_width: int = 8, bin_height: int = 4) -> None:
         self.bin_width = bin_width
         self.bin_height = bin_height
-        self.items = []
-        self.bins = []
+        self.items = [] # type: List[item.Item]
+        self.bins = [] # type: List[Algorithm]
         self.bin_count = 0
         self.bin_sel_algo = self._bin_best_fit
-        self.algorithm = 'shelf'
+        self.algorithm = guillotine.Guillotine # type: Algorithm
         self.h_choices = ['next_fit',
                           'first_fit',
                           'best_width_fit',
@@ -36,7 +39,7 @@ class BinManager:
         self.heuristic = 'next_fit'
 
 
-    def add_items(self, *items: List[item.Item]) -> bool:
+    def add_items(self, *items: item.Item) -> bool:
         for item in items:
             self.items.append(item)
         self.items.sort(key=lambda el: el.x*el.y, reverse=True)
@@ -76,8 +79,8 @@ class BinManager:
         """
         Insert into the bin that best fits the item
         """
-        best_rect = None
-        best_bin_index = None
+        best_rect = None # type: Union[guillotine.FreeRectangle, shelf.Shelf]
+        best_bin_index = None # type: int
         for i, binn in enumerate(self.bins):
             if self.algorithm == 'guillotine':
                 fitted_rects = [rect for rect
@@ -102,7 +105,7 @@ class BinManager:
                                   and shelf.y >= item.y]
                 if not fitted_shelves:
                     fitted_shelves = [shelf for shelf
-                                      in self.shelves
+                                      in binn.shelves
                                       if shelf.available_width >= item.y
                                       and shelf.y >= item.x]
                     if fitted_shelves:
