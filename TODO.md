@@ -1,4 +1,5 @@
 ### To Do:
+* Rewrite shelf.py (replace shelf class with a list)
 * Option to disable Item Rotation
 * Maximal Rectangles and Skyline Algorithms
 * Guillotine Split Rules (Shorter/Longer Axis and Shorter/Longer Leftover)

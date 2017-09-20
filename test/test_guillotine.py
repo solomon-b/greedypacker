@@ -9,7 +9,7 @@ from .util import stdout_redirect
 
 class FirstFit(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -22,7 +22,7 @@ class FirstFit(BaseTestCase):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(5, 11)
@@ -33,7 +33,7 @@ class FirstFit(BaseTestCase):
         """
         Single item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -52,7 +52,7 @@ class FirstFit(BaseTestCase):
         """
         Two item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 2)
@@ -74,7 +74,7 @@ class FirstFit(BaseTestCase):
         """
         Three items
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 2)
@@ -98,7 +98,7 @@ class FirstFit(BaseTestCase):
 
 class BestWidthFit(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(8, 4)
+        self.BIN = guillotine.Guillotine(8, 4, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -110,6 +110,9 @@ class BestWidthFit(BaseTestCase):
     def testItemTooBig(self):
         """
         Single Item Fits no FreeRectangles
+        Split Horizontal
+        Rotation == False
+        RectMerge == False
         """
         ITEM = item.Item(5, 9)
         self.assertFalse(self.BIN.insert(ITEM, 'best_width_fit'))
@@ -119,7 +122,7 @@ class BestWidthFit(BaseTestCase):
         """
         Single item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -138,7 +141,7 @@ class BestWidthFit(BaseTestCase):
         """
         Two item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 2)
@@ -161,7 +164,7 @@ class BestWidthFit(BaseTestCase):
         """
         Three item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 2)
@@ -196,7 +199,7 @@ class BestHeightFit(BaseTestCase):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(5, 11)
@@ -207,7 +210,7 @@ class BestHeightFit(BaseTestCase):
         """
         Single item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -226,7 +229,7 @@ class BestHeightFit(BaseTestCase):
         """
         Two item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -248,7 +251,7 @@ class BestHeightFit(BaseTestCase):
         """
         Three item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -284,7 +287,7 @@ class BestAreaFit(BaseTestCase):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(5, 11)
@@ -295,7 +298,7 @@ class BestAreaFit(BaseTestCase):
         """
         Single item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -314,7 +317,7 @@ class BestAreaFit(BaseTestCase):
         """
         Two item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -337,7 +340,7 @@ class BestAreaFit(BaseTestCase):
         """
         Three item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -374,7 +377,7 @@ class WorstWidthFit(BaseTestCase):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(5, 11)
@@ -385,7 +388,7 @@ class WorstWidthFit(BaseTestCase):
         """
         Single item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -404,7 +407,7 @@ class WorstWidthFit(BaseTestCase):
         """
         Two item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -426,7 +429,7 @@ class WorstWidthFit(BaseTestCase):
         """
         Three item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -449,7 +452,7 @@ class WorstWidthFit(BaseTestCase):
 
 class WorstHeightFit(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -462,7 +465,7 @@ class WorstHeightFit(BaseTestCase):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(5, 11)
@@ -473,7 +476,7 @@ class WorstHeightFit(BaseTestCase):
         """
         Single item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -492,7 +495,7 @@ class WorstHeightFit(BaseTestCase):
         """
         Two item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -515,7 +518,7 @@ class WorstHeightFit(BaseTestCase):
         """
         Three item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -539,7 +542,7 @@ class WorstHeightFit(BaseTestCase):
 
 class WorstAreaFit(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -552,7 +555,7 @@ class WorstAreaFit(BaseTestCase):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(5, 11)
@@ -563,7 +566,7 @@ class WorstAreaFit(BaseTestCase):
         """
         Single item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -582,7 +585,7 @@ class WorstAreaFit(BaseTestCase):
         """
         Two item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -604,7 +607,7 @@ class WorstAreaFit(BaseTestCase):
         """
         Three item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == False
         """
         ITEM = item.Item(4, 3)
@@ -628,7 +631,7 @@ class WorstAreaFit(BaseTestCase):
 
 class RectMerge(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
         self.BIN.rMerge = True
 
@@ -642,7 +645,7 @@ class RectMerge(BaseTestCase):
         """
         Two item
         Split Horizontal
-        Rotation == True
+        Rotation == False
         RectMerge == True
         """
         ITEM = item.Item(4, 2)
@@ -654,7 +657,7 @@ class RectMerge(BaseTestCase):
 
 class BinStats(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
 
 
     def tearDown(self):

@@ -47,12 +47,13 @@ class Sheet:
     Sheet class represents a sheet of material to be subdivided.
     Sheets hold a list of rows which hold a list of items.
     """
-    def __init__(self, x: int, y: int) -> None:
+    def __init__(self, x: int, y: int, rotation: bool = True) -> None:
         self.x = x if x > y else y
         self.y = y if y < x else x
         self.available_height = self.y
         self.shelves = [] # type: List[Shelf]
         self.items = [] # type: List[item.Item]
+        self.rotation = rotation
 
 
     def __repr__(self) -> str:
@@ -64,10 +65,11 @@ class Sheet:
                           in self.shelves
                           if shelf.available_width >= item.x
                           and shelf.y >= item.y]
-        fitted_shelves_rotated = [shelf for shelf
-                                  in self.shelves
-                                  if shelf.available_width >= item.y
-                                  and shelf.y >= item.x]
+        if self.rotation:
+            fitted_shelves_rotated = [shelf for shelf
+                                      in self.shelves
+                                      if shelf.available_width >= item.y
+                                      and shelf.y >= item.x]
         if fitted_shelves:
             current_shelf = fitted_shelves[-1]
             current_shelf.insert(item)
@@ -87,10 +89,11 @@ class Sheet:
                           in self.shelves
                           if shelf.available_width >= item.x
                           and shelf.y >= item.y]
-        fitted_shelves_rotated = [shelf for shelf
-                                  in self.shelves
-                                  if shelf.available_width >= item.y
-                                  and shelf.y >= item.x]
+        if self.rotation:
+            fitted_shelves_rotated = [shelf for shelf
+                                      in self.shelves
+                                      if shelf.available_width >= item.y
+                                      and shelf.y >= item.x]
         if fitted_shelves:
             current_shelf = fitted_shelves[0]
             current_shelf.insert(item)
@@ -110,7 +113,7 @@ class Sheet:
                           in self.shelves
                           if shelf.available_width >= item.x
                           and shelf.y >= item.y]
-        if not fitted_shelves:
+        if not fitted_shelves and self.rotation:
             fitted_shelves = [shelf for shelf in self.shelves if shelf.available_width >= item.y and shelf.y >= item.x]
             if fitted_shelves:
                 item.rotate()
@@ -123,9 +126,15 @@ class Sheet:
 
 
     def best_height_fit(self, item) -> bool:
-        fitted_shelves = [shelf for shelf in self.shelves if shelf.available_width >= item.x and shelf.y >= item.y]
-        if not fitted_shelves:
-            fitted_shelves = [shelf for shelf in self.shelves if shelf.available_width >= item.y and shelf.y >= item.x]
+        fitted_shelves = [shelf for shelf
+                          in self.shelves
+                          if shelf.available_width >= item.x
+                          and shelf.y >= item.y]
+        if not fitted_shelves and self.rotation:
+            fitted_shelves = [shelf for shelf
+                              in self.shelves
+                              if shelf.available_width >= item.y
+                              and shelf.y >= item.x]
             if fitted_shelves:
                 item.rotate()
             else:
@@ -137,9 +146,15 @@ class Sheet:
 
 
     def best_area_fit(self, item) -> bool:
-        fitted_shelves = [shelf for shelf in self.shelves if shelf.available_width >= item.x and shelf.y >= item.y]
-        if not fitted_shelves:
-            fitted_shelves = [shelf for shelf in self.shelves if shelf.available_width >= item.y and shelf.y >= item.x]
+        fitted_shelves = [shelf for shelf
+                          in self.shelves
+                          if shelf.available_width >= item.x
+                          and shelf.y >= item.y]
+        if not fitted_shelves and self.rotation:
+            fitted_shelves = [shelf for shelf
+                              in self.shelves
+                              if shelf.available_width >= item.y
+                              and shelf.y >= item.x]
             if fitted_shelves:
                 item.rotate()
             else:
@@ -165,9 +180,15 @@ class Sheet:
 
 
     def worst_height_fit(self, item) -> bool:
-        fitted_shelves = [shelf for shelf in self.shelves if shelf.available_width >= item.x and shelf.y >= item.y]
-        if not fitted_shelves:
-            fitted_shelves = [shelf for shelf in self.shelves if shelf.available_width >= item.y and shelf.y >= item.x]
+        fitted_shelves = [shelf for shelf
+                          in self.shelves
+                          if shelf.available_width >= item.x
+                          and shelf.y >= item.y]
+        if not fitted_shelves and self.rotation:
+            fitted_shelves = [shelf for shelf
+                              in self.shelves
+                              if shelf.available_width >= item.y
+                              and shelf.y >= item.x]
             if fitted_shelves:
                 item.rotate()
             else:
@@ -179,9 +200,15 @@ class Sheet:
 
 
     def worst_area_fit(self, item) -> bool:
-        fitted_shelves = [shelf for shelf in self.shelves if shelf.available_width >= item.x and shelf.y >= item.y]
-        if not fitted_shelves:
-            fitted_shelves = [shelf for shelf in self.shelves if shelf.available_width >= item.y and shelf.y >= item.x]
+        fitted_shelves = [shelf for shelf
+                          in self.shelves
+                          if shelf.available_width >= item.x
+                          and shelf.y >= item.y]
+        if not fitted_shelves and self.rotation:
+            fitted_shelves = [shelf for shelf
+                              in self.shelves
+                              if shelf.available_width >= item.y
+                              and shelf.y >= item.x]
             if fitted_shelves:
                 item.rotate()
             else:

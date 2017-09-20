@@ -5,7 +5,9 @@ Guillotine Style 2D Bin Algorithm
 Solomon Bothwell
 ssbothwell@gmail.com
 """
+import operator
 import typing
+from typing import Optional, List
 from functools import reduce
 from collections import namedtuple
 from . import item
@@ -19,26 +21,41 @@ class FreeRectangle(typing.NamedTuple('FreeRectangle', [('width', int), ('height
 
 
 class Guillotine:
-    def __init__(self, x: int = 8, y: int = 4) -> None:
+    def __init__(self, x: int = 8, y: int = 4, rotation: bool = True) -> None:
         self.x = x
         self.y = y
         self.rMerge = False
         self.freerects = [FreeRectangle(self.x, self.y, 0, 0)] # type: List[FreeRectangle]
         self.items = [] # type: List[item.Item]
+        self.rotation = rotation
 
 
     def __repr__(self) -> str:
         return "Guillotine(%r)" % (self.items)
 
 
+    def _fitted_rects(self, item: item.Item,
+                      rotation: bool = False) -> List[FreeRectangle]:
+        """
+        Returns a list of FreeRectangles that the item fits
+        """
+        width = item.x if not rotation else item.y
+        height = item.y if not rotation else item.x
+        return [rect for rect
+                in self.freerects
+                if rect.width >= width
+                and rect.height >= height] # type: List[FreeRectangle]
+
+
     def first_fit(self, item: item.Item) -> bool:
         """
         Select first indexed FreeRectangle (that fits item)
         """
-        fitted_rects = [rect for rect
-                        in self.freerects
-                        if rect.width >= item.x
-                        and rect.height >= item.y] # type: List[FreeRectangle]
+        fitted_rects = self._fitted_rects(item)
+        if not fitted_rects and self.rotation:
+            fitted_rects = self._fitted_rects(item, rotation=True)
+            if fitted_rects:
+                item.rotate()
         for freerect in fitted_rects:
             item.CornerPoint = (freerect.x, freerect.y)
             self.items.append(item)
@@ -68,43 +85,61 @@ class Guillotine:
         return False
 
 
-    def best_width_fit(self, item) -> bool:
+    def best_width_fit(self, item: item.Item) -> bool:
         """
         Select FreeRectangle with width closest to item.width
         """
-        fitted_rects = [rect for rect
-                        in self.freerects
-                        if rect.width >= item.x
-                        and rect.height >= item.y] # type: List[FreeRectangle]
+        smallest_rect = None # type: FreeRectangle
+        smallest_rotated = None # type: FreeRectangle
+        best = None # type: FreeRectangle
 
+        fitted_rects = self._fitted_rects(item)
         if fitted_rects:
-            best = reduce(lambda a, b: a if (a.width < b.width) else b, fitted_rects)
-            if best:
-                item.CornerPoint = (best.x, best.y)
-                self.items.append(item)
-                self.freerects.remove(best)
-                if item.x < best.width:
-                    # generate free rectangle for remaining width
-                    right_width = best.width - item.x
-                    right_height = item.y
-                    right_x = best.x + item.x
-                    right_y = best.y
-                    right_rect = FreeRectangle(right_width,
-                                               right_height,
-                                               right_x,
-                                               right_y)
-                    self.freerects.append(right_rect)
-                if item.y < best.height:
-                    top_width = best.width
-                    top_height = best.height - item.y
-                    top_x = best.x
-                    top_y = item.y
-                    top_rect = FreeRectangle(top_width,
-                                             top_height,
-                                             top_x,
-                                             top_y)
-                    self.freerects.append(top_rect)
-                return True
+            compare = lambda a, b: a if (a.width < b.width) else b
+            smallest_rect = reduce(compare, fitted_rects)
+
+        if self.rotation:
+            fitted_rects_rot = [rect for rect
+                            in self.freerects
+                            if rect.width >= item.y
+                            and rect.height >= item.x] # type: List[FreeRectangle]
+            if fitted_rects_rot:
+                compare = lambda a, b: a if (a.width < b.width) else b
+                smallest_rotated = reduce(compare, fitted_rects)
+
+        if smallest_rect and smallest_rotated:
+            best = smallest_rect if smallest_rect.width <= smallest_rotated.width else smallest_rotated
+        elif smallest_rotated and not smallest_rect:
+            best = smallest_rotated
+        else:
+            best = smallest_rect
+
+        if best:
+            item.CornerPoint = (best.x, best.y)
+            self.items.append(item)
+            self.freerects.remove(best)
+            if item.x < best.width:
+                # generate free rectangle for remaining width
+                right_width = best.width - item.x
+                right_height = item.y
+                right_x = best.x + item.x
+                right_y = best.y
+                right_rect = FreeRectangle(right_width,
+                                           right_height,
+                                           right_x,
+                                           right_y)
+                self.freerects.append(right_rect)
+            if item.y < best.height:
+                top_width = best.width
+                top_height = best.height - item.y
+                top_x = best.x
+                top_y = item.y
+                top_rect = FreeRectangle(top_width,
+                                         top_height,
+                                         top_x,
+                                         top_y)
+                self.freerects.append(top_rect)
+            return True
         return False
 
 
@@ -112,10 +147,7 @@ class Guillotine:
         """
         Select FreeRectangle with height closest to item.height
         """
-        fitted_rects = [rect for rect
-                        in self.freerects
-                        if rect.width >= item.x
-                        and rect.height >= item.y] # type: List[FreeRectangle]
+        fitted_rects = self._fitted_rects(item)
 
         if fitted_rects:
             best = reduce(lambda a, b: a if (a.height < b.height) else b, fitted_rects)
@@ -153,10 +185,7 @@ class Guillotine:
         """
         Select FreeRectangle with area closest to item.area
         """
-        fitted_rects = [rect for rect in
-                        self.freerects
-                        if rect.width >= item.x
-                        and rect.height >= item.y] # type: List[FreeRectangle]
+        fitted_rects = self._fitted_rects(item)
 
         area_compare = lambda a, b: a if (a.area < b.area) else b
         if fitted_rects:
@@ -195,10 +224,7 @@ class Guillotine:
         """
         Select FreeRectangle with width greatest compared to item.width
         """
-        fitted_rects = [rect for rect
-                        in self.freerects
-                        if rect.width >= item.x
-                        and rect.height >= item.y] # type: List[FreeRectangle]
+        fitted_rects = self._fitted_rects(item)
 
         if fitted_rects:
             best = reduce(lambda a, b: a if (a.width > b.width) else b, fitted_rects)
@@ -236,10 +262,7 @@ class Guillotine:
         """
         Select FreeRectangle with height greatest compared to item.height
         """
-        fitted_rects = [rect for rect
-                        in self.freerects
-                        if rect.width >= item.x
-                        and rect.height >= item.y] # type: List[FreeRectangle]
+        fitted_rects = self._fitted_rects(item)
 
         if fitted_rects:
             compare = lambda a, b: a if (a.height > b.height) else b
@@ -278,10 +301,7 @@ class Guillotine:
         """
         Select FreeRectangle with area greatest compared to item.area
         """
-        fitted_rects = [rect for rect
-                        in self.freerects
-                        if rect.width >= item.x
-                        and rect.height >= item.y] # type: List[FreeRectangle]
+        fitted_rects = self._fitted_rects(item)
 
         if fitted_rects:
             compare = lambda a, b: a if a.area > b.area else b
