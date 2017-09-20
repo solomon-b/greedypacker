@@ -23,32 +23,35 @@ class BinManager:
     """
     def __init__(self, bin_width: int = 8,
                  bin_height: int = 4,
-                 algo: str = 'guillotine',
-                 heuristic: str ='best_width_fit') -> None:
+                 bin_algo: str = 'bin_best_fit',
+                 pack_algo: str = 'guillotine',
+                 heuristic: str ='best_width_fit',
+                 sorting: bool = True,
+                 rotation: bool = True) -> None:
         self.bin_width = bin_width
         self.bin_height = bin_height
         self.items = [] # type: List[item.Item]
         self.bin_count = 0
-        self.bin_sel_algo = self._bin_best_fit
+        if bin_algo == 'bin_best_fit':
+            self.bin_sel_algo = self._bin_best_fit
+        elif bin_algo == 'bin_first_fit':
+            self.bin_sel_algo =  self._bin_first_fit
         self.heuristic = heuristic
-        self.algorithm = algo
-        self.defaultBin = self._bin_factory(self.bin_width,
+        self.algorithm = pack_algo
+        defaultBin = self._bin_factory(self.bin_width,
                                            self.bin_height,
                                            self.algorithm,
                                            self.heuristic) # type: Algorithm
-        self.bins = [self.defaultBin] # type: List[Algorithm]
-        self.h_choices = ['next_fit',
-                          'first_fit',
-                          'best_width_fit',
-                          'best_height_fit',
-                          'best_area_fit',
-                          'worst_width_fit']
+        self.bins = [defaultBin] # type: List[Algorithm]
+        self.sorting = sorting
+        self.rotation = rotation
 
 
     def add_items(self, *items: item.Item) -> bool:
         for item in items:
             self.items.append(item)
-        self.items.sort(key=lambda el: el.x*el.y, reverse=True)
+        if self.sorting:
+            self.items.sort(key=lambda el: el.x*el.y, reverse=True)
 
 
     def _bin_factory(self, width: int, height: int, algo: str, heuristic: str) -> Algorithm:
@@ -72,7 +75,10 @@ class BinManager:
             if result:
                 break
         if not result:
-            self.bins.append(self.algorithm(self.bin_width, self.bin_height))
+            self.bins.append(self._bin_factory(self.bin_width,
+                                               self.bin_height,
+                                               self.algorithm,
+                                               self.heuristic))
             self.bins[-1].insert(item, self.heuristic)
 
 
@@ -146,7 +152,6 @@ class BinManager:
         """
         Loop over all items and attempt insertion
         """
-        #self.bins = [self.algorithm(self.bin_width, self.bin_height)]
         for item in self.items:
             self.bin_sel_algo(item)
 

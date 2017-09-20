@@ -21,6 +21,9 @@ class FirstFit(BaseTestCase):
     def testItemTooBig(self):
         """
         Single Item Fits no FreeRectangles
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(5, 11)
         self.assertFalse(self.BIN.insert(ITEM, 'first_fit'))
@@ -28,8 +31,10 @@ class FirstFit(BaseTestCase):
 
     def testSingleItemInsertion(self):
         """
-        Single item insert testing for item CornerPoint
-        and new FreeRectangles.
+        Single item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         self.BIN.insert(ITEM, 'first_fit')
@@ -45,8 +50,10 @@ class FirstFit(BaseTestCase):
 
     def testTwoItemInsertion(self):
         """
-        Two item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Two item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(2, 2)
@@ -65,8 +72,10 @@ class FirstFit(BaseTestCase):
 
     def testThreeItemInsertion(self):
         """
-        Three item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Three items
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(2, 2)
@@ -108,8 +117,10 @@ class BestWidthFit(BaseTestCase):
 
     def testSingleItemInsertion(self):
         """
-        Single item insert testing for item CornerPoint
-        and new FreeRectangles.
+        Single item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         self.BIN.insert(ITEM, 'best_width_fit')
@@ -125,8 +136,10 @@ class BestWidthFit(BaseTestCase):
 
     def testTwoItemInsertion(self):
         """
-        Two item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Two item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(2, 2)
@@ -143,10 +156,13 @@ class BestWidthFit(BaseTestCase):
             self.assertEqual(self.BIN.items, [ITEM, ITEM2])
 
 
+
     def testThreeItemInsertion(self):
         """
-        Three item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Three item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(2, 2)
@@ -179,6 +195,9 @@ class BestHeightFit(BaseTestCase):
     def testItemTooBig(self):
         """
         Single Item Fits no FreeRectangles
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(5, 11)
         self.assertFalse(self.BIN.insert(ITEM, 'best_height_fit'))
@@ -186,8 +205,10 @@ class BestHeightFit(BaseTestCase):
 
     def testSingleItemInsertion(self):
         """
-        Single item insert testing for item CornerPoint
-        and new FreeRectangles.
+        Single item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         self.BIN.insert(ITEM, 'best_height_fit')
@@ -203,8 +224,10 @@ class BestHeightFit(BaseTestCase):
 
     def testTwoItemInsertion(self):
         """
-        Two item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Two item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         ITEM2 = item.Item(2, 2)
@@ -223,8 +246,10 @@ class BestHeightFit(BaseTestCase):
 
     def testThreeItemInsertion(self):
         """
-        Three item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Three item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         ITEM2 = item.Item(2, 2)
@@ -258,6 +283,9 @@ class BestAreaFit(BaseTestCase):
     def testItemTooBig(self):
         """
         Single Item Fits no FreeRectangles
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(5, 11)
         self.assertFalse(self.BIN.insert(ITEM, 'best_area_fit'))
@@ -265,8 +293,10 @@ class BestAreaFit(BaseTestCase):
 
     def testSingleItemInsertion(self):
         """
-        Single item insert testing for item CornerPoint
-        and new FreeRectangles.
+        Single item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         self.BIN.insert(ITEM, 'best_area_fit')
@@ -282,8 +312,10 @@ class BestAreaFit(BaseTestCase):
 
     def testTwoItemInsertion(self):
         """
-        Two item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Two item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         ITEM2 = item.Item(2, 2)
@@ -303,8 +335,10 @@ class BestAreaFit(BaseTestCase):
 
     def testThreeItemInsertion(self):
         """
-        Three item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Three item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         ITEM2 = item.Item(2, 2)
@@ -339,6 +373,9 @@ class WorstWidthFit(BaseTestCase):
     def testItemTooBig(self):
         """
         Single Item Fits no FreeRectangles
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(5, 11)
         self.assertFalse(self.BIN.insert(ITEM, 'worst_width_fit'))
@@ -346,8 +383,10 @@ class WorstWidthFit(BaseTestCase):
 
     def testSingleItemInsertion(self):
         """
-        Single item insert testing for item CornerPoint
-        and new FreeRectangles.
+        Single item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         self.BIN.insert(ITEM, 'worst_width_fit')
@@ -363,8 +402,10 @@ class WorstWidthFit(BaseTestCase):
 
     def testTwoItemInsertion(self):
         """
-        Two item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Two item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         ITEM2 = item.Item(2, 2)
@@ -383,8 +424,10 @@ class WorstWidthFit(BaseTestCase):
 
     def testThreeItemInsertion(self):
         """
-        Three item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Three item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         ITEM2 = item.Item(2, 2)
@@ -418,6 +461,9 @@ class WorstHeightFit(BaseTestCase):
     def testItemTooBig(self):
         """
         Single Item Fits no FreeRectangles
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(5, 11)
         self.assertFalse(self.BIN.insert(ITEM, 'worst_height_fit'))
@@ -425,8 +471,10 @@ class WorstHeightFit(BaseTestCase):
 
     def testSingleItemInsertion(self):
         """
-        Single item insert testing for item CornerPoint
-        and new FreeRectangles.
+        Single item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         self.BIN.insert(ITEM, 'worst_height_fit')
@@ -442,8 +490,10 @@ class WorstHeightFit(BaseTestCase):
 
     def testTwoItemInsertion(self):
         """
-        Two item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Two item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         ITEM2 = item.Item(2, 2)
@@ -463,8 +513,10 @@ class WorstHeightFit(BaseTestCase):
 
     def testThreeItemInsertion(self):
         """
-        Three item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Three item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         ITEM2 = item.Item(2, 2)
@@ -499,6 +551,9 @@ class WorstAreaFit(BaseTestCase):
     def testItemTooBig(self):
         """
         Single Item Fits no FreeRectangles
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(5, 11)
         self.assertFalse(self.BIN.insert(ITEM, 'worst_area_fit'))
@@ -506,8 +561,10 @@ class WorstAreaFit(BaseTestCase):
 
     def testSingleItemInsertion(self):
         """
-        Single item insert testing for item CornerPoint
-        and new FreeRectangles.
+        Single item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         self.BIN.insert(ITEM, 'worst_area_fit')
@@ -523,8 +580,10 @@ class WorstAreaFit(BaseTestCase):
 
     def testTwoItemInsertion(self):
         """
-        Two item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Two item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         ITEM2 = item.Item(2, 2)
@@ -543,8 +602,10 @@ class WorstAreaFit(BaseTestCase):
 
     def testThreeItemInsertion(self):
         """
-        Three item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Three item
+        Split Horizontal
+        Rotation == True
+        RectMerge == False
         """
         ITEM = item.Item(4, 3)
         ITEM2 = item.Item(2, 2)
@@ -579,8 +640,10 @@ class RectMerge(BaseTestCase):
 
     def testMatchingWidths(self):
         """
-        Two item insert testing for item CornerPoints
-        and new FreeRectangles.
+        Two item
+        Split Horizontal
+        Rotation == True
+        RectMerge == True
         """
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(4, 3)
