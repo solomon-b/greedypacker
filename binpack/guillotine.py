@@ -7,7 +7,7 @@ ssbothwell@gmail.com
 """
 import operator
 import typing
-from typing import Optional, List, Callable
+from typing import List
 from functools import reduce
 from collections import namedtuple
 from . import item
@@ -258,13 +258,3 @@ class Guillotine:
             }
 
         return stats
-
-if __name__ == '__main__':
-    G = Guillotine(8, 4)
-    I = item.Item(2, 5) # type: item.Item
-    I2 = item.Item(2, 5) # type: item.Item
-    I3 = item.Item(2, 2) # type: item.Item
-    G.insert(I)
-    G.insert(I2)
-    G.insert(I3)
-    print(G.bin_stats())

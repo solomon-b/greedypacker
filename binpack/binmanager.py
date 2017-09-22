@@ -157,9 +157,3 @@ class BinManager:
         """
         for item in self.items:
             self.bin_sel_algo(item)
-
-
-if __name__ == '__main__':
-    MANAGER = BinManager()
-    MANAGER.add_items(item.Item(2,6), item.Item(3,2), item.Item(1,1))
-    MANAGER.execute()
