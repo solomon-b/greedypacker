@@ -122,7 +122,7 @@ class BinManager:
                                       in binn.shelves
                                       if shelf.available_width >= item.x
                                       and shelf.y >= item.y]
-                    # Thick checks rotation fits if no regular fits.
+                    # This checks rotation fits if no regular fits.
                     # Need to compare regular fit and rotate fitted
                     # to find actual best fit
                     if not fitted_shelves and self.rotation:

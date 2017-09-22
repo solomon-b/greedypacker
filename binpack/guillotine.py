@@ -7,7 +7,7 @@ ssbothwell@gmail.com
 """
 import operator
 import typing
-from typing import Optional, List
+from typing import Optional, List, Callable
 from functools import reduce
 from collections import namedtuple
 from . import item
@@ -76,6 +76,40 @@ class Guillotine:
             result.append(top_rect)
         return result
 
+
+    @staticmethod
+    def _rectangle_reduce(fitted_rects: List[FreeRectangle],
+                          op = operator.lt,
+                          field: str = 'width') -> FreeRectangle:
+        """
+        Reduces a list of FreeRectangles and returns the result
+        """
+        if fitted_rects:
+            if field == 'width':
+                compare = lambda a, b: a if op(a.width, b.width) else b
+            if field == 'height':
+                compare = lambda a, b: a if op(a.height, b.height) else b
+            if field == 'area':
+                compare = lambda a, b: a if op(a.area, b.area) else b
+            return reduce(compare, fitted_rects)
+        return None
+
+
+    @staticmethod
+    def _compare_two_freerects(A: FreeRectangle, B: FreeRectangle) -> FreeRectangle:
+        """
+        Returns the smaller of two FreeRectangles
+        """
+        if not A and not B:
+            return None
+        if A and B:
+            return min(A, B)
+        if A and not B:
+            return A
+        else:
+            return B
+
+
     def first_fit(self, item: item.Item) -> bool:
         """
         Select first indexed FreeRectangle (that fits item)
@@ -101,28 +135,42 @@ class Guillotine:
         """
         Select FreeRectangle with width closest to item.width
         """
-        smallest_rect = None # type: FreeRectangle
-        smallest_rotated = None # type: FreeRectangle
-        best = None # type: FreeRectangle
-
         fitted_rects = self._fitted_rects(item)
-        if fitted_rects:
-            compare = lambda a, b: a if (a.width < b.width) else b
-            smallest_rect = reduce(compare, fitted_rects)
+        smallest_rect = self._rectangle_reduce(fitted_rects, operator.le, 'width')
 
         if self.rotation:
-            fitted_rects_rot = [rect for rect
-                            in self.freerects
-                            if rect.width >= item.y
-                            and rect.height >= item.x] # type: List[FreeRectangle]
-            if fitted_rects_rot:
-                compare = lambda a, b: a if (a.width < b.width) else b
-                smallest_rotated = reduce(compare, fitted_rects)
+            fitted_rects_rot = self._fitted_rects(item, rotation=True)
+            smallest_rotated = self._rectangle_reduce(fitted_rects_rot)
+            best = self._compare_two_freerects(smallest_rect, smallest_rotated)
+        else:
+            best = smallest_rect
 
-        if smallest_rect and smallest_rotated:
-            best = smallest_rect if smallest_rect.width <= smallest_rotated.width else smallest_rotated
-        elif smallest_rotated and not smallest_rect:
-            best = smallest_rotated
+        if best:
+            # Update Item Position
+            item.CornerPoint = (best.x, best.y)
+            self.items.append(item)
+            # Update self.freerects
+            self.freerects.remove(best)
+            splits = self._split_free_rect(item, best)
+            for rect in splits:
+                self.freerects.append(rect)
+            return True
+        return False
+
+
+    def best_height_fit(self, item) -> bool:
+        """
+        Select FreeRectangle with height closest to item.height
+        """
+        fitted_rects = self._fitted_rects(item)
+        smallest_rect = self._rectangle_reduce(fitted_rects, operator.le, 'height')
+
+        if self.rotation:
+            fitted_rects_rot = self._fitted_rects(item, rotation=True)
+            smallest_rotated = self._rectangle_reduce(fitted_rects_rot,
+                                                      operator.le,
+                                                      'height')
+            best = self._compare_two_freerects(smallest_rect, smallest_rotated)
         else:
             best = smallest_rect
 
@@ -138,45 +186,34 @@ class Guillotine:
         return False
 
 
-    def best_height_fit(self, item) -> bool:
-        """
-        Select FreeRectangle with height closest to item.height
-        """
-        fitted_rects = self._fitted_rects(item)
-
-        if fitted_rects:
-            best = reduce(lambda a, b: a if (a.height < b.height) else b, fitted_rects)
-
-            if best:
-                item.CornerPoint = (best.x, best.y)
-                self.items.append(item)
-                self.freerects.remove(best)
-
-                splits = self._split_free_rect(item, best)
-                for rect in splits:
-                    self.freerects.append(rect)
-                return True
-        return False
-
-
     def best_area_fit(self, item) -> bool:
         """
         Select FreeRectangle with area closest to item.area
         """
+        smallest_rect = None # type: FreeRectangle
+        smallest_rotated = None # type: FreeRectangle
+        best = None # type: FreeRectangle
+
         fitted_rects = self._fitted_rects(item)
+        smallest_rect = self._rectangle_reduce(fitted_rects, operator.le, 'area')
 
-        area_compare = lambda a, b: a if (a.area < b.area) else b
-        if fitted_rects:
-            best = reduce(area_compare, fitted_rects)
+        if self.rotation:
+            fitted_rects_rot = self._fitted_rects(item, rotation=True)
+            smallest_rotated = self._rectangle_reduce(fitted_rects_rot,
+                                                      operator.le,
+                                                      'area')
+            best = self._compare_two_freerects(smallest_rect, smallest_rotated)
+        else:
+            best = smallest_rect
 
-            if best:
-                item.CornerPoint = (best.x, best.y)
-                self.items.append(item)
-                self.freerects.remove(best)
-                splits = self._split_free_rect(item, best)
-                for rect in splits:
-                    self.freerects.append(rect)
-                return True
+        if best:
+            item.CornerPoint = (best.x, best.y)
+            self.items.append(item)
+            self.freerects.remove(best)
+            splits = self._split_free_rect(item, best)
+            for rect in splits:
+                self.freerects.append(rect)
+            return True
         return False
 
 
@@ -185,18 +222,25 @@ class Guillotine:
         Select FreeRectangle with width greatest compared to item.width
         """
         fitted_rects = self._fitted_rects(item)
+        smallest_rect = self._rectangle_reduce(fitted_rects, operator.gt, 'width')
 
-        if fitted_rects:
-            best = reduce(lambda a, b: a if (a.width > b.width) else b, fitted_rects)
+        if self.rotation:
+            fitted_rects_rot = self._fitted_rects(item, rotation=True)
+            smallest_rotated = self._rectangle_reduce(fitted_rects_rot,
+                                                      operator.gt,
+                                                      'width')
+            best = self._compare_two_freerects(smallest_rect, smallest_rotated)
+        else:
+            best = smallest_rect
 
-            if best:
-                item.CornerPoint = (best.x, best.y)
-                self.items.append(item)
-                self.freerects.remove(best)
-                splits = self._split_free_rect(item, best)
-                for rect in splits:
-                    self.freerects.append(rect)
-                return True
+        if best:
+            item.CornerPoint = (best.x, best.y)
+            self.items.append(item)
+            self.freerects.remove(best)
+            splits = self._split_free_rect(item, best)
+            for rect in splits:
+                self.freerects.append(rect)
+            return True
         return False
 
 
@@ -205,19 +249,25 @@ class Guillotine:
         Select FreeRectangle with height greatest compared to item.height
         """
         fitted_rects = self._fitted_rects(item)
+        smallest_rect = self._rectangle_reduce(fitted_rects, operator.gt, 'height')
 
-        if fitted_rects:
-            compare = lambda a, b: a if (a.height > b.height) else b
-            best = reduce(compare, fitted_rects)
+        if self.rotation:
+            fitted_rects_rot = self._fitted_rects(item, rotation=True)
+            smallest_rotated = self._rectangle_reduce(fitted_rects_rot,
+                                                      operator.gt,
+                                                      'height')
+            best = self._compare_two_freerects(smallest_rect, smallest_rotated)
+        else:
+            best = smallest_rect
 
-            if best:
-                item.CornerPoint = (best.x, best.y)
-                self.items.append(item)
-                self.freerects.remove(best)
-                splits = self._split_free_rect(item, best)
-                for rect in splits:
-                    self.freerects.append(rect)
-                return True
+        if best:
+            item.CornerPoint = (best.x, best.y)
+            self.items.append(item)
+            self.freerects.remove(best)
+            splits = self._split_free_rect(item, best)
+            for rect in splits:
+                self.freerects.append(rect)
+            return True
         return False
 
 
@@ -226,19 +276,25 @@ class Guillotine:
         Select FreeRectangle with area greatest compared to item.area
         """
         fitted_rects = self._fitted_rects(item)
+        smallest_rect = self._rectangle_reduce(fitted_rects, operator.gt, 'area')
 
-        if fitted_rects:
-            compare = lambda a, b: a if a.area > b.area else b
-            best = reduce(compare, fitted_rects)
+        if self.rotation:
+            fitted_rects_rot = self._fitted_rects(item, rotation=True)
+            smallest_rotated = self._rectangle_reduce(fitted_rects_rot,
+                                                      operator.gt,
+                                                      'area')
+            best = self._compare_two_freerects(smallest_rect, smallest_rotated)
+        else:
+            best = smallest_rect
 
-            if best:
-                item.CornerPoint = (best.x, best.y)
-                self.items.append(item)
-                self.freerects.remove(best)
-                splits = self._split_free_rect(item, best)
-                for rect in splits:
-                    self.freerects.append(rect)
-                return True
+        if best:
+            item.CornerPoint = (best.x, best.y)
+            self.items.append(item)
+            self.freerects.remove(best)
+            splits = self._split_free_rect(item, best)
+            for rect in splits:
+                self.freerects.append(rect)
+            return True
         return False
 
 
