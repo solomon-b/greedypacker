@@ -1,5 +1,5 @@
 """
-Bin Pack
+Greedy Bin Packer
 
 A two dimensional binpacking algorithm with options
 for first fit and best fit greedy heuristics.
@@ -15,9 +15,4 @@ unoccupied scores.
 """
 
 from .binmanager import BinManager
-
 from .item import Item
-
-
-#from .binpack import BinPack
-#from .layoutrender import layoutrender

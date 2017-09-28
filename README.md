@@ -5,11 +5,11 @@ Solomon Bothwell
 
 ssbothwell@gmail.com
 
-A 2D binpacking library based on on Jukka Jylänki's article 
+A 2D greedypackering library based on on Jukka Jylänki's article 
 "A Thousand Ways to Pack the Bin - A Practical Approach to 
 Two-Dimensional Rectangle Bin Packing."
 
-This library is intended for offline binpacking and takes
+This library is intended for offline greedypackering and takes
 a greedy heuristic. Next Fit, First Fit, Best Width, Best
 Height, Best Area, Worst Width, Worst Width, and Worst Area
 heuristics are available for both Shelf and Guillotine style
@@ -23,18 +23,18 @@ See TODO.md for complete list of in progress features.
 
 ### Example Usage:
 ```
-In [13]: import binpack
+In [13]: import greedypacker
 
-In [14]: M = binpack.BinManager(8, 4)
+In [14]: M = greedypacker.BinManager(8, 4)
 
 In [15]: M.set_algorthim('shelf', 'best_width_fit')
 Out[15]: True
 
-In [16]: ITEM = binpack.Item(4, 2)
+In [16]: ITEM = greedypacker.Item(4, 2)
 
-In [17]: ITEM2 = binpack.Item(5, 2)
+In [17]: ITEM2 = greedypacker.Item(5, 2)
 
-In [18]: ITEM3 = binpack.Item(2, 2)
+In [18]: ITEM3 = greedypacker.Item(2, 2)
 
 In [19]: M.add_items(ITEM, ITEM2, ITEM3)
 

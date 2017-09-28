@@ -1,7 +1,7 @@
 import sys
 import unittest
 
-import binpack
+import greedypacker
 
 from .base import BaseTestCase
 from .util import stdout_redirect
@@ -11,10 +11,10 @@ class APITests(BaseTestCase):
         """
         Example insertion from README.md
         """
-        M = binpack.BinManager(8, 4, pack_algo='shelf')
-        ITEM = binpack.Item(4, 2)
-        ITEM2 = binpack.Item(5, 2)
-        ITEM3 = binpack.Item(2, 2)
+        M = greedypacker.BinManager(8, 4, pack_algo='shelf')
+        ITEM = greedypacker.Item(4, 2)
+        ITEM2 = greedypacker.Item(5, 2)
+        ITEM3 = greedypacker.Item(2, 2)
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
         correct = [ITEM2, ITEM, ITEM3]
@@ -37,11 +37,11 @@ class BestBinFit(BaseTestCase):
         Item Sorting == True
         Item Rotation == True
         """
-        M = binpack.BinManager(10, 5, pack_algo='guillotine',
+        M = greedypacker.BinManager(10, 5, pack_algo='guillotine',
                                sorting=True, rotation=True)
-        ITEM = binpack.Item(3, 4)
-        ITEM2 = binpack.Item(5, 3)
-        ITEM3 = binpack.Item(2, 2)
+        ITEM = greedypacker.Item(3, 4)
+        ITEM2 = greedypacker.Item(5, 3)
+        ITEM3 = greedypacker.Item(2, 2)
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
         correct = [ITEM2, ITEM, ITEM3]
@@ -62,11 +62,11 @@ class BestBinFit(BaseTestCase):
         Item Sorting == False
         Item Rotation == True
         """
-        M = binpack.BinManager(10, 5, pack_algo='guillotine',
+        M = greedypacker.BinManager(10, 5, pack_algo='guillotine',
                                sorting=False, rotation=True)
-        ITEM = binpack.Item(3, 4)
-        ITEM2 = binpack.Item(5, 3)
-        ITEM3 = binpack.Item(2, 2)
+        ITEM = greedypacker.Item(3, 4)
+        ITEM2 = greedypacker.Item(5, 3)
+        ITEM3 = greedypacker.Item(2, 2)
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
         correct = [ITEM, ITEM2, ITEM3]
@@ -87,11 +87,11 @@ class BestBinFit(BaseTestCase):
         Item Sorting == True
         Item Rotation == True
         """
-        M = binpack.BinManager(10, 5, pack_algo='shelf',
+        M = greedypacker.BinManager(10, 5, pack_algo='shelf',
                                sorting=True, rotation=True)
-        ITEM = binpack.Item(1, 1)
-        ITEM2 = binpack.Item(4, 3)
-        ITEM3 = binpack.Item(2, 2)
+        ITEM = greedypacker.Item(1, 1)
+        ITEM2 = greedypacker.Item(4, 3)
+        ITEM3 = greedypacker.Item(2, 2)
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
         correct = [ITEM2, ITEM3, ITEM]
@@ -112,11 +112,11 @@ class BestBinFit(BaseTestCase):
         Item Sorting == False
         Item Rotation == True
         """
-        M = binpack.BinManager(10, 5, pack_algo='shelf',
+        M = greedypacker.BinManager(10, 5, pack_algo='shelf',
                                sorting=False, rotation=True)
-        ITEM = binpack.Item(1, 1)
-        ITEM2 = binpack.Item(4, 3)
-        ITEM3 = binpack.Item(2, 2)
+        ITEM = greedypacker.Item(1, 1)
+        ITEM2 = greedypacker.Item(4, 3)
+        ITEM3 = greedypacker.Item(2, 2)
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
         correct = [ITEM, ITEM2, ITEM3]
@@ -139,14 +139,14 @@ class BinFirstFit(BaseTestCase):
         Item Sorting == True
         Item Rotation == True
         """
-        M = binpack.BinManager(10, 5,
+        M = greedypacker.BinManager(10, 5,
                                pack_algo='guillotine',
                                bin_algo="bin_first_fit",
                                sorting=True,
                                rotation=True)
-        ITEM = binpack.Item(4, 3)
-        ITEM2 = binpack.Item(6, 5)
-        ITEM3 = binpack.Item(5, 5)
+        ITEM = greedypacker.Item(4, 3)
+        ITEM2 = greedypacker.Item(6, 5)
+        ITEM3 = greedypacker.Item(5, 5)
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
         correct = [ITEM2, ITEM3, ITEM]
@@ -167,14 +167,14 @@ class BinFirstFit(BaseTestCase):
         Item Sorting == False
         Item Rotation == True
         """
-        M = binpack.BinManager(10, 5,
+        M = greedypacker.BinManager(10, 5,
                                pack_algo='guillotine',
                                bin_algo="bin_first_fit",
                                sorting=False,
                                rotation=True)
-        ITEM = binpack.Item(4, 3)
-        ITEM2 = binpack.Item(6, 5)
-        ITEM3 = binpack.Item(4, 4)
+        ITEM = greedypacker.Item(4, 3)
+        ITEM2 = greedypacker.Item(6, 5)
+        ITEM3 = greedypacker.Item(4, 4)
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
         correct = [ITEM, ITEM2, ITEM3]
@@ -195,14 +195,14 @@ class BinFirstFit(BaseTestCase):
         Item Sorting == True
         Item Rotation == True
         """
-        M = binpack.BinManager(10, 5,
+        M = greedypacker.BinManager(10, 5,
                                pack_algo='shelf',
                                bin_algo="bin_first_fit",
                                sorting=True,
                                rotation=True)
-        ITEM = binpack.Item(1, 1)
-        ITEM2 = binpack.Item(4, 3)
-        ITEM3 = binpack.Item(2, 2)
+        ITEM = greedypacker.Item(1, 1)
+        ITEM2 = greedypacker.Item(4, 3)
+        ITEM3 = greedypacker.Item(2, 2)
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
         correct = [ITEM2, ITEM3, ITEM]
@@ -223,14 +223,14 @@ class BinFirstFit(BaseTestCase):
         Item Sorting == False
         Item Rotation == True
         """
-        M = binpack.BinManager(10, 5,
+        M = greedypacker.BinManager(10, 5,
                                pack_algo='shelf',
                                bin_algo="bin_first_fit",
                                sorting=False,
                                rotation=True)
-        ITEM = binpack.Item(1, 1)
-        ITEM2 = binpack.Item(4, 3)
-        ITEM3 = binpack.Item(2, 2)
+        ITEM = greedypacker.Item(1, 1)
+        ITEM2 = greedypacker.Item(4, 3)
+        ITEM3 = greedypacker.Item(2, 2)
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
         correct = [ITEM, ITEM2, ITEM3]

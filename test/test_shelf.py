@@ -1,8 +1,8 @@
 import sys
 import unittest
 
-from binpack import shelf
-from binpack import item
+from greedypacker import shelf
+from greedypacker import item
 
 from .base import BaseTestCase
 from .util import stdout_redirect
