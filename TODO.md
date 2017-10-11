@@ -1,5 +1,4 @@
 ### To Do:
-* Rewrite shelf.py (replace shelf class with a list)
 * Write tests for rotation disable and merge rectangles
 * Maximal Rectangles and Skyline Algorithms
 * Guillotine Split Rules (Shorter/Longer Axis and Shorter/Longer Leftover)
