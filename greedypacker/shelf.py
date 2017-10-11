@@ -6,6 +6,7 @@ Solomon Bothwell
 ssbothwell@gmail.com
 """
 from functools import reduce
+from typing import List
 from . import item
 
 

@@ -8,7 +8,7 @@ for packed bins.
 
 """
 from functools import reduce
-from typing import List, Union, Callable
+from typing import List, Union, Callable, Optional
 from . import item
 from . import shelf
 from . import guillotine
@@ -47,14 +47,14 @@ class BinManager:
         self.rotation = rotation
 
 
-    def add_items(self, *items: item.Item) -> bool:
+    def add_items(self, *items: item.Item) -> None:
         for item in items:
             self.items.append(item)
         if self.sorting:
             self.items.sort(key=lambda el: el.x*el.y, reverse=True)
 
 
-    def _bin_factory(self, width: int, height: int, algo: str, heuristic: str) -> Algorithm:
+    def _bin_factory(self, width: int, height: int, algo: str, heuristic: str) -> Optional[Algorithm]:
         """
         Returns a bin with the desired algorithm,
         heuristic, and dimensions
@@ -63,7 +63,7 @@ class BinManager:
             return guillotine.Guillotine(width, height)
         elif algo == 'shelf':
             return shelf.Sheet(width, height)
-        return
+        raise ValueError('Error: No such Algorithm')
 
 
     def _bin_first_fit(self, item: item.Item) -> None:
@@ -82,7 +82,7 @@ class BinManager:
             self.bins[-1].insert(item, self.heuristic)
 
 
-    def _bin_best_fit(self, item: item.Item) -> None:
+    def _bin_best_fit(self, item: item.Item) -> str:
         """
         Insert into the bin that best fits the item
         """
@@ -109,7 +109,7 @@ class BinManager:
 
             if best_rect:
                 self.bins[i].insert(item, self.heuristic)
-                return
+                return "Success"
 
 
         if self.algorithm == 'shelf':
@@ -142,13 +142,13 @@ class BinManager:
             if bin_scores:
                 best_bin_index = min(bin_scores)[1]
                 self.bins[best_bin_index].insert(item, self.heuristic)
-                return
+                return "success"
         self.bins.append(self._bin_factory(self.bin_width,
                                            self.bin_height,
                                            self.algorithm,
                                            self.heuristic))
         self.bins[-1].insert(item, self.heuristic)
-        return
+        return "Success"
 
 
     def execute(self) -> None:

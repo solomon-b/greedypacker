@@ -44,7 +44,7 @@ class Guillotine:
         return [rect for rect
                 in self.freerects
                 if rect.width >= width
-                and rect.height >= height] # type: List[FreeRectangle]
+                and rect.height >= height] 
 
     def _split_free_rect(self, item: item.Item,
                          freerect: FreeRectangle,
@@ -164,10 +164,11 @@ class Guillotine:
         """
         for freerect in self.freerects:
             matching_widths = list(filter(lambda r: (r.width == freerect.width and
-                                                     r.x == freerect.x) and r != freerect, self.freerects) # type: List[FreeRectangle]
-                                                     )
+                                                     r.x == freerect.x) and
+                                                     r != freerect, self.freerects))
             matching_heights = list(filter(lambda r: (r.height == freerect.height and
-                                                      r.y == freerect.y) and r != freerect, self.freerects)) # type: List[FreeRectangle]
+                                                      r.y == freerect.y) and
+                                                      r != freerect, self.freerects))
 
             if matching_widths:
                 widths_adjacent = list(filter(lambda r: r.y == freerect.y + freerect.height, self.freerects)) # type: List[FreeRectangle]
