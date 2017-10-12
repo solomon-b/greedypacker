@@ -2,7 +2,6 @@ import unittest
 
 from . import test_api
 from . import test_shelf
-from . import test_shelf_norotation
 from . import test_guillotine
 
 def load_tests(loader, standard_tests, pattern):
