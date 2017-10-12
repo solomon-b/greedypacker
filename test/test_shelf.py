@@ -70,27 +70,23 @@ class shelfObject(BaseTestCase):
 class NextFit(BaseTestCase):
     def setUp(self):
         self.sheet = shelf.Sheet(8, 4)
+        self.sheet.rotation = True
 
     def tearDown(self):
         del self.sheet
 
     def testSingleInsert(self):
         """
-        Single item insertion doesn't use a heuristic
+        Single item insertion
         """
         ITEM = item.Item(6, 2)
         self.sheet.insert(ITEM, heuristic='next_fit')
         with self.subTest():
-            correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM]
-            correct.available_width = 2
-            self.assertEqual(self.sheet.shelves[0].__dict__,
-                             correct.__dict__)
-
-
-        with self.subTest():
-            correct = [ITEM]
+            correct= [ITEM]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(ITEM.CornerPoint, (0,0))
+
 
     def testTwoInsertsA(self):
         """
@@ -101,59 +97,116 @@ class NextFit(BaseTestCase):
         self.sheet.insert(ITEM, heuristic='next_fit')
         self.sheet.insert(ITEM2, heuristic='next_fit')
         with self.subTest():
-            correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM, ITEM2]
-            correct.available_width = 2
-            self.assertEqual(self.sheet.shelves[0].__dict__,
-                             correct.__dict__)
-        with self.subTest():
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 2)
+            self.assertEqual(ITEM.y, 3)
+            self.assertEqual(ITEM2.CornerPoint, (2,0))
 
 
     def testTwoInsertsB(self):
         """
         Two items that fit in two shelves
         """
-        ITEM = item.Item(3, 2)
-        ITEM2 = item.Item(6, 2)
+        ITEM = item.Item(2, 2)
+        ITEM2 = item.Item(7, 2)
         self.sheet.insert(ITEM, heuristic='next_fit')
         self.sheet.insert(ITEM2, heuristic='next_fit')
         with self.subTest():
-            correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM]
-            correct.available_width = 5
-            self.assertEqual(self.sheet.shelves[0].__dict__,
-                             correct.__dict__)
-        with self.subTest():
-            correct = shelf.Shelf(8, 2, 2)
-            correct.items = [ITEM2]
-            correct.available_width = 2
-            self.assertEqual(self.sheet.shelves[1].__dict__,
-                             correct.__dict__)
-        with self.subTest():
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM2.CornerPoint, (0,2))
 
     def testTwoInsertsC(self):
         """
         Second item doesn't fit remaining vertical space in sheet
         """
         ITEM = item.Item(3, 2)
-        ITEM2 = item.Item(6, 3)
+        ITEM2 = item.Item(7, 3)
         self.sheet.insert(ITEM, heuristic='next_fit')
         res = self.sheet.insert(ITEM2, heuristic='next_fit')
         with self.subTest():
-            correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM]
-            correct.available_width = 5
-            self.assertEqual(self.sheet.shelves[0].__dict__,
-                             correct.__dict__)
+            correct = [ITEM]
+            self.assertEqual(self.sheet.items, correct)
         with self.subTest():
             self.assertFalse(res)
         with self.subTest():
+            self.assertEqual(ITEM.CornerPoint, (0,0))
+
+
+class NextFitNoRotation(BaseTestCase):
+    def setUp(self):
+        self.sheet = shelf.Sheet(8, 4)
+        self.sheet.rotation = False
+
+    def tearDown(self):
+        del self.sheet
+
+    def testSingleInsert(self):
+        """
+        Single item insertion
+        """
+        ITEM = item.Item(6, 2)
+        self.sheet.insert(ITEM, heuristic='next_fit')
+        with self.subTest():
             correct = [ITEM]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(ITEM.CornerPoint, (0,0))
+
+
+    def testTwoInsertsA(self):
+        """
+        Two items that fit in one shelf
+        """
+        ITEM = item.Item(3, 2)
+        ITEM2 = item.Item(3, 2)
+        self.sheet.insert(ITEM, heuristic='next_fit')
+        self.sheet.insert(ITEM2, heuristic='next_fit')
+        with self.subTest():
+            correct = [ITEM, ITEM2]
+            self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 3)
+            self.assertEqual(ITEM.y, 2)
+            self.assertEqual(ITEM2.CornerPoint, (3,0))
+
+
+    def testTwoInsertsB(self):
+        """
+        Two items that fit in two shelves
+        """
+        ITEM = item.Item(2, 2)
+        ITEM2 = item.Item(7, 2)
+        self.sheet.insert(ITEM, heuristic='next_fit')
+        self.sheet.insert(ITEM2, heuristic='next_fit')
+        with self.subTest():
+            correct = [ITEM, ITEM2]
+            self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM2.CornerPoint, (0,2))
+
+    def testTwoInsertsC(self):
+        """
+        Second item doesn't fit remaining vertical space in sheet
+        """
+        ITEM = item.Item(7, 3)
+        ITEM2 = item.Item(3, 2)
+        self.sheet.insert(ITEM, heuristic='next_fit')
+        res = self.sheet.insert(ITEM2, heuristic='next_fit')
+        with self.subTest():
+            correct = [ITEM]
+            self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertFalse(res)
+        with self.subTest():
+            self.assertEqual(ITEM.CornerPoint, (0,0))
 
 
 class FirstFit(BaseTestCase):
@@ -513,6 +566,7 @@ def load_tests(loader, tests, pattern):
     if pattern is None:
         suite.addTests(loader.loadTestsFromTestCase(shelfObject))
         suite.addTests(loader.loadTestsFromTestCase(NextFit))
+        suite.addTests(loader.loadTestsFromTestCase(NextFitNoRotation))
         suite.addTests(loader.loadTestsFromTestCase(FirstFit))
         suite.addTests(loader.loadTestsFromTestCase(BestWidthFit))
         suite.addTests(loader.loadTestsFromTestCase(BestHeightFit))

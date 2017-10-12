@@ -8,13 +8,10 @@ class Item:
     def __init__(self, x, y,
                  CornerPoint: tuple = (0, 0),
                  rotation: bool = True) -> None:
-        if rotation:
-            self.x = x if x > y else y
-            self.y = y if y < x else x
-        else:
-            self.x = x
-            self.y = y
+        self.x = x
+        self.y = y
         self.CornerPoint = CornerPoint
+        self.rotated = False
 
 
     def __repr__(self):
@@ -23,6 +20,7 @@ class Item:
 
     def rotate(self) -> None:
         self.x, self.y = self.y, self.x
+        self.rotated = False if self.rotated == True else True
 
 
     def area(self) -> int:

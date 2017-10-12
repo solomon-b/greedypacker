@@ -8,6 +8,7 @@ ssbothwell@gmail.com
 from functools import reduce
 from typing import List
 from . import item
+from . import shelf_nf
 
 
 class Shelf:
@@ -29,16 +30,9 @@ class Shelf:
 
     def insert(self, item: item.Item) -> bool:
         if item.x <= self.available_width and item.y <= self.y:
-            self.available_width -= item.x
-            item_length = len(self.items)
-            if item_length == 0:
-                item.CornerPoint = (0, self.vertical_offset)
-            elif item_length == 1:
-                item.CornerPoint = (self.items[0].x, self.vertical_offset)
-            else:
-                item.CornerPoint = (self.items[-1].CornerPoint[0] +
-                                    self.items[-1].x, self.vertical_offset)
+            item.CornerPoint = (self.x - self.available_width, self.vertical_offset)
             self.items.append(item)
+            self.available_width -= item.x
             return True
         return False
 
@@ -49,12 +43,13 @@ class Sheet:
     Sheets hold a list of rows which hold a list of items.
     """
     def __init__(self, x: int, y: int, rotation: bool = True) -> None:
-        self.x = x if x > y else y
-        self.y = y if y < x else x
+        self.x = x
+        self.y = y
         self.available_height = self.y
         self.shelves = [] # type: List[Shelf]
         self.items = [] # type: List[item.Item]
         self.rotation = rotation
+        self.nf = shelf_nf.ShelfNextFit(self.x, self.y)
 
 
     def __repr__(self) -> str:
@@ -62,24 +57,14 @@ class Sheet:
 
 
     def next_fit(self, item: item.Item) -> bool:
-        fitted_shelves = [shelf for shelf
-                          in self.shelves
-                          if shelf.available_width >= item.x
-                          and shelf.y >= item.y]
         if self.rotation:
-            fitted_shelves_rotated = [shelf for shelf
-                                      in self.shelves
-                                      if shelf.available_width >= item.y
-                                      and shelf.y >= item.x]
-        if fitted_shelves:
-            current_shelf = fitted_shelves[-1]
-            current_shelf.insert(item)
-            self.items.append(item)
-            return True
-        elif fitted_shelves_rotated:
-            current_shelf = fitted_shelves_rotated[-1]
-            item.rotate()
-            current_shelf.insert(item)
+            res = self.nf.insert(item)
+            if res:
+                self.items.append(item)
+                return True
+            return False
+        res = self.nf.insert_norotate(item)
+        if res:
             self.items.append(item)
             return True
         return False
@@ -221,14 +206,16 @@ class Sheet:
 
 
     def insert(self, item: item.Item, heuristic: 'str' = 'next_fit') -> bool:
+        # THIS CONDITIONAL IS WRONG IF ROTATION IS ENABLED
         if item.x <= self.x and item.y <= self.y:
-            if not self.shelves:
-                new_shelf = Shelf(self.x, item.y)
-                self.shelves.append(new_shelf)
-                self.available_height -= new_shelf.y
-                new_shelf.insert(item)
-                self.items.append(item)
-                return True
+            if heuristic != 'next_fit':
+                if not self.shelves:
+                    new_shelf = Shelf(self.x, item.y)
+                    self.shelves.append(new_shelf)
+                    self.available_height -= new_shelf.y
+                    new_shelf.insert(item)
+                    self.items.append(item)
+                    return True
 
             heuristics = {'next_fit': self.next_fit,
                           'first_fit': self.first_fit,
@@ -245,20 +232,21 @@ class Sheet:
                 # If item inserted successfully
                 if res:
                     return True
-            # No shelf fit but sheet fit
-            if item.y <= self.available_height:
-                if len(self.shelves) == 1:
-                    v_offset = self.shelves[0].y
-                else:
-                    last_shelf = self.shelves[-1]
-                    v_offset = last_shelf.vertical_offset + last_shelf.y
+            if heuristic != 'next_fit':
+                # No shelf fit but sheet fit
+                if item.y <= self.available_height:
+                    if len(self.shelves) == 1:
+                        v_offset = self.shelves[0].y
+                    else:
+                        last_shelf = self.shelves[-1]
+                        v_offset = last_shelf.vertical_offset + last_shelf.y
 
-                new_shelf = Shelf(self.x, item.y, v_offset=v_offset)
-                new_shelf.insert(item)
-                self.shelves.append(new_shelf)
-                self.items.append(item)
-                self.available_height -= item.y
-                return True
+                    new_shelf = Shelf(self.x, item.y, v_offset=v_offset)
+                    new_shelf.insert(item)
+                    self.shelves.append(new_shelf)
+                    self.items.append(item)
+                    self.available_height -= item.y
+                    return True
         # No sheet fit
         return False
 
