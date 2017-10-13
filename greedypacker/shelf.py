@@ -106,15 +106,9 @@ class Sheet:
 
 
     def next_fit(self, item: item.Item) -> bool:
-        if self.rotation:
-            res = self.nf.insert(item)
-            if res:
-                self.items.append(item)
-                return True
-            return False
-        res = self.nf.insert_norotate(item)
-        if res:
-            self.items.append(item)
+        open_shelf = self.shelves[-1]
+        if self.item_fits_shelf(item, open_shelf):
+            self.add_to_shelf(item, open_shelf)
             return True
         return False
 
@@ -227,11 +221,9 @@ class Sheet:
 
     def insert(self, item: item.Item, heuristic: 'str' = 'next_fit') -> bool:
         if (item.x <= self.x and item.y <= self.y):
-            # next_fit is a special case currently
-            if heuristic != 'next_fit':
-                # First Item Insert
-                if not self.shelves:
-                    return self.create_shelf(item)
+            # First Item Insert
+            if not self.shelves:
+                return self.create_shelf(item)
 
             heuristics = {'next_fit': self.next_fit,
                           'first_fit': self.first_fit,
@@ -248,9 +240,8 @@ class Sheet:
                 # If item inserted successfully
                 if res:
                     return True
-            if heuristic != 'next_fit':
-                # No shelf fit
-                return self.create_shelf(item)
+            # No shelf fit
+            return self.create_shelf(item)
         # No sheet fit
         return False
 

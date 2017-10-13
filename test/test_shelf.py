@@ -101,9 +101,11 @@ class NextFit(BaseTestCase):
             self.assertEqual(self.sheet.items, correct)
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0,0))
-            self.assertEqual(ITEM.x, 2)
-            self.assertEqual(ITEM.y, 3)
-            self.assertEqual(ITEM2.CornerPoint, (2,0))
+            self.assertEqual(ITEM.x, 3)
+            self.assertEqual(ITEM.y, 2)
+            self.assertEqual(ITEM2.CornerPoint, (3,0))
+            self.assertEqual(ITEM2.x, 3)
+            self.assertEqual(ITEM2.y, 2)
 
 
     def testTwoInsertsB(self):
