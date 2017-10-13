@@ -48,7 +48,6 @@ class Sheet:
         self.shelves = [] # type: List[Shelf]
         self.items = [] # type: List[item.Item]
         self.rotation = rotation
-        self.nf = shelf_nf.ShelfNextFit(self.x, self.y)
 
 
     def __repr__(self) -> str:
