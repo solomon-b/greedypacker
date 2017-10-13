@@ -8,7 +8,6 @@ ssbothwell@gmail.com
 from functools import reduce
 from typing import List
 from . import item
-from . import shelf_nf
 
 
 class Shelf:
