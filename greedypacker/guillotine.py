@@ -25,7 +25,10 @@ class Guillotine:
         self.x = x
         self.y = y
         self.rMerge = False
-        self.freerects = [FreeRectangle(self.x, self.y, 0, 0)] # type: List[FreeRectangle]
+        if x == 0 or y == 0:
+            self.freerects = []
+        else:
+            self.freerects = [FreeRectangle(self.x, self.y, 0, 0)] # type: List[FreeRectangle]
         self.items = [] # type: List[item.Item]
         self.rotation = rotation
 
@@ -131,7 +134,7 @@ class Guillotine:
         return False
 
 
-    def _generic_algo(self, item, heuristic: str = 'width', op = operator.lt) -> bool:
+    def _generic_algo(self, item, heuristic: str = 'best_width_fit', op = operator.lt) -> bool:
         """
         Select FreeRectangle based on heuristic choices
         """
