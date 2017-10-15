@@ -145,9 +145,10 @@ class Guillotine:
             fitted_rects_rot = self._fitted_rects(item, rotation=True)
             smallest_rotated = self._rectangle_reduce(fitted_rects_rot, op, heuristic)
             best = self._compare_two_freerects(smallest_rect, smallest_rotated)
+            if best == smallest_rotated:
+                item.rotate()
         else:
             best = smallest_rect
-
         if best:
             item.CornerPoint = (best.x, best.y)
             self.items.append(item)

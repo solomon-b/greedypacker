@@ -7,6 +7,80 @@ from greedypacker import item
 from .base import BaseTestCase
 from .util import stdout_redirect
 
+class WasteMap(BaseTestCase):
+    def setUp(self):
+        self.sheet = shelf.Sheet(8, 4, rotation=True, wastemap=True)
+
+
+    def tearDown(self):
+        del self.sheet
+
+
+    def testAddToWastemapA(self):
+        """
+       Manual Triggering of sheet.add_to_wastmap
+        Without vertical offest
+        """
+        self.sheet.use_waste_map = False
+
+        ITEM1 = item.Item(3,3)
+        ITEM2 = item.Item(2,2)
+        ITEM3 = item.Item(2,2)
+
+        self.sheet.insert(ITEM1, heuristic='next_fit')
+        self.sheet.insert(ITEM2, heuristic='next_fit')
+        self.sheet.insert(ITEM3, heuristic='next_fit')
+        self.sheet.add_to_wastemap(self.sheet.shelves[-1])
+
+        correct = [(1, 3, 7, 0), (4, 1, 3, 2)]
+        self.assertEqual(self.sheet.wastemap.freerects, correct)
+
+
+    def testAddToWastemapB(self):
+        """
+        Manual Triggering of sheet.add_to_wastmap
+        With vertical offest
+        """
+        self.sheet.use_waste_map = False
+
+        ITEM0 = item.Item(8,1)
+        ITEM1 = item.Item(3,3)
+        ITEM2 = item.Item(2,2)
+        ITEM3 = item.Item(2,2)
+
+        self.sheet.insert(ITEM0, heuristic='next_fit')
+        self.sheet.insert(ITEM1, heuristic='next_fit')
+        self.sheet.insert(ITEM2, heuristic='next_fit')
+        self.sheet.insert(ITEM3, heuristic='next_fit')
+        self.sheet.add_to_wastemap(self.sheet.shelves[-1])
+
+        correct = [(1, 3, 7, 1), (4, 1, 3, 3)]
+        self.assertEqual(self.sheet.wastemap.freerects, correct)
+
+
+    def testAddAnItemToWasteMap(self):
+        """
+        Waste Map generation and insertion using shelf.insert()
+        """
+        self.sheet.use_waste_map = True
+
+        ITEM0 = item.Item(8,1)
+        ITEM1 = item.Item(3,3)
+        ITEM2 = item.Item(2,2)
+        ITEM3 = item.Item(3,3)
+        ITEM4 = item.Item(1,2)
+
+        self.sheet.insert(ITEM0, heuristic='next_fit')
+        self.sheet.insert(ITEM1, heuristic='next_fit')
+        self.sheet.insert(ITEM2, heuristic='next_fit')
+        self.sheet.insert(ITEM3, heuristic='next_fit')
+        self.sheet.insert(ITEM4, heuristic='next_fit')
+
+        with self.subTest():
+            self.assertEqual(self.sheet.items, [ITEM0, ITEM1, ITEM2, ITEM3, ITEM4])
+        with self.subTest():
+            self.assertEqual(self.sheet.wastemap.freerects, [])
+
 class shelfObject(BaseTestCase):
     def setUp(self):
         self.shelf = shelf.Shelf(8,4, 0)
@@ -576,6 +650,7 @@ def load_tests(loader, tests, pattern):
         suite.addTests(loader.loadTestsFromTestCase(WorstWidthFit))
         suite.addTests(loader.loadTestsFromTestCase(WorstHeightFit))
         suite.addTests(loader.loadTestsFromTestCase(WorstAreaFit))
+        suite.addTests(loader.loadTestsFromTestCase(WasteMap))
         #suite.addTests(loader.loadTestsFromTestCase(BinStats))
     else:
         tests = loader.loadTestsFromName(pattern,

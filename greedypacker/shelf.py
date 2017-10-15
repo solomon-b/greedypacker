@@ -8,6 +8,7 @@ ssbothwell@gmail.com
 from functools import reduce
 from typing import List
 from . import item
+from . import guillotine
 
 
 class Shelf:
@@ -41,13 +42,16 @@ class Sheet:
     Sheet class represents a sheet of material to be subdivided.
     Sheets hold a list of rows which hold a list of items.
     """
-    def __init__(self, x: int, y: int, rotation: bool = True) -> None:
+    def __init__(self, x: int, y: int, rotation: bool = True, wastemap: bool = False) -> None:
         self.x = x
         self.y = y
         self.available_height = self.y
         self.shelves = [] # type: List[Shelf]
         self.items = [] # type: List[item.Item]
         self.rotation = rotation
+        self.use_waste_map = wastemap
+        if self.use_waste_map:
+            self.wastemap = guillotine.Guillotine(0, 0, rotation = self.rotation)
 
 
     def __repr__(self) -> str:
@@ -99,8 +103,40 @@ class Sheet:
         res = shelf.insert(item)
         if res:
             self.items.append(item)
+            #if self.use_waste_map:
+            #    waste_rect = guillotine.FreeRectangle
             return True
         return False
+
+
+    def add_to_wastemap(self, shelf: Shelf) -> None:
+        # Add space above items to wastemap
+        for item in shelf.items:
+            if item.y < shelf.y:
+                freeWidth = item.x
+                freeHeight = shelf.y - item.y
+                freeX = item.CornerPoint[0]
+                freeY = item.y + shelf.vertical_offset
+                freeRect = guillotine.FreeRectangle(freeWidth,
+                                                    freeHeight,
+                                                    freeX,
+                                                    freeY)
+                self.wastemap.freerects.append(freeRect)
+        # Move remaining shelf width to wastemap
+        if shelf.available_width > 0:
+            freeWidth = shelf.available_width
+            freeHeight = shelf.y
+            freeX = self.x - shelf.available_width
+            freeY = shelf.vertical_offset
+            freeRect = guillotine.FreeRectangle(freeWidth,
+                                                freeHeight,
+                                                freeX,
+                                                freeY)
+            self.wastemap.freerects.append(freeRect)
+        # Close Shelf
+        shelf.available_width = 0
+        # Merge rectangles in wastemap
+        self.wastemap.rectangle_merge()
 
 
     def next_fit(self, item: item.Item) -> bool:
@@ -219,10 +255,18 @@ class Sheet:
 
     def insert(self, item: item.Item, heuristic: 'str' = 'next_fit') -> bool:
         if (item.x <= self.x and item.y <= self.y):
-            # First Item Insert
+            # 1) If there are no shelves, create one and insert the item
             if not self.shelves:
                 return self.create_shelf(item)
 
+            # 2) If enabled, try to insert into the wastemap 
+            if self.use_waste_map:
+                res = self.wastemap.insert(item, heuristic='best_width_fit')
+                if res:
+                    self.items.append(item)
+                    return True
+
+            # Ugly python switch 'statement'
             heuristics = {'next_fit': self.next_fit,
                           'first_fit': self.first_fit,
                           'best_width_fit': self.best_width_fit,
@@ -232,15 +276,26 @@ class Sheet:
                           'worst_height_fit': self.worst_height_fit,
                           'worst_area_fit': self.worst_area_fit }
 
+            # 3) Try the desired heuristic
             if heuristic in heuristics:
                 # Call Heuristic
                 res = heuristics[heuristic](item)
                 # If item inserted successfully
                 if res:
                     return True
-            # No shelf fit
+            # 4) If the item didn't fit then close the shelf
+            #    and add its waste to the wastemap
+            if self.use_waste_map:
+                self.add_to_wastemap(self.shelves[-1])
+
+                # 5) Attempt to insert into the wastemap
+                res = self.wastemap.insert(item, heuristic='best_width_fit')
+                if res:
+                    self.items.append(item)
+                    return True
+            # 6) Attempt to create a new shelf for the item
             return self.create_shelf(item)
-        # No sheet fit
+        # 7) Nothing worked!
         return False
 
 

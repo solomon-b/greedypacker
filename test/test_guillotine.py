@@ -187,7 +187,7 @@ class BestWidthFit(BaseTestCase):
 
 class BestHeightFit(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -275,7 +275,7 @@ class BestHeightFit(BaseTestCase):
 
 class BestAreaFit(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -365,7 +365,7 @@ class BestAreaFit(BaseTestCase):
 
 class WorstWidthFit(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
 
 
