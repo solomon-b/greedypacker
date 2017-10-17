@@ -28,25 +28,29 @@ class BinManager:
                  heuristic: str ='best_width_fit',
                  split_heuristic: str = 'default',
                  sorting: bool = True,
-                 rotation: bool = True) -> None:
+                 rotation: bool = True,
+                 rectangle_merge: bool = False,
+                 wastemap: bool = False) -> None:
         self.bin_width = bin_width
         self.bin_height = bin_height
         self.items = [] # type: List[item.Item]
         self.bin_count = 0
+
         if bin_algo == 'bin_best_fit':
             self.bin_sel_algo = self._bin_best_fit
         elif bin_algo == 'bin_first_fit':
             self.bin_sel_algo =  self._bin_first_fit
         self.heuristic = heuristic
         self.algorithm = pack_algo
+
         self.split_heuristic = split_heuristic
-        defaultBin = self._bin_factory(self.bin_width,
-                                           self.bin_height,
-                                           self.algorithm,
-                                           self.heuristic) # type: Algorithm
-        self.bins = [defaultBin] # type: List[Algorithm]
         self.sorting = sorting
         self.rotation = rotation
+        self.rectangle_merge = rectangle_merge
+        self.wastemap = wastemap
+
+        defaultBin = self._bin_factory() # type: Algorithm
+        self.bins = [defaultBin] # type: List[Algorithm]
 
 
     def add_items(self, *items: item.Item) -> None:
@@ -56,15 +60,16 @@ class BinManager:
             self.items.sort(key=lambda el: el.x*el.y, reverse=True)
 
 
-    def _bin_factory(self, width: int, height: int, algo: str, heuristic: str) -> Optional[Algorithm]:
+    def _bin_factory(self) -> Optional[Algorithm]:
         """
-        Returns a bin with the desired algorithm,
+        Returns a bin with the specificed algorithm,
         heuristic, and dimensions
         """
-        if algo == 'guillotine':
-            return guillotine.Guillotine(width, height)
-        elif algo == 'shelf':
-            return shelf.Sheet(width, height)
+        if self.algorithm == 'guillotine':
+            return guillotine.Guillotine(self.bin_width, self.bin_height, self.rotation,
+                                         self.rectangle_merge, self.split_heuristic)
+        elif self.algorithm == 'shelf':
+            return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap)
         raise ValueError('Error: No such Algorithm')
 
 
@@ -77,11 +82,7 @@ class BinManager:
             if result:
                 break
         if not result:
-            self.bins.append(self._bin_factory(self.bin_width,
-                                               self.bin_height,
-                                               self.algorithm,
-                                               self.heuristic,
-                                               ))
+            self.bins.append(self._bin_factory())
             self.bins[-1].insert(item, self.heuristic)
 
 

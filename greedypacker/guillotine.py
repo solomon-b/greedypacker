@@ -21,10 +21,17 @@ class FreeRectangle(typing.NamedTuple('FreeRectangle', [('width', int), ('height
 
 
 class Guillotine:
-    def __init__(self, x: int = 8, y: int = 4, rotation: bool = True) -> None:
+    def __init__(self, x: int = 8,
+                 y: int = 4,
+                 rotation: bool = True,
+                 rectangle_merge: bool=False,
+                 split_heuristic: str='default') -> None:
         self.x = x
         self.y = y
-        self.rMerge = False
+        self.rMerge = rectangle_merge
+        self.split_heuristic = split_heuristic
+
+
         if x == 0 or y == 0:
             self.freerects = [] # type: List[FreeRectangle]
         else:
@@ -84,8 +91,7 @@ class Guillotine:
 
 
     def _split_free_rect(self, item: item.Item,
-                         freeRect: FreeRectangle,
-                         heuristic: str = 'default') -> List[FreeRectangle]:
+                         freeRect: FreeRectangle) -> List[FreeRectangle]:
         """
         Determines the split axis based upon the split heuristic then calls
         _split_along_axis  with the appropriate axis to return a List[FreeRectangle].
@@ -95,13 +101,13 @@ class Guillotine:
         w = freeRect.width - item.x
         h = freeRect.height - item.y
 
-        if heuristic == 'SplitShorterLeftoverAxis': split = (w <= h)
-        elif heuristic == 'SplitLongerLeftoverAxis': split = (w > h)
-        elif heuristic == 'SplitMinimizeArea': split = (item.x * h > w * item.y)
-        elif heuristic == 'SplitMaximizeArea': split = (item.x * h <= w * item.y)
-        elif heuristic == 'SplitShorterAxis': split = (freeRect.width <= freeRect.height)
-        elif heuristic == 'SplitLongerAxis': split = (freeRect.width > freeRect.height)
-        else: split = (True)
+        if self.split_heuristic == 'SplitShorterLeftoverAxis': split = (w <= h)
+        elif self.split_heuristic == 'SplitLongerLeftoverAxis': split = (w > h)
+        elif self.split_heuristic == 'SplitMinimizeArea': split = (item.x * h > w * item.y)
+        elif self.split_heuristic == 'SplitMaximizeArea': split = (item.x * h <= w * item.y)
+        elif self.split_heuristic == 'SplitShorterAxis': split = (freeRect.width <= freeRect.height)
+        elif self.split_heuristic == 'SplitLongerAxis': split = (freeRect.width > freeRect.height)
+        else: split = True
 
 
         return self._split_along_axis(freeRect, item, split)
@@ -181,7 +187,7 @@ class Guillotine:
             self.items.append(item)
             self.freerects.remove(best)
 
-            splits = self._split_free_rect(item, best, split_heuristic)
+            splits = self._split_free_rect(item, best)
             for rect in splits:
                 self.freerects.append(rect)
             return True
