@@ -122,7 +122,7 @@ in more efficient packings then the default always horizontal split.
 Usage:
 ```
 In [15]: M = greedypacker.BinManager(8, 4, 'guillotine', 'best_width_fit', split_heuristic='SplitMinimizeArea')
-    ```
+```
 
 ### install notes
 
