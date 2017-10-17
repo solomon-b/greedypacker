@@ -26,7 +26,7 @@ class Guillotine:
         self.y = y
         self.rMerge = False
         if x == 0 or y == 0:
-            self.freerects = []
+            self.freerects = [] # type: List[FreeRectangle]
         else:
             self.freerects = [FreeRectangle(self.x, self.y, 0, 0)] # type: List[FreeRectangle]
         self.items = [] # type: List[item.Item]
@@ -47,37 +47,64 @@ class Guillotine:
         return [rect for rect
                 in self.freerects
                 if rect.width >= width
-                and rect.height >= height] 
+                and rect.height >= height]
+
+
+    @staticmethod
+    def _split_along_axis(freeRect: FreeRectangle,
+                          item: item.Item, split: bool) -> List[FreeRectangle]:
+        top_x = freeRect.x
+        top_y = freeRect.y + item.y
+        top_h = freeRect.height - item.y
+
+        right_x = freeRect.x + item.x
+        right_y = freeRect.y
+        right_w = freeRect.width - item.x
+
+        # horizontal split
+        if split:
+            top_w = freeRect.width
+            right_h = item.y
+        # vertical split
+        else:
+            top_w = item.x
+            right_h = freeRect.height
+
+        result = []
+
+        if right_w > 0 and right_h > 0:
+            right_rect = FreeRectangle(right_w, right_h, right_x, right_y)
+            result.append(right_rect)
+
+        if top_w > 0 and top_h > 0:
+            top_rect = FreeRectangle(top_w, top_h, top_x, top_y)
+            result.append(top_rect)
+
+        return result
+
 
     def _split_free_rect(self, item: item.Item,
-                         freerect: FreeRectangle,
-                         split_axis: str = 'horiz') -> List[FreeRectangle]:
+                         freeRect: FreeRectangle,
+                         heuristic: str = 'default') -> List[FreeRectangle]:
         """
-        returns a list of FreeRectangles remaining after the split
+        Determines the split axis based upon the split heuristic then calls
+        _split_along_axis  with the appropriate axis to return a List[FreeRectangle].
         """
-        result = []
-        if item.x < freerect.width:
-            # generate free rectangle for remaining width
-            right_width = freerect.width - item.x
-            right_height = item.y
-            right_x = freerect.x + item.x
-            right_y = freerect.y
-            right_rect = FreeRectangle(right_width,
-                                       right_height,
-                                       right_x,
-                                       right_y)
-            result.append(right_rect)
-        if item.y < freerect.height:
-            top_width = freerect.width
-            top_height = freerect.height - item.y
-            top_x = freerect.x
-            top_y = item.y + item.CornerPoint[1]
-            top_rect = FreeRectangle(top_width,
-                                     top_height,
-                                     top_x,
-                                     top_y)
-            result.append(top_rect)
-        return result
+
+        # Leftover lengths
+        w = freeRect.width - item.x
+        h = freeRect.height - item.y
+
+        if heuristic == 'SplitShorterLeftoverAxis': split = (w <= h)
+        elif heuristic == 'SplitLongerLeftoverAxis': split = (w > h)
+        elif heuristic == 'SplitMinimizeArea': split = (item.x * h > w * item.y)
+        elif heuristic == 'SplitMaximizeArea': split = (item.x * h <= w * item.y)
+        elif heuristic == 'SplitShorterAxis': split = (freeRect.width <= freeRect.height)
+        elif heuristic == 'SplitLongerAxis': split = (freeRect.width > freeRect.height)
+        else: split = (True)
+
+
+        return self._split_along_axis(freeRect, item, split)
 
 
     @staticmethod
@@ -134,12 +161,12 @@ class Guillotine:
         return False
 
 
-    def _generic_algo(self, item, heuristic: str = 'best_width_fit', op = operator.lt) -> bool:
+    def _generic_algo(self, item, heuristic: str = 'best_width_fit', op = operator.lt, split_heuristic: str='default') -> bool:
         """
         Select FreeRectangle based on heuristic choices
         """
         fitted_rects = self._fitted_rects(item)
-        smallest_rect = self._rectangle_reduce(fitted_rects, op, heuristic)
+        smallest_rect = self._rectangle_reduce(self._fitted_rects(item), op, heuristic)
 
         if self.rotation:
             fitted_rects_rot = self._fitted_rects(item, rotation=True)
@@ -154,7 +181,7 @@ class Guillotine:
             self.items.append(item)
             self.freerects.remove(best)
 
-            splits = self._split_free_rect(item, best)
+            splits = self._split_free_rect(item, best, split_heuristic)
             for rect in splits:
                 self.freerects.append(rect)
             return True
@@ -200,7 +227,7 @@ class Guillotine:
                     self.freerects.append(merged_rect)
 
 
-    def insert(self, item: item.Item, heuristic: str = 'best_area_fit') -> bool:
+    def insert(self, item: item.Item, heuristic: str = 'best_area_fit', split_heuristic='default') -> bool:
         """
         Public method for selecting heuristic and inserting item
         """
@@ -211,37 +238,37 @@ class Guillotine:
                     self.rectangle_merge()
                 return True
         elif heuristic == 'best_width_fit':
-            res = self._generic_algo(item, 'width', operator.lt)
+            res = self._generic_algo(item, 'width', operator.lt, split_heuristic)
             if res:
                 if self.rMerge:
                     self.rectangle_merge()
                 return True
         elif heuristic == 'best_height_fit':
-            res = self._generic_algo(item, 'height', operator.lt)
+            res = self._generic_algo(item, 'height', operator.lt, split_heuristic)
             if res:
                 if self.rMerge:
                     self.rectangle_merge()
                 return True
         elif heuristic == 'best_area_fit':
-            res = self._generic_algo(item, 'area', operator.lt)
+            res = self._generic_algo(item, 'area', operator.lt, split_heuristic)
             if res:
                 if self.rMerge:
                     self.rectangle_merge()
                 return True
         elif heuristic == 'worst_width_fit':
-            res = self._generic_algo(item, 'width', operator.gt)
+            res = self._generic_algo(item, 'width', operator.gt, split_heuristic)
             if res:
                 if self.rMerge:
                     self.rectangle_merge()
                 return True
         elif heuristic == 'worst_height_fit':
-            res = self._generic_algo(item, 'height', operator.gt)
+            res = self._generic_algo(item, 'height', operator.gt, split_heuristic)
             if res:
                 if self.rMerge:
                     self.rectangle_merge()
                 return True
         elif heuristic == 'worst_area_fit':
-            res = self._generic_algo(item, 'area', operator.gt)
+            res = self._generic_algo(item, 'area', operator.gt, split_heuristic)
             if res:
                 if self.rMerge:
                     self.rectangle_merge()

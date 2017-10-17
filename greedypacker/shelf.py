@@ -332,3 +332,4 @@ if __name__ == '__main__':
         print('Shelf #%s: %r' % (i, str(shelf.items)))
     print()
     print(SHEET.bin_stats())
+

@@ -26,6 +26,7 @@ class BinManager:
                  bin_algo: str = 'bin_best_fit',
                  pack_algo: str = 'guillotine',
                  heuristic: str ='best_width_fit',
+                 split_heuristic: str = 'default',
                  sorting: bool = True,
                  rotation: bool = True) -> None:
         self.bin_width = bin_width
@@ -38,6 +39,7 @@ class BinManager:
             self.bin_sel_algo =  self._bin_first_fit
         self.heuristic = heuristic
         self.algorithm = pack_algo
+        self.split_heuristic = split_heuristic
         defaultBin = self._bin_factory(self.bin_width,
                                            self.bin_height,
                                            self.algorithm,
@@ -78,7 +80,8 @@ class BinManager:
             self.bins.append(self._bin_factory(self.bin_width,
                                                self.bin_height,
                                                self.algorithm,
-                                               self.heuristic))
+                                               self.heuristic,
+                                               ))
             self.bins[-1].insert(item, self.heuristic)
 
 
@@ -108,7 +111,7 @@ class BinManager:
                         best_bin_index = i
 
             if best_rect:
-                self.bins[i].insert(item, self.heuristic)
+                self.bins[i].insert(item, self.heuristic, split_heuristic=self.split_heuristic)
                 return "Success"
 
 
