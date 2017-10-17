@@ -5,11 +5,11 @@ class Item:
     """
     Items class for rectangles inserted into sheets
     """
-    def __init__(self, x, y,
+    def __init__(self, width, height,
                  CornerPoint: tuple = (0, 0),
                  rotation: bool = True) -> None:
-        self.x = x
-        self.y = y
+        self.width = width
+        self.height = height
         self.CornerPoint = CornerPoint
         self.rotated = False
 
@@ -19,7 +19,7 @@ class Item:
 
 
     def rotate(self) -> None:
-        self.x, self.y = self.y, self.x
+        self.width, self.height = self.height, self.width
         self.rotated = False if self.rotated == True else True
 
 

@@ -57,7 +57,7 @@ class BinManager:
         for item in items:
             self.items.append(item)
         if self.sorting:
-            self.items.sort(key=lambda el: el.x*el.y, reverse=True)
+            self.items.sort(key=lambda el: el.width*el.height, reverse=True)
 
 
     def _bin_factory(self) -> Optional[Algorithm]:
@@ -90,7 +90,7 @@ class BinManager:
         """
         Insert into the bin that best fits the item
         """
-        if item.x > self.bin_width or item.y > self.bin_height:
+        if item.width > self.bin_width or item.height > self.bin_height:
             return "Error! item too big for bins"
 
         best_rect = None # type: Union[guillotine.FreeRectangle, shelf.Shelf]
@@ -99,8 +99,8 @@ class BinManager:
             for i, binn in enumerate(self.bins):
                 fitted_rects = [rect for rect
                                 in binn.freerects
-                                if rect.width >= item.x
-                                and rect.height >= item.y]
+                                if rect.width >= item.width
+                                and rect.height >= item.height]
                 if fitted_rects:
                     compare = lambda a, b: a if a.area > b.area else b
                     best_in_bin = reduce(compare, fitted_rects)
@@ -120,29 +120,29 @@ class BinManager:
             bin_scores = [] # type: List[tuple]
             for i, binn in enumerate(self.bins):
                 if binn.shelves == []:
-                    bin_scores.append((binn.x - item.x, i))
+                    bin_scores.append((binn.x - item.width, i))
                 else:
                     fitted_shelves = [shelf for shelf
                                       in binn.shelves
-                                      if shelf.available_width >= item.x
-                                      and shelf.y >= item.y]
+                                      if shelf.available_width >= item.width
+                                      and shelf.y >= item.height]
                     # This checks rotation fits if no regular fits.
                     # Need to compare regular fit and rotate fitted
                     # to find actual best fit
                     if not fitted_shelves and self.rotation:
                         fitted_shelves = [shelf for shelf
                                           in binn.shelves
-                                          if shelf.available_width >= item.y
-                                          and shelf.y >= item.x]
+                                          if shelf.available_width >= item.height
+                                          and shelf.y >= item.width]
                         if fitted_shelves:
                             item.rotate()
                     if fitted_shelves:
                         compare = lambda a, b: a if (a.available_width <
                                                      b.available_width) else b
                         best_shelf = reduce(compare, fitted_shelves)
-                        bin_scores.append((best_shelf.available_width - item.x, i))
-                    elif binn.available_height >= item.y:
-                        bin_scores.append((binn.x - item.x, i))
+                        bin_scores.append((best_shelf.available_width - item.width, i))
+                    elif binn.available_height >= item.height:
+                        bin_scores.append((binn.x - item.width, i))
             if bin_scores:
                 best_bin_index = min(bin_scores)[1]
                 self.bins[best_bin_index].insert(item, self.heuristic)

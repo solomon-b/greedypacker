@@ -29,10 +29,10 @@ class Shelf:
 
 
     def insert(self, item: item.Item) -> bool:
-        if item.x <= self.available_width and item.y <= self.y:
+        if item.width <= self.available_width and item.height <= self.y:
             item.CornerPoint = (self.x - self.available_width, self.vertical_offset)
             self.items.append(item)
-            self.available_width -= item.x
+            self.available_width -= item.width
             return True
         return False
 
@@ -59,12 +59,12 @@ class Sheet:
 
 
     def create_shelf(self, item: item.Item) -> bool:
-        if (self.rotation and item.y > item.x and
-           item.y < self.x and item.x < self.y):
+        if (self.rotation and item.height > item.width and
+           item.height < self.x and item.width < self.y):
             item.rotate()
-        if item.y <= self.available_height:
+        if item.height <= self.available_height:
             v_offset = self.y - self.available_height
-            new_shelf = Shelf(self.x, item.y, v_offset)
+            new_shelf = Shelf(self.x, item.height, v_offset)
             self.shelves.append(new_shelf)
             self.available_height -= new_shelf.y
             new_shelf.insert(item)
@@ -75,8 +75,8 @@ class Sheet:
 
     @staticmethod
     def item_fits_shelf(item: item.Item, shelf: Shelf) -> bool:
-        if ((item.x <= shelf.available_width and item.y <= shelf.y) or
-           (item.y <= shelf.available_width and item.x <= shelf.y)):
+        if ((item.width <= shelf.available_width and item.height <= shelf.y) or
+           (item.height <= shelf.available_width and item.width <= shelf.y)):
             return True
         return False
 
@@ -87,9 +87,9 @@ class Sheet:
         Rotate item to long side vertical if that orientation
         fits the shelf.
         """
-        if (item.x > item.y and
-            item.x <= shelf.y and
-            item.y <= shelf.available_width):
+        if (item.width > item.height and
+            item.width <= shelf.y and
+            item.height <= shelf.available_width):
             item.rotate()
             return True
         return False
@@ -112,11 +112,11 @@ class Sheet:
     def add_to_wastemap(self, shelf: Shelf) -> None:
         # Add space above items to wastemap
         for item in shelf.items:
-            if item.y < shelf.y:
-                freeWidth = item.x
-                freeHeight = shelf.y - item.y
+            if item.height < shelf.y:
+                freeWidth = item.width
+                freeHeight = shelf.y - item.height
                 freeX = item.CornerPoint[0]
-                freeY = item.y + shelf.vertical_offset
+                freeY = item.height + shelf.vertical_offset
                 freeRect = guillotine.FreeRectangle(freeWidth,
                                                     freeHeight,
                                                     freeX,
@@ -162,8 +162,8 @@ class Sheet:
             # Looks redundent but is to get optimal bestfit calc 
             self.rotate_to_shelf(item, shelf)
             if self.item_fits_shelf(item, shelf):
-                if shelf.available_width - item.x < best_width:
-                    best_width = shelf.available_width - item.x
+                if shelf.available_width - item.width < best_width:
+                    best_width = shelf.available_width - item.width
                     best_shelf = shelf
         if best_shelf:
             self.add_to_shelf(item, best_shelf)
@@ -178,8 +178,8 @@ class Sheet:
             # Looks redundent but is to get optimal bestfit calc 
             self.rotate_to_shelf(item, shelf)
             if self.item_fits_shelf(item, shelf):
-                if shelf.y - item.y < best_width:
-                    best_width = shelf.available_width - item.y
+                if shelf.y - item.height < best_width:
+                    best_width = shelf.available_width - item.height
                     best_shelf = shelf
         if best_shelf:
             self.add_to_shelf(item, best_shelf)
@@ -194,7 +194,7 @@ class Sheet:
             # Looks redundent but is to get optimal bestfit calc 
             self.rotate_to_shelf(item, shelf)
             if self.item_fits_shelf(item, shelf):
-                remainder_area = (shelf.available_width - item.x)*shelf.y
+                remainder_area = (shelf.available_width - item.width)*shelf.y
                 if remainder_area < best_area:
                     best_area = remainder_area
                     best_shelf = shelf
@@ -211,8 +211,8 @@ class Sheet:
             # Looks redundent but is to get optimal bestfit calc 
             self.rotate_to_shelf(item, shelf)
             if self.item_fits_shelf(item, shelf):
-                if shelf.available_width - item.x > worst_width:
-                    worst_width = shelf.available_width - item.x
+                if shelf.available_width - item.width > worst_width:
+                    worst_width = shelf.available_width - item.width
                     worst_shelf = shelf
         if worst_shelf:
             self.add_to_shelf(item, worst_shelf)
@@ -227,8 +227,8 @@ class Sheet:
             # Looks redundent but is to get optimal bestfit calc 
             self.rotate_to_shelf(item, shelf)
             if self.item_fits_shelf(item, shelf):
-                if shelf.y - item.x > worst_height:
-                    worst_height = shelf.available_width - item.x
+                if shelf.y - item.width > worst_height:
+                    worst_height = shelf.available_width - item.width
                     worst_shelf = shelf
         if worst_shelf:
             self.add_to_shelf(item, worst_shelf)
@@ -243,7 +243,7 @@ class Sheet:
             # Looks redundent but is to get optimal bestfit calc 
             self.rotate_to_shelf(item, shelf)
             if self.item_fits_shelf(item, shelf):
-                remainder_area = (shelf.available_width - item.x)*shelf.y
+                remainder_area = (shelf.available_width - item.width)*shelf.y
                 if remainder_area > worst_area:
                     worst_area = remainder_area
                     worst_shelf = shelf
@@ -254,7 +254,7 @@ class Sheet:
 
 
     def insert(self, item: item.Item, heuristic: 'str' = 'next_fit') -> bool:
-        if (item.x <= self.x and item.y <= self.y):
+        if (item.width <= self.x and item.height <= self.y):
             # 1) If there are no shelves, create one and insert the item
             if not self.shelves:
                 return self.create_shelf(item)

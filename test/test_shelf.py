@@ -81,6 +81,7 @@ class WasteMap(BaseTestCase):
         with self.subTest():
             self.assertEqual(self.sheet.wastemap.freerects, [])
 
+
 class shelfObject(BaseTestCase):
     def setUp(self):
         self.shelf = shelf.Shelf(8,4, 0)
@@ -175,11 +176,11 @@ class NextFit(BaseTestCase):
             self.assertEqual(self.sheet.items, correct)
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0,0))
-            self.assertEqual(ITEM.x, 3)
-            self.assertEqual(ITEM.y, 2)
+            self.assertEqual(ITEM.width, 3)
+            self.assertEqual(ITEM.height, 2)
             self.assertEqual(ITEM2.CornerPoint, (3,0))
-            self.assertEqual(ITEM2.x, 3)
-            self.assertEqual(ITEM2.y, 2)
+            self.assertEqual(ITEM2.width, 3)
+            self.assertEqual(ITEM2.height, 2)
 
 
     def testTwoInsertsB(self):
@@ -248,8 +249,8 @@ class NextFitNoRotation(BaseTestCase):
             self.assertEqual(self.sheet.items, correct)
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0,0))
-            self.assertEqual(ITEM.x, 3)
-            self.assertEqual(ITEM.y, 2)
+            self.assertEqual(ITEM.width, 3)
+            self.assertEqual(ITEM.height, 2)
             self.assertEqual(ITEM2.CornerPoint, (3,0))
 
 
