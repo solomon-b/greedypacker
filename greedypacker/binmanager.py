@@ -12,6 +12,7 @@ from typing import List, Union, Callable, Optional
 from . import item
 from . import shelf
 from . import guillotine
+from . import maximal_rectangles
 
 # Type Aliases:
 Algorithm = Union[shelf.Sheet, guillotine.Guillotine]
