@@ -77,7 +77,7 @@ class StaticMethods(BaseTestCase):
         """
         F0 = maximal_rectangles.FreeRectangle(3, 3, 0, 0)
         F1 = maximal_rectangles.FreeRectangle(1, 1, 1, 1)
-
+    
         overlap = self.M.findOverlap(F0, F1)
         remainders = self.M.clipOverlap(F0, overlap)
 
@@ -87,6 +87,34 @@ class StaticMethods(BaseTestCase):
         Ft = maximal_rectangles.FreeRectangle(3, 1, 0, 2)
 
         self.assertCountEqual(remainders, [Fl, Fr, Fb, Ft])
+        
+
+    def testEncapsulates(self):
+        """
+        Returns a boolean if the second rectangle
+        is fully encapsulated in the first
+        """
+        F0 = maximal_rectangles.FreeRectangle(3, 3, 0, 0)
+        F1 = maximal_rectangles.FreeRectangle(1, 1, 1, 1)
+        F2 = maximal_rectangles.FreeRectangle(2, 1, 5, 1)
+
+        with self.subTest():
+            self.assertTrue(self.M.encapsulates(F0, F1))
+        with self.subTest():
+            self.assertFalse(self.M.encapsulates(F0, F2))
+
+
+    def testRemoveRedundent(self):
+        """
+        F1 should be removed from freerects
+        """
+        F0 = maximal_rectangles.FreeRectangle(3, 3, 0, 0)
+        F1 = maximal_rectangles.FreeRectangle(1, 1, 1, 1)
+        F2 = maximal_rectangles.FreeRectangle(2, 1, 5, 1)
+        F3 = maximal_rectangles.FreeRectangle(1, 1, 5, 1)
+        self.M.freerects = [F0, F1, F2, F3]
+        self.M.remove_redundent()
+        self.assertCountEqual(self.M.freerects, [F0, F2])
 
 
 def load_tests(loader, tests, pattern):

@@ -54,16 +54,16 @@ class MaximalRectangle:
 
     @staticmethod
     def checkInstersection(usedRect: FreeRectangle,
-                           freeRect: FreeRectangle) -> bool:
+                           free_rect: FreeRectangle) -> bool:
         """ 
         Checks if two rectangles intersect
         """
 
         # Check if nodes actually intersect
-        if (usedRect.x >= freeRect.x + freeRect.width or 
-            usedRect.x + usedRect.width <= freeRect.x or 
-            usedRect.y >= freeRect.y + freeRect.height or
-            usedRect.y + usedRect.height <= freeRect.y):
+        if (usedRect.x >= free_rect.x + free_rect.width or 
+            usedRect.x + usedRect.width <= free_rect.x or 
+            usedRect.y >= free_rect.y + free_rect.height or
+            usedRect.y + usedRect.height <= free_rect.y):
             return False
         return True
         
@@ -120,6 +120,44 @@ class MaximalRectangle:
         return results
        
         
+    @staticmethod
+    def encapsulates(F0: FreeRectangle,
+                     F1: FreeRectangle) -> bool:
+        """
+        Returns true if F1 is fully encapsulated
+        inside F0
+        """
+        if F1.x < F0.x or F1.x > F0.x+F0.width:
+            return False
+        if F1.x+F1.width > F0.x+F0.width:
+            return False
+        if F1.y < F0.y or F1.y > F0.y+F0.height:
+            return False
+        if F1.y+F1.width > F0.y+F0.width:
+            return False
+        return True
+
+
+    def remove_redundent(self) -> List[FreeRectangle]:
+        """
+        Remove all FreeRectangle full encapsulated
+        inside another FreeRectangle.
+        """
+        i = 0
+        while i < len(self.freerects):
+            j = i + 1
+            while j < len(self.freerects):
+                if self.encapsulates(self.freerects[j], self.freerects[i]):
+                    del self.freerects[i]
+                    i -= 1
+                    break
+                if self.encapsulates(self.freerects[i], self.freerects[j]):
+                    del self.freerects[j]
+                    j -= 1
+                j += 1
+            i += 1
+        return self.freerects
+
 
     def first_fit(self, item: item.Item) -> bool:
         """
