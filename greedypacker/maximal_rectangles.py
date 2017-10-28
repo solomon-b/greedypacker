@@ -45,39 +45,81 @@ class MaximalRectangle:
 
 
     @staticmethod
-    def item_fits_rect(item: item.Item, rect: FreeRectangle) -> bool:
-        if ((item.width <= rect.width and item.height <= rect.height) or
-           (item.height <= rect.width and item.width <= rect.height)):
+    def item_fits_rect(item: item.Item,
+                       rect: FreeRectangle,
+                       rotation: bool=False) -> bool:
+        if (item.width <= rect.width and item.height <= rect.height):
+            return True
+        if (rotation and 
+            item.height <= rect.width and 
+            item.width <= rect.height):
             return True
         return False
 
 
     @staticmethod
-    def checkInstersection(usedRect: FreeRectangle,
-                           free_rect: FreeRectangle) -> bool:
+    def split_rectangle(rectangle: FreeRectangle,
+                        item: item.Item) -> List[FreeRectangle]:
+        """
+        Return a list of maximal free rectangles from a split
+        """
+        results = []
+        if item.width < rectangle.width:
+            Fw = rectangle.width - item.width
+            Fh = rectangle.height
+            Fx = rectangle.x + item.width
+            Fy = rectangle.y
+            results.append(FreeRectangle(width=Fw,
+                                         height=Fh,
+                                         x=Fx,
+                                         y=Fy))
+        if item.height < rectangle.height:
+            Fw = rectangle.width
+            Fh = rectangle.height - item.height
+            Fx = rectangle.x 
+            Fy = rectangle.y + item.height
+            results.append(FreeRectangle(width=Fw,
+                                         height=Fh,
+                                         x=Fx,
+                                         y=Fy))
+        return results
+    
+
+    @staticmethod
+    def item_bounds(item: item.Item) -> tuple:
+        """
+        Returns the lower left and upper right 
+        corners of the item's bounding box.
+        """
+        return (item.CornerPoint[0], item.CornerPoint[1], item.CornerPoint[0]+item.width, item.CornerPoint[1]+item.height)
+
+
+    @staticmethod
+    def checkInstersection(free_rect: FreeRectangle,
+                           bounding_box: tuple) -> bool:
         """ 
-        Checks if two rectangles intersect
+        Checks if bounding box intersects rectangle
         """
 
         # Check if nodes actually intersect
-        if (usedRect.x >= free_rect.x + free_rect.width or 
-            usedRect.x + usedRect.width <= free_rect.x or 
-            usedRect.y >= free_rect.y + free_rect.height or
-            usedRect.y + usedRect.height <= free_rect.y):
+        if (bounding_box[0] >= free_rect.x + free_rect.width or
+            bounding_box[2] <= free_rect.x or
+            bounding_box[1] >= free_rect.y + free_rect.height or
+            bounding_box[3] <= free_rect.y):
             return False
         return True
         
 
     @staticmethod
-    def findOverlap(F1: FreeRectangle, F2: FreeRectangle) -> tuple:
+    def findOverlap(F1: FreeRectangle, B: tuple ) -> tuple:
         """
         returns the bottom left and top right 
         coordinates of the overlap
         """
         X1, Y1 = F1.x, F1.y
         X2, Y2 = F1.x+F1.width, F1.y+F1.height
-        X3, Y3 = F2.x, F2.y
-        X4, Y4 = F2.x+F2.width, F2.y+F2.height
+        X3, Y3 = B[0], B[1]
+        X4, Y4 = B[2], B[3]
 
         X5 = max(X1, X3)
         Y5 = max(Y1, Y3)
@@ -133,7 +175,7 @@ class MaximalRectangle:
             return False
         if F1.y < F0.y or F1.y > F0.y+F0.height:
             return False
-        if F1.y+F1.width > F0.y+F0.width:
+        if F1.y+F1.height > F0.y+F0.height:
             return False
         return True
 
@@ -165,43 +207,19 @@ class MaximalRectangle:
         """
         
         for el in self.freerects:
-            if el[0] and self.item_fits_rect(item, el[0]):
-                item.CornerPoint = el[0].x, el[0].y
-                intersection = self.findIntersection(el)
+            if self.item_fits_rect(item, el):
+                item.CornerPoint = el.x, el.y
+                maximals = self.split_rectangle(el, item)
+                self.freerects.remove(el)
+                self.freerects += maximals
+                itemBounds = self.item_bounds(item)
 
-                self.freerects = filter(lambda F: F != el, self.freerects)
-                return self.freerects
-            elif el[1] and self.item_fits_rect(item, el[1]):
-                item.CornerPoint = el[1].x, el[1].y
-                self.freerects = filter(lambda F: F != el, self.freerects)
-                return self.freerects
+                for rect in self.freerects:
+                    if self.checkInstersection(rect, itemBounds):
+                        overlap = self.findOverlap(rect, itemBounds)
+                        new_rects = self.clipOverlap(rect, overlap)
+                        self.freerects.remove(rect)
+                        self.freerects += new_rects
+                self.remove_redundent()
+                return True
         return False
-                
-
-        if not fitted_rects and self.rotation:
-            fitted_rects = self._fitted_rects(item, rotation=True)
-            if fitted_rects:
-                item.rotate()
-        for freerect in fitted_rects:
-            item.CornerPoint = (freerect.x, freerect.y)
-            self.items.append(item)
-            self.freerects.remove(freerect)
-
-            splits = self._split_free_rect(item, freerect)
-            for rect in splits:
-                self.freerects.append(rect)
-            return True
-        return False
-
-
-if __name__ == '__main__':
-    M = MaximalRectangle(0, 0)
-    F0 = FreeRectangle(2,4,2,0)
-    F1 = FreeRectangle(4,2,0,2)
-    F2 = FreeRectangle(4,2,4,2)
-    F3 = FreeRectangle(2,4,6,0)
-    I = item.Item(2,4)
-    M.freerects.append((F0, F1))
-    M.freerects.append((F2, F3))
-    #print(list(M.first_fit(I)))
-    print(M.findoverlap((F1, F0)))

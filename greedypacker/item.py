@@ -11,6 +11,8 @@ class Item:
         self.width = width
         self.height = height
         self.CornerPoint = CornerPoint
+        self.x = CornerPoint[0]
+        self.y = CornerPoint[1]
         self.rotated = False
 
 
