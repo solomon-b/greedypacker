@@ -201,6 +201,23 @@ class MaximalRectangle:
         return self.freerects
 
 
+    def prune_overlaps(self, itemBounds: tuple) -> None:
+        """
+        Loop through all FreeRectangles and prune
+        any overlapping the itemBounds
+        """
+        result = []
+        for rect in self.freerects:
+            if self.checkInstersection(rect, itemBounds):
+                overlap = self.findOverlap(rect, itemBounds)
+                new_rects = self.clipOverlap(rect, overlap)
+                result += new_rects
+            else:
+                result.append(rect)
+        self.freerects = result
+        self.remove_redundent()
+
+
     def first_fit(self, item: item.Item) -> bool:
         """
         Select first indexed FreeRectangle (that fits item)
@@ -214,12 +231,30 @@ class MaximalRectangle:
                 self.freerects += maximals
                 itemBounds = self.item_bounds(item)
 
-                for rect in self.freerects:
-                    if self.checkInstersection(rect, itemBounds):
-                        overlap = self.findOverlap(rect, itemBounds)
-                        new_rects = self.clipOverlap(rect, overlap)
-                        self.freerects.remove(rect)
-                        self.freerects += new_rects
-                self.remove_redundent()
+                self.prune_overlaps(itemBounds)
                 return True
+        return False
+
+
+    def best_area(self, item: item.Item) -> bool:
+        """
+        Insert item into rectangle with smallest
+        area
+        """
+        best_rect = None
+        best_area = float('inf')
+        for rect in self.freerects:
+            area = rect.width*rect.height 
+            if self.item_fits_rect(item, rect) and area < best_area:
+                best_rect = rect
+                best_area = area
+        if best_rect:
+            item.CornerPoint = best_rect.x, best_rect.y
+            maximals = self.split_rectangle(best_rect, item)
+            self.freerects.remove(best_rect)
+            self.freerects += maximals
+            itemBounds = self.item_bounds(item)
+
+            self.prune_overlaps(itemBounds)
+            return True
         return False

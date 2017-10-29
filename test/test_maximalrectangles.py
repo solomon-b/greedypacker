@@ -139,6 +139,18 @@ class StaticMethods(BaseTestCase):
         self.assertCountEqual(self.M.freerects, [F0, F2])
 
 
+    def testPruneOverlaps(self):
+        F0 = maximal_rectangles.FreeRectangle(4, 4, 0, 0)
+        F1 = maximal_rectangles.FreeRectangle(1, 1, 0, 0)
+        self.M.freerects = [F0, F1]
+        itemBounds = (0, 0, 2, 2)
+        self.M.prune_overlaps(itemBounds)
+        
+        F2 = maximal_rectangles.FreeRectangle(2, 4, 2, 0)
+        F3 = maximal_rectangles.FreeRectangle(4, 2, 0, 2)
+        self.assertCountEqual(self.M.freerects, [F2, F3])
+
+
 class FirstFit(BaseTestCase):
     def setUp(self):
         self.M = maximal_rectangles.MaximalRectangle(4, 4)
@@ -173,11 +185,50 @@ class FirstFit(BaseTestCase):
         self.assertEqual(self.M.freerects, [F0])
 
 
+class BestArea(BaseTestCase):
+    def setUp(self):
+        self.M = maximal_rectangles.MaximalRectangle(8, 4)
+
+
+    def tearDown(self):
+        del self.M
+
+
+    def testBadInsert(self):
+        """
+        Item too Big
+        Rotation = False
+        """
+        I = item.Item(9, 4)
+        F0 = maximal_rectangles.FreeRectangle(8, 4, 0, 0)
+        self.M.best_area(I)
+        self.assertCountEqual(self.M.freerects, [F0])
+
+    def testTwoItemInsert(self):
+        """
+        Two Item insertion 
+        Rotation = False
+        """
+        I = item.Item(2, 2)
+        I2 = item.Item(4, 2)
+        F0 = maximal_rectangles.FreeRectangle(6, 2, 2, 0)
+        F1 = maximal_rectangles.FreeRectangle(4, 4, 4, 0)
+        self.M.best_area(I)
+        self.M.best_area(I2)
+        with self.subTest():
+            self.assertCountEqual(self.M.freerects, [F0, F1])
+        with self.subTest():
+            self.assertEqual(I.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(I2.CornerPoint, (0,2))
+
+
 def load_tests(loader, tests, pattern):
     suite = unittest.TestSuite()
     if pattern is None:
         suite.addTests(loader.loadTestsFromTestCase(StaticMethods))
         suite.addTests(loader.loadTestsFromTestCase(FirstFit))
+        suite.addTests(loader.loadTestsFromTestCase(BestArea))
     else:
         tests = loader.loadTestsFromName(pattern,
                                          module=sys.modules[__name__])
@@ -186,5 +237,3 @@ def load_tests(loader, tests, pattern):
         if len(failedTests) == 0:
             suite.addTests(tests)
     return suite
-
-
