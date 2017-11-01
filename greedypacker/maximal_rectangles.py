@@ -10,7 +10,7 @@ import typing
 from typing import List, Tuple, Union
 from functools import reduce
 from collections import namedtuple
-from . import item
+from .item import Item
 
 
 class FreeRectangle(typing.NamedTuple('FreeRectangle', [('width', int), ('height', int), ('x', int), ('y', int)])):
@@ -36,7 +36,7 @@ class MaximalRectangle:
             self.freerects = [] # type: List[FreeRectangle]
         else:
             self.freerects = [FreeRectangle(self.x, self.y, 0, 0)] # type: List[FreeRectangle]
-        self.items = [] # type: List[item.Item]
+        self.items = [] # type: List[Item]
         self.rotation = rotation
 
 
@@ -45,7 +45,7 @@ class MaximalRectangle:
 
 
     @staticmethod
-    def item_fits_rect(item: item.Item,
+    def item_fits_rect(item: Item,
                        rect: FreeRectangle,
                        rotation: bool=False) -> bool:
         if (item.width <= rect.width and item.height <= rect.height):
@@ -59,7 +59,7 @@ class MaximalRectangle:
 
     @staticmethod
     def split_rectangle(rectangle: FreeRectangle,
-                        item: item.Item) -> List[FreeRectangle]:
+                        item: Item) -> List[FreeRectangle]:
         """
         Return a list of maximal free rectangles from a split
         """
@@ -86,7 +86,7 @@ class MaximalRectangle:
     
 
     @staticmethod
-    def item_bounds(item: item.Item) -> tuple:
+    def item_bounds(item: Item) -> tuple:
         """
         Returns the lower left and upper right 
         corners of the item's bounding box.
@@ -218,7 +218,7 @@ class MaximalRectangle:
         self.remove_redundent()
 
 
-    def first_fit(self, item: item.Item) -> bool:
+    def first_fit(self, item: Item) -> bool:
         """
         Select first indexed FreeRectangle (that fits item)
         """
@@ -226,6 +226,7 @@ class MaximalRectangle:
         for el in self.freerects:
             if self.item_fits_rect(item, el):
                 item.CornerPoint = el.x, el.y
+                self.items.append(item)
                 maximals = self.split_rectangle(el, item)
                 self.freerects.remove(el)
                 self.freerects += maximals
@@ -236,7 +237,7 @@ class MaximalRectangle:
         return False
 
 
-    def best_area(self, item: item.Item) -> bool:
+    def best_area(self, item: Item) -> bool:
         """
         Insert item into rectangle with smallest
         area
@@ -244,12 +245,162 @@ class MaximalRectangle:
         best_rect = None
         best_area = float('inf')
         for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
             area = rect.width*rect.height 
-            if self.item_fits_rect(item, rect) and area < best_area:
+            if area < best_area:
                 best_rect = rect
                 best_area = area
         if best_rect:
             item.CornerPoint = best_rect.x, best_rect.y
+            self.items.append(item)
+            maximals = self.split_rectangle(best_rect, item)
+            self.freerects.remove(best_rect)
+            self.freerects += maximals
+            itemBounds = self.item_bounds(item)
+
+            self.prune_overlaps(itemBounds)
+            return True
+        return False
+
+
+    def best_shortside(self, item: Item) -> bool:
+        """
+        Pack Item into a FreeRectangle such that
+        the smaller leftover side is minimized, ie:
+        pick the FreeRectangle where min(Fw - Iw, Fh - Ih)
+        is the smallest.
+        """
+        best_rect = None
+        best_shortside = float('inf')
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            shortside = min(rect.width-item.width,
+                            rect.height-item.height)
+            if shortside < best_shortside:
+                best_rect = rect
+                best_shortside = shortside
+        if best_rect:
+            item.CornerPoint = best_rect.x, best_rect.y
+            self.items.append(item)
+            maximals = self.split_rectangle(best_rect, item)
+            self.freerects.remove(best_rect)
+            self.freerects += maximals
+            itemBounds = self.item_bounds(item)
+
+            self.prune_overlaps(itemBounds)
+            return True
+        return False
+
+
+    def best_longside(self, item: Item) -> bool:
+        """
+        Pack Item into a FreeRectangle such that
+        the larger leftover side is minimized, ie:
+        pick the FreeRectangle where max(Fw - Iw, Fh - Ih)
+        is the smallest.
+        """
+        best_rect = None
+        best_longside = float('inf')
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            longside = max(rect.width-item.width,
+                           rect.height-item.height)
+            if longside < best_longside:
+                best_rect = rect
+                best_longside = longside
+        if best_rect:
+            item.CornerPoint = best_rect.x, best_rect.y
+            self.items.append(item)
+            maximals = self.split_rectangle(best_rect, item)
+            self.freerects.remove(best_rect)
+            self.freerects += maximals
+            itemBounds = self.item_bounds(item)
+
+            self.prune_overlaps(itemBounds)
+            return True
+        return False
+
+
+    def best_bottomleft(self, item: Item) -> bool:
+        """
+        Pack Item into a FreeRectangle such that
+        the item's top coordinate will be minimized. 
+        If multiple FreeRectangles result in minimal 
+        top heights, then choose then one with the 
+        smallest x
+        """
+        best_rect = None
+        best_topy = float('inf')
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            topy = item.height + rect.y  
+            if ((topy == best_topy and rect.x < best_rect.x) or
+                 topy < best_topy):
+                best_rect = rect
+                best_topy = topy
+
+        if best_rect:
+            item.CornerPoint = best_rect.x, best_rect.y
+            self.items.append(item)
+            maximals = self.split_rectangle(best_rect, item)
+            self.freerects.remove(best_rect)
+            self.freerects += maximals
+            itemBounds = self.item_bounds(item)
+
+            self.prune_overlaps(itemBounds)
+            return True
+        return False
+
+    
+    @staticmethod
+    def common_interval_length(Xstart: int, Xend: int,
+                               Ystart: int, Yend: int) -> int:
+        """
+        Returns the length of perimiter shared by two
+        rectangles
+        """
+        if Xend < Ystart or Yend < Xstart:
+            return 0
+        return min(Xend, Yend) - max(Xstart, Ystart)
+
+    
+    def contact_point(self, item: Item) -> bool:
+        """
+        Pack Item into a FreeRectangle such that
+        the permiter of Item that is touching either
+        the bin edge or another packed item is
+        maximized.
+        """
+        best_rect = None
+        best_perim = -1
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+
+            perim = 0
+            if rect.x == 0 or rect.x + item.width == self.x:
+                perim += item.height
+            if rect.y == 0 or rect.y + item.height == self.y:
+                perim += item.width
+
+            for itm in self.items:
+                if (itm.x == rect.x+rect.width or
+                    itm.x+itm.width == rect.x):
+                    perim += self.common_interval_length(itm.y, itm.y+itm.height, rect.y, rect.y+item.height)
+                if (itm.y == rect.y+rect.height or
+                    item.y+itm.height == rect.y):
+                    perim += self.common_interval_length(itm.x, itm.x+itm.width, rect.x, rect.x+item.width)
+            if perim > best_perim:
+                best_rect = rect
+                best_perim = perim
+
+        if best_rect:
+            item.CornerPoint = best_rect.x, best_rect.y
+            self.items.append(item)
             maximals = self.split_rectangle(best_rect, item)
             self.freerects.remove(best_rect)
             self.freerects += maximals

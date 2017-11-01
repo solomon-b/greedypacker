@@ -223,12 +223,178 @@ class BestArea(BaseTestCase):
             self.assertEqual(I2.CornerPoint, (0,2))
 
 
+class BestShortside(BaseTestCase):
+    def setUp(self):
+        self.M = maximal_rectangles.MaximalRectangle(8, 4)
+
+
+    def tearDown(self):
+        del self.M
+
+
+    def testBadInsert(self):
+        """
+        Item too Big
+        Rotation = False
+        """
+        I = item.Item(9, 4)
+        F0 = maximal_rectangles.FreeRectangle(8, 4, 0, 0)
+        self.M.best_shortside(I)
+        self.assertCountEqual(self.M.freerects, [F0])
+
+    def testTwoItemInsert(self):
+        """
+        Two Item insertion 
+        Rotation = False
+        """
+        I = item.Item(1, 1)
+        I2 = item.Item(2, 2)
+        F0 = maximal_rectangles.FreeRectangle(7, 1, 1, 0)
+        F1 = maximal_rectangles.FreeRectangle(8, 1, 0, 3)
+        F2 = maximal_rectangles.FreeRectangle(6, 4, 2, 0)
+        self.M.best_shortside(I)
+        self.M.best_shortside(I2)
+        with self.subTest():
+            self.assertCountEqual(self.M.freerects, [F0, F1, F2])
+        with self.subTest():
+            self.assertEqual(I.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(I2.CornerPoint, (0,1))
+
+
+class BestLongside(BaseTestCase):
+    def setUp(self):
+        self.M = maximal_rectangles.MaximalRectangle(8, 4)
+
+
+    def tearDown(self):
+        del self.M
+
+
+    def testBadInsert(self):
+        """
+        Item too Big
+        Rotation = False
+        """
+        I = item.Item(9, 4)
+        F0 = maximal_rectangles.FreeRectangle(8, 4, 0, 0)
+        self.M.best_shortside(I)
+        self.assertCountEqual(self.M.freerects, [F0])
+
+    def testTwoItemInsert(self):
+        """
+        Two Item insertion 
+        Rotation = False
+        """
+        I = item.Item(1, 1)
+        I2 = item.Item(2, 2)
+        F0 = maximal_rectangles.FreeRectangle(5, 4, 3, 0)
+        F1 = maximal_rectangles.FreeRectangle(1, 3, 0, 1)
+        F2 = maximal_rectangles.FreeRectangle(8, 2, 0, 2)
+        self.M.best_longside(I)
+        self.M.best_longside(I2)
+        with self.subTest():
+            self.assertCountEqual(self.M.freerects, [F0, F1, F2])
+        with self.subTest():
+            self.assertEqual(I.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(I2.CornerPoint, (1,0))
+
+
+class BestBottomLeft(BaseTestCase):
+    def setUp(self):
+        self.M = maximal_rectangles.MaximalRectangle(8, 4)
+
+
+    def tearDown(self):
+        del self.M
+
+
+    def testBadInsert(self):
+        """
+        Item too Big
+        Rotation = False
+        """
+        I = item.Item(9, 4)
+        F0 = maximal_rectangles.FreeRectangle(8, 4, 0, 0)
+        self.M.best_shortside(I)
+        self.assertCountEqual(self.M.freerects, [F0])
+
+    def testThreeItemInsert(self):
+        """
+        Three Item insertion 
+        Rotation = False
+        """
+        I = item.Item(4, 1)
+        I2 = item.Item(4, 2)
+        I3 = item.Item(1, 1)
+        F0 = maximal_rectangles.FreeRectangle(8, 2, 0, 2)
+        F1 = maximal_rectangles.FreeRectangle(3, 3, 1, 1)
+        self.M.best_bottomleft(I)
+        self.M.best_bottomleft(I2)
+        self.M.best_bottomleft(I3)
+        with self.subTest():
+            self.assertCountEqual(self.M.freerects, [F0, F1])
+        with self.subTest():
+            self.assertEqual(I.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(I2.CornerPoint, (4,0))
+        with self.subTest():
+            self.assertEqual(I3.CornerPoint, (0,1))
+
+
+class ContactPoint(BaseTestCase):
+    def setUp(self):
+        self.M = maximal_rectangles.MaximalRectangle(8, 4)
+
+
+    def tearDown(self):
+        del self.M
+
+
+    def testBadInsert(self):
+        """
+        Item too Big
+        Rotation = False
+        """
+        I = item.Item(9, 4)
+        F0 = maximal_rectangles.FreeRectangle(8, 4, 0, 0)
+        self.M.best_shortside(I)
+        self.assertCountEqual(self.M.freerects, [F0])
+
+    def testThreeItemInsert(self):
+        """
+        Three Item insertion 
+        Rotation = False
+        """
+        I = item.Item(1, 1)
+        I2 = item.Item(4, 2)
+        I3 = item.Item(1, 1)
+        F0 = maximal_rectangles.FreeRectangle(8, 2, 0, 2)
+        F1 = maximal_rectangles.FreeRectangle(3, 4, 5, 0)
+        self.M.contact_point(I)
+        self.M.contact_point(I2)
+        self.M.contact_point(I3)
+        with self.subTest():
+            self.assertCountEqual(self.M.freerects, [F0, F1])
+        with self.subTest():
+            self.assertEqual(I.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(I2.CornerPoint, (1,0))
+        with self.subTest():
+            self.assertEqual(I3.CornerPoint, (0,1))
+
+
 def load_tests(loader, tests, pattern):
     suite = unittest.TestSuite()
     if pattern is None:
         suite.addTests(loader.loadTestsFromTestCase(StaticMethods))
         suite.addTests(loader.loadTestsFromTestCase(FirstFit))
         suite.addTests(loader.loadTestsFromTestCase(BestArea))
+        suite.addTests(loader.loadTestsFromTestCase(BestShortside))
+        suite.addTests(loader.loadTestsFromTestCase(BestLongside))
+        suite.addTests(loader.loadTestsFromTestCase(BestBottomLeft))
+        suite.addTests(loader.loadTestsFromTestCase(ContactPoint))
     else:
         tests = loader.loadTestsFromName(pattern,
                                          module=sys.modules[__name__])
