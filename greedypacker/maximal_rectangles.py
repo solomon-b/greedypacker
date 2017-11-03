@@ -48,7 +48,9 @@ class MaximalRectangle:
     def item_fits_rect(item: Item,
                        rect: FreeRectangle,
                        rotation: bool=False) -> bool:
-        if (item.width <= rect.width and item.height <= rect.height):
+        if (not rotation and
+            item.width <= rect.width and 
+            item.height <= rect.height):
             return True
         if (rotation and 
             item.height <= rect.width and 
@@ -111,15 +113,15 @@ class MaximalRectangle:
         
 
     @staticmethod
-    def findOverlap(F1: FreeRectangle, B: tuple ) -> tuple:
+    def findOverlap(F1: FreeRectangle, F2: tuple ) -> tuple:
         """
         returns the bottom left and top right 
         coordinates of the overlap
         """
         X1, Y1 = F1.x, F1.y
         X2, Y2 = F1.x+F1.width, F1.y+F1.height
-        X3, Y3 = B[0], B[1]
-        X4, Y4 = B[2], B[3]
+        X3, Y3 = F2[0], F2[1]
+        X4, Y4 = F2[2], F2[3]
 
         X5 = max(X1, X3)
         Y5 = max(Y1, Y3)
@@ -218,25 +220,6 @@ class MaximalRectangle:
         self.remove_redundent()
 
 
-    def first_fit(self, item: Item) -> bool:
-        """
-        Select first indexed FreeRectangle (that fits item)
-        """
-        
-        for el in self.freerects:
-            if self.item_fits_rect(item, el):
-                item.CornerPoint = el.x, el.y
-                self.items.append(item)
-                maximals = self.split_rectangle(el, item)
-                self.freerects.remove(el)
-                self.freerects += maximals
-                itemBounds = self.item_bounds(item)
-
-                self.prune_overlaps(itemBounds)
-                return True
-        return False
-
-
     def best_area(self, item: Item) -> bool:
         """
         Insert item into rectangle with smallest
@@ -244,6 +227,7 @@ class MaximalRectangle:
         """
         best_rect = None
         best_area = float('inf')
+        rotated = False
         for rect in self.freerects:
             if not self.item_fits_rect(item, rect):
                 continue
@@ -251,7 +235,21 @@ class MaximalRectangle:
             if area < best_area:
                 best_rect = rect
                 best_area = area
+                rotated = False
+
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                area = rect.width*rect.height 
+                if area < best_area:
+                    best_rect = rect
+                    best_area = area
+                    rotated = True
+
         if best_rect:
+            if rotated:
+                item.rotate()
             item.CornerPoint = best_rect.x, best_rect.y
             self.items.append(item)
             maximals = self.split_rectangle(best_rect, item)
@@ -273,6 +271,7 @@ class MaximalRectangle:
         """
         best_rect = None
         best_shortside = float('inf')
+        rotated = False
         for rect in self.freerects:
             if not self.item_fits_rect(item, rect):
                 continue
@@ -281,7 +280,22 @@ class MaximalRectangle:
             if shortside < best_shortside:
                 best_rect = rect
                 best_shortside = shortside
+                rotated = False
+
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                shortside = min(rect.width-item.width,
+                                rect.height-item.height)
+                if shortside < best_shortside:
+                    best_rect = rect
+                    best_shortside = shortside
+                    rotated = True
+
         if best_rect:
+            if rotated:
+                item.rotate()
             item.CornerPoint = best_rect.x, best_rect.y
             self.items.append(item)
             maximals = self.split_rectangle(best_rect, item)
@@ -303,6 +317,7 @@ class MaximalRectangle:
         """
         best_rect = None
         best_longside = float('inf')
+        rotated = False
         for rect in self.freerects:
             if not self.item_fits_rect(item, rect):
                 continue
@@ -311,7 +326,21 @@ class MaximalRectangle:
             if longside < best_longside:
                 best_rect = rect
                 best_longside = longside
+
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                longside = max(rect.width-item.width,
+                           rect.height-item.height)
+                if longside < best_longside:
+                    best_rect = rect
+                    best_longside = longside
+                    rotated = True
+
         if best_rect:
+            if rotated:
+                item.rotate()
             item.CornerPoint = best_rect.x, best_rect.y
             self.items.append(item)
             maximals = self.split_rectangle(best_rect, item)
@@ -334,6 +363,7 @@ class MaximalRectangle:
         """
         best_rect = None
         best_topy = float('inf')
+        rotated = False
         for rect in self.freerects:
             if not self.item_fits_rect(item, rect):
                 continue
@@ -343,7 +373,20 @@ class MaximalRectangle:
                 best_rect = rect
                 best_topy = topy
 
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                topy = item.height + rect.y  
+                if ((topy == best_topy and rect.x < best_rect.x) or
+                     topy < best_topy):
+                    best_rect = rect
+                    best_topy = topy
+                    rotated = True
+
         if best_rect:
+            if rotated:
+                item.rotate()
             item.CornerPoint = best_rect.x, best_rect.y
             self.items.append(item)
             maximals = self.split_rectangle(best_rect, item)
@@ -377,6 +420,7 @@ class MaximalRectangle:
         """
         best_rect = None
         best_perim = -1
+        rotated = False
         for rect in self.freerects:
             if not self.item_fits_rect(item, rect):
                 continue
@@ -398,7 +442,30 @@ class MaximalRectangle:
                 best_rect = rect
                 best_perim = perim
 
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                perim = 0
+                if rect.x == 0 or rect.x + item.width == self.x:
+                    perim += item.height
+                if rect.y == 0 or rect.y + item.height == self.y:
+                    perim += item.width
+                for itm in self.items:
+                    if (itm.x == rect.x+rect.width or
+                        itm.x+itm.width == rect.x):
+                        perim += self.common_interval_length(itm.y, itm.y+itm.height, rect.y, rect.y+item.height)
+                    if (itm.y == rect.y+rect.height or
+                        item.y+itm.height == rect.y):
+                        perim += self.common_interval_length(itm.x, itm.x+itm.width, rect.x, rect.x+item.width)
+                if perim > best_perim:
+                    best_rect = rect
+                    best_perim = perim
+                    rotated = True
+
         if best_rect:
+            if rotated:
+                item.rotate()
             item.CornerPoint = best_rect.x, best_rect.y
             self.items.append(item)
             maximals = self.split_rectangle(best_rect, item)

@@ -151,40 +151,6 @@ class StaticMethods(BaseTestCase):
         self.assertCountEqual(self.M.freerects, [F2, F3])
 
 
-class FirstFit(BaseTestCase):
-    def setUp(self):
-        self.M = maximal_rectangles.MaximalRectangle(4, 4)
-
-
-    def tearDown(self):
-        del self.M
-
-
-    def testSingleItemInsert(self):
-        """
-        Single Item insertion checks for maximal
-        rectangles result
-        """
-        I = item.Item(2, 2)
-        F0 = maximal_rectangles.FreeRectangle(2, 4, 2, 0)
-        F1 = maximal_rectangles.FreeRectangle(4, 2, 0, 2)
-        self.M.first_fit(I)
-        self.assertCountEqual(self.M.freerects, [F0, F1])
-
-
-    def testTwoItemInsert(self):
-        """
-        Two Item insertion checks for maximal
-        rectangles result
-        """
-        I = item.Item(2, 2)
-        I2 = item.Item(4, 2)
-        self.M.first_fit(I)
-        self.M.first_fit(I2)
-        F0 = maximal_rectangles.FreeRectangle(2, 2, 2, 0)
-        self.assertEqual(self.M.freerects, [F0])
-
-
 class BestArea(BaseTestCase):
     def setUp(self):
         self.M = maximal_rectangles.MaximalRectangle(8, 4)
@@ -385,16 +351,90 @@ class ContactPoint(BaseTestCase):
             self.assertEqual(I3.CornerPoint, (0,1))
 
 
+class RotationTests(BaseTestCase):
+    def setUp(self):
+        self.M = maximal_rectangles.MaximalRectangle(8, 4, rotation=True)
+
+
+    def tearDown(self):
+        del self.M
+
+
+    def testBestAreaRotated(self):
+        """
+        Item too Big
+        Rotation = False
+        """
+        I = item.Item(4, 8)
+        self.M.best_area(I)
+        with self.subTest():
+            self.assertEqual(self.M.freerects, [])
+        with self.subTest():
+            self.assertEqual(I.rotated, True)
+        
+
+    def testBestShortsideRotated(self):
+        """
+        Item too Big
+        Rotation = False
+        """
+        I = item.Item(4, 8)
+        self.M.best_shortside(I)
+        with self.subTest():
+            self.assertEqual(self.M.freerects, [])
+        with self.subTest():
+            self.assertEqual(I.rotated, True)
+
+
+    def testBestLongsideRotated(self):
+        """
+        Item too Big
+        Rotation = False
+        """
+        I = item.Item(4, 8)
+        self.M.best_longside(I)
+        with self.subTest():
+            self.assertEqual(self.M.freerects, [])
+        with self.subTest():
+            self.assertEqual(I.rotated, True)
+
+
+    def testBestBottomLeftRotated(self):
+        """
+        Item too Big
+        Rotation = False
+        """
+        I = item.Item(4, 8)
+        self.M.best_bottomleft(I)
+        with self.subTest():
+            self.assertEqual(self.M.freerects, [])
+        with self.subTest():
+            self.assertEqual(I.rotated, True)
+
+
+    def testBestContactPointRotated(self):
+        """
+        Item too Big
+        Rotation = False
+        """
+        I = item.Item(4, 8)
+        self.M.contact_point(I)
+        with self.subTest():
+            self.assertEqual(self.M.freerects, [])
+        with self.subTest():
+            self.assertEqual(I.rotated, True)
+
+
 def load_tests(loader, tests, pattern):
     suite = unittest.TestSuite()
     if pattern is None:
         suite.addTests(loader.loadTestsFromTestCase(StaticMethods))
-        suite.addTests(loader.loadTestsFromTestCase(FirstFit))
         suite.addTests(loader.loadTestsFromTestCase(BestArea))
         suite.addTests(loader.loadTestsFromTestCase(BestShortside))
         suite.addTests(loader.loadTestsFromTestCase(BestLongside))
         suite.addTests(loader.loadTestsFromTestCase(BestBottomLeft))
         suite.addTests(loader.loadTestsFromTestCase(ContactPoint))
+        suite.addTests(loader.loadTestsFromTestCase(RotationTests))
     else:
         tests = loader.loadTestsFromName(pattern,
                                          module=sys.modules[__name__])
