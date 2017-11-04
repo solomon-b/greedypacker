@@ -261,12 +261,12 @@ class Sheet:
 
             # 2) If enabled, try to insert into the wastemap 
             if self.use_waste_map:
-                res = self.wastemap.insert(item, heuristic='best_width_fit')
+                res = self.wastemap.insert(item, heuristic='best_area')
                 if res:
                     self.items.append(item)
                     return True
 
-            # Ugly python switch 'statement'
+            # Ugly python switch statement
             heuristics = {'next_fit': self.next_fit,
                           'first_fit': self.first_fit,
                           'best_width_fit': self.best_width_fit,
@@ -289,7 +289,7 @@ class Sheet:
                 self.add_to_wastemap(self.shelves[-1])
 
                 # 5) Attempt to insert into the wastemap
-                res = self.wastemap.insert(item, heuristic='best_width_fit')
+                res = self.wastemap.insert(item, heuristic='best_area')
                 if res:
                     self.items.append(item)
                     return True

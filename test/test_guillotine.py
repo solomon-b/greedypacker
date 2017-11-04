@@ -437,8 +437,8 @@ class RectMerge(BaseTestCase):
         """
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(4, 3)
-        self.BIN.insert(ITEM, 'best_height_fit')
-        self.BIN.insert(ITEM2, 'best_height_fit')
+        self.BIN.insert(ITEM, 'best_area')
+        self.BIN.insert(ITEM2, 'best_area')
         self.assertEqual(self.BIN.freerects, [self.freeRectangle(6, 5, 4, 0)])
 
 
@@ -454,8 +454,8 @@ class BinStats(BaseTestCase):
     def testReturn(self):
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'best_width_fit')
-        self.BIN.insert(ITEM2, 'best_width_fit')
+        self.BIN.insert(ITEM, 'best_area')
+        self.BIN.insert(ITEM2, 'best_area')
         correct = {
             'width': 10,
             'height': 5,

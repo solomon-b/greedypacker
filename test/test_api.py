@@ -32,14 +32,17 @@ class BestBinFit(BaseTestCase):
     def testGuillotineBWFSortingRotation(self):
         """
         Best Bin Fit
-        Guillotine Bins (best_width_fit)
+        Guillotine Bins (best_area)
         Split Horizontal
         Item Sorting == True
         Item Rotation == True
         """
-        M = greedypacker.BinManager(10, 5, pack_algo='guillotine',
-                               sorting=True, rotation=True)
-        ITEM = greedypacker.Item(3, 4)
+        M = greedypacker.BinManager(10, 5,
+                                    pack_algo='guillotine',
+                                    heuristic='best_area',
+                                    sorting=True,
+                                    rotation=True)
+        ITEM = greedypacker.Item(4, 3)
         ITEM2 = greedypacker.Item(5, 3)
         ITEM3 = greedypacker.Item(2, 2)
         M.add_items(ITEM, ITEM2, ITEM3)
@@ -48,22 +51,25 @@ class BestBinFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (3,0))
+            self.assertEqual(ITEM.CornerPoint, (5,0))
         with self.subTest():
             self.assertEqual(ITEM2.CornerPoint, (0,0))
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (7,0))
+            self.assertEqual(ITEM3.CornerPoint, (0,3))
 
     def testGuillotineBWFRotation(self):
         """
         Best Bin Fit
-        Guillotine Bins (best_width_fit)
+        Guillotine Bins (best_area)
         Split Horizontal
         Item Sorting == False
         Item Rotation == True
         """
-        M = greedypacker.BinManager(10, 5, pack_algo='guillotine',
-                               sorting=False, rotation=True)
+        M = greedypacker.BinManager(10, 5,
+                                    pack_algo='guillotine',
+                                    heuristic='best_area',
+                                    sorting=False,
+                                    rotation=True)
         ITEM = greedypacker.Item(3, 4)
         ITEM2 = greedypacker.Item(5, 3)
         ITEM3 = greedypacker.Item(2, 2)
@@ -75,9 +81,9 @@ class BestBinFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0,0))
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (4,0))
+            self.assertEqual(ITEM2.CornerPoint, (3,0))
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (0,3))
+            self.assertEqual(ITEM3.CornerPoint, (8,0))
 
 
     def testShelfBWFSortingRotation(self):
@@ -87,8 +93,11 @@ class BestBinFit(BaseTestCase):
         Item Sorting == True
         Item Rotation == True
         """
-        M = greedypacker.BinManager(10, 5, pack_algo='shelf',
-                               sorting=True, rotation=True)
+        M = greedypacker.BinManager(10, 5,
+                                    pack_algo='shelf',
+                                    heuristic='best_width_fit',
+                                    sorting=True,
+                                    rotation=True)
         ITEM = greedypacker.Item(1, 1)
         ITEM2 = greedypacker.Item(4, 3)
         ITEM3 = greedypacker.Item(2, 2)
@@ -112,8 +121,11 @@ class BestBinFit(BaseTestCase):
         Item Sorting == False
         Item Rotation == True
         """
-        M = greedypacker.BinManager(10, 5, pack_algo='shelf',
-                               sorting=False, rotation=True)
+        M = greedypacker.BinManager(10, 5,
+                                    pack_algo='shelf',
+                                    heuristic='best_width_fit',
+                                    sorting=False,
+                                    rotation=True)
         ITEM = greedypacker.Item(1, 1)
         ITEM2 = greedypacker.Item(4, 3)
         ITEM3 = greedypacker.Item(2, 2)
@@ -141,6 +153,7 @@ class BinFirstFit(BaseTestCase):
         """
         M = greedypacker.BinManager(10, 5,
                                pack_algo='guillotine',
+                               heuristic='best_area',
                                bin_algo="bin_first_fit",
                                sorting=True,
                                rotation=True)
@@ -169,6 +182,7 @@ class BinFirstFit(BaseTestCase):
         """
         M = greedypacker.BinManager(10, 5,
                                pack_algo='guillotine',
+                               heuristic='best_area',
                                bin_algo="bin_first_fit",
                                sorting=False,
                                rotation=True)
@@ -185,7 +199,7 @@ class BinFirstFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(ITEM2.CornerPoint, (0,0))
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (3,0))
+            self.assertEqual(ITEM3.CornerPoint, (6,0))
 
 
     def testShelfBWFSortingRotation(self):
@@ -197,6 +211,7 @@ class BinFirstFit(BaseTestCase):
         """
         M = greedypacker.BinManager(10, 5,
                                pack_algo='shelf',
+                               heuristic='best_width_fit',
                                bin_algo="bin_first_fit",
                                sorting=True,
                                rotation=True)

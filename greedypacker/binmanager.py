@@ -26,12 +26,12 @@ class BinManager:
                  bin_height: int = 4,
                  bin_algo: str = 'bin_best_fit',
                  pack_algo: str = 'guillotine',
-                 heuristic: str ='best_width_fit',
+                 heuristic: str ='default',
                  split_heuristic: str = 'default',
                  sorting: bool = True,
                  rotation: bool = True,
-                 rectangle_merge: bool = False,
-                 wastemap: bool = False) -> None:
+                 rectangle_merge: bool = True,
+                 wastemap: bool = True) -> None:
         self.bin_width = bin_width
         self.bin_height = bin_height
         self.items = [] # type: List[item.Item]
@@ -71,6 +71,8 @@ class BinManager:
                                          self.rectangle_merge, self.split_heuristic)
         elif self.algorithm == 'shelf':
             return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+        elif self.algorithm == 'maximal_rectangle':
+            return shelf.maximal_rectangles.MaximalRectangle(self.bin_width, self.bin_height, self.rotation)
         raise ValueError('Error: No such Algorithm')
 
 
@@ -78,6 +80,7 @@ class BinManager:
         """
         Insert into the first bin that fits the item
         """
+        result = False
         for binn in self.bins:
             result = binn.insert(item, self.heuristic)
             if result:
@@ -91,8 +94,16 @@ class BinManager:
         """
         Insert into the bin that best fits the item
         """
-        if item.width > self.bin_width or item.height > self.bin_height:
-            return "Error! item too big for bins"
+
+        # Ensure item can theoretically fit the bin
+        item_fits = False
+        if item.width <= self.bin_width or item.height >= self.bin_height:
+            item_fits = True
+        if self.rotation and (item.height <= self.bin_width or item.width >= self.bin_height):
+            item_fits = True
+        if not item_fits:
+            return "Error! item too big for bin"
+
 
         best_rect = None # type: Union[guillotine.FreeRectangle, shelf.Shelf]
         best_bin_index = None # type: int
@@ -103,8 +114,8 @@ class BinManager:
                                 if rect.width >= item.width
                                 and rect.height >= item.height]
                 if fitted_rects:
-                    compare = lambda a, b: a if a.area > b.area else b
-                    best_in_bin = reduce(compare, fitted_rects)
+                    compare = lambda x: x.area
+                    best_in_bin = min(fitted_rects, key=compare)
                     if not best_rect:
                         best_rect = best_in_bin
                         best_bin_index = i
@@ -113,7 +124,7 @@ class BinManager:
                         best_bin_index = i
 
             if best_rect:
-                self.bins[i].insert(item, self.heuristic, split_heuristic=self.split_heuristic)
+                self.bins[i].insert(item, self.heuristic)
                 return "Success"
 
 
@@ -148,10 +159,7 @@ class BinManager:
                 best_bin_index = min(bin_scores)[1]
                 self.bins[best_bin_index].insert(item, self.heuristic)
                 return "success"
-        self.bins.append(self._bin_factory(self.bin_width,
-                                           self.bin_height,
-                                           self.algorithm,
-                                           self.heuristic))
+        self.bins.append(self._bin_factory())
         self.bins[-1].insert(item, self.heuristic)
         return "Success"
 
