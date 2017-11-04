@@ -1,114 +1,24 @@
 import sys
 import unittest
 
-
 from greedypacker import guillotine
 from greedypacker import item
 from .base import BaseTestCase
 from .util import stdout_redirect
 
 
-class FirstFit(BaseTestCase):
-    def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
-        self.freeRectangle = guillotine.FreeRectangle
-
-
-    def tearDown(self):
-        del self.BIN
-        del self.freeRectangle
-
-
-    def testItemTooBig(self):
-        """
-        Single Item Fits no FreeRectangles
-        Split Horizontal
-        Rotation == False
-        RectMerge == False
-        """
-        ITEM = item.Item(5, 11)
-        self.assertFalse(self.BIN.insert(ITEM, 'first_fit'))
-
-
-    def testSingleItemInsertion(self):
-        """
-        Single item
-        Split Horizontal
-        Rotation == False
-        RectMerge == False
-        """
-        ITEM = item.Item(4, 3)
-        self.BIN.insert(ITEM, 'first_fit')
-        with self.subTest():
-            correct = [self.freeRectangle(6, 3, 4, 0),
-                       self.freeRectangle(10, 2, 0, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
-        with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
-        with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM])
-
-
-    def testTwoItemInsertion(self):
-        """
-        Two item
-        Split Horizontal
-        Rotation == False
-        RectMerge == False
-        """
-        ITEM = item.Item(4, 2)
-        ITEM2 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'first_fit')
-        self.BIN.insert(ITEM2, 'first_fit')
-        with self.subTest():
-            correct = [self.freeRectangle(10, 3, 0, 2),
-                        self.freeRectangle(4, 2, 6, 0)]
-            self.assertEqual(self.BIN.freerects, correct)
-        with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (4, 0))
-        with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2])
-
-
-    def testThreeItemInsertion(self):
-        """
-        Three items
-        Split Horizontal
-        Rotation == False
-        RectMerge == False
-        """
-        ITEM = item.Item(4, 2)
-        ITEM2 = item.Item(2, 2)
-        ITEM3 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'first_fit')
-        self.BIN.insert(ITEM2, 'first_fit')
-        self.BIN.insert(ITEM3, 'first_fit')
-        with self.subTest():
-            correct = [self.freeRectangle(4, 2, 6, 0),
-                       self.freeRectangle(8, 2, 2, 2),
-                       self.freeRectangle(10, 1, 0, 4)]
-            self.assertEqual(self.BIN.freerects, correct)
-        with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (4, 0))
-            self.assertEqual(ITEM3.CornerPoint, (0, 2))
-        with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2, ITEM3])
-
-
-class BestWidthFit(BaseTestCase):
+class BestShortSide(BaseTestCase):
     def setUp(self):
         self.BIN = guillotine.Guillotine(8, 4, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
-
+        
 
     def tearDown(self):
         del self.BIN
         del self.freeRectangle
 
-
-    def testItemTooBig(self):
+    
+    def testItemInsertionFailure(self):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
@@ -116,76 +26,56 @@ class BestWidthFit(BaseTestCase):
         RectMerge == False
         """
         ITEM = item.Item(5, 9)
-        self.assertFalse(self.BIN.insert(ITEM, 'best_width_fit'))
+        self.assertFalse(self.BIN.best_shortside(ITEM))
+        
 
-
-    def testSingleItemInsertion(self):
+    def testItemInsertionSuccess(self):
         """
         Single item
         Split Horizontal
         Rotation == False
         RectMerge == False
         """
-        ITEM = item.Item(4, 3)
-        self.BIN.insert(ITEM, 'best_width_fit')
+        F0 = self.freeRectangle(1, 2, 0, 0)
+        F1 = self.freeRectangle(2, 2, 1, 0)
+        ITEM = item.Item(1, 1)
+
+        self.BIN.freerects = [F0, F1]
+        self.BIN.best_shortside(ITEM)
+
         with self.subTest():
-            correct = [self.freeRectangle(4, 3, 4, 0),
-                       self.freeRectangle(8, 1, 0, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
+            correct = [self.freeRectangle(1, 1, 0, 1),
+                       self.freeRectangle(2, 2, 1, 0)]
+            self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
 
 
-    def testTwoItemInsertion(self):
+    def testItemInsertionSuccessRotation(self):
         """
-        Two item
+        Single item
         Split Horizontal
-        Rotation == False
+        Rotation == True
         RectMerge == False
         """
-        ITEM = item.Item(4, 2)
-        ITEM2 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'best_width_fit')
-        self.BIN.insert(ITEM2, 'best_width_fit')
+        F0 = self.freeRectangle(2, 1, 0, 0)
+        ITEM = item.Item(1, 2)
+        
+        self.BIN.rotation = True
+        self.BIN.freerects = [F0]
+        self.BIN.best_shortside(ITEM)
+
         with self.subTest():
-            correct = [self.freeRectangle(8, 2, 0, 2),
-                        self.freeRectangle(2, 2, 6, 0)]
-            self.assertEqual(self.BIN.freerects, correct)
+            self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (4, 0))
         with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2])
+            self.assertEqual(self.BIN.items, [ITEM])
 
 
-
-    def testThreeItemInsertion(self):
-        """
-        Three item
-        Split Horizontal
-        Rotation == False
-        RectMerge == False
-        """
-        ITEM = item.Item(4, 2)
-        ITEM2 = item.Item(2, 2)
-        ITEM3 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'best_width_fit')
-        self.BIN.insert(ITEM2, 'best_width_fit')
-        self.BIN.insert(ITEM3, 'best_width_fit')
-        with self.subTest():
-            correct = [self.freeRectangle(8, 2, 0, 2)]
-            self.assertEqual(self.BIN.freerects, correct)
-        with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (4, 0))
-            self.assertEqual(ITEM3.CornerPoint, (6, 0))
-        with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2, ITEM3])
-
-
-class BestHeightFit(BaseTestCase):
+class BestLongSide(BaseTestCase):
     def setUp(self):
         self.BIN = guillotine.Guillotine(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
@@ -196,7 +86,7 @@ class BestHeightFit(BaseTestCase):
         del self.freeRectangle
 
 
-    def testItemTooBig(self):
+    def testItemInsertionFailure(self):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
@@ -204,73 +94,53 @@ class BestHeightFit(BaseTestCase):
         RectMerge == False
         """
         ITEM = item.Item(5, 11)
-        self.assertFalse(self.BIN.insert(ITEM, 'best_height_fit'))
+        self.assertFalse(self.BIN.best_longside(ITEM))
 
 
-    def testSingleItemInsertion(self):
+    def testItemInsertionSuccess(self):
         """
         Single item
         Split Horizontal
         Rotation == False
         RectMerge == False
         """
-        ITEM = item.Item(4, 3)
-        self.BIN.insert(ITEM, 'best_height_fit')
+        F0 = self.freeRectangle(1, 3, 0, 0)
+        F1 = self.freeRectangle(2, 1, 1, 0)
+        ITEM = item.Item(1, 1)
+
+        self.BIN.freerects = [F0, F1]
+
+        self.BIN.best_longside(ITEM)
         with self.subTest():
-            correct = [self.freeRectangle(6, 3, 4, 0),
-                       self.freeRectangle(10, 2, 0, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
+            correct = [self.freeRectangle(1, 3, 0, 0),
+                       self.freeRectangle(1, 1, 2, 0)]
+            self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.CornerPoint, (1, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
 
 
-    def testTwoItemInsertion(self):
+    def testItemInsertionSuccessRotation(self):
         """
-        Two item
+        Single item
         Split Horizontal
-        Rotation == False
+        Rotation == True
         RectMerge == False
         """
-        ITEM = item.Item(4, 3)
-        ITEM2 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'best_height_fit')
-        self.BIN.insert(ITEM2, 'best_height_fit')
+        F0 = self.freeRectangle(2, 1, 0, 0)
+        ITEM = item.Item(1, 2)
+        
+        self.BIN.rotation = True
+        self.BIN.freerects = [F0]
+        self.BIN.best_longside(ITEM)
+
         with self.subTest():
-            correct = [self.freeRectangle(6, 3, 4, 0),
-                        self.freeRectangle(8, 2, 2, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
+            self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (0, 3))
         with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2])
-
-
-    def testThreeItemInsertion(self):
-        """
-        Three item
-        Split Horizontal
-        Rotation == False
-        RectMerge == False
-        """
-        ITEM = item.Item(4, 3)
-        ITEM2 = item.Item(2, 2)
-        ITEM3 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'best_height_fit')
-        self.BIN.insert(ITEM2, 'best_height_fit')
-        self.BIN.insert(ITEM3, 'best_height_fit')
-        with self.subTest():
-            correct = [self.freeRectangle(6, 3, 4, 0),
-                        self.freeRectangle(6, 2, 4, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
-        with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (0, 3))
-            self.assertEqual(ITEM3.CornerPoint, (2, 3))
-        with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2, ITEM3])
+            self.assertEqual(self.BIN.items, [ITEM])
 
 
 class BestAreaFit(BaseTestCase):
@@ -284,7 +154,7 @@ class BestAreaFit(BaseTestCase):
         del self.freeRectangle
 
 
-    def testItemTooBig(self):
+    def testItemInsertionFailure(self):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
@@ -295,250 +165,187 @@ class BestAreaFit(BaseTestCase):
         self.assertFalse(self.BIN.insert(ITEM, 'best_area_fit'))
 
 
-    def testSingleItemInsertion(self):
+    def testItemInsertionSuccess(self):
         """
         Single item
         Split Horizontal
         Rotation == False
         RectMerge == False
         """
-        ITEM = item.Item(4, 3)
-        self.BIN.insert(ITEM, 'best_area_fit')
+        F0 = self.freeRectangle(2, 2, 0, 0)
+        F1 = self.freeRectangle(3, 3, 2, 0)
+        ITEM = item.Item(1, 1)
+        
+        self.BIN.freerects = [F0, F1]
+        self.BIN.best_area(ITEM)
         with self.subTest():
-            correct = [self.freeRectangle(6, 3, 4, 0),
-                       self.freeRectangle(10, 2, 0, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
+            correct = [self.freeRectangle(2, 1, 0, 1),
+                        self.freeRectangle(1, 1, 1, 0),
+                        self.freeRectangle(3, 3, 2, 0)]
+            self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
 
 
-    def testTwoItemInsertion(self):
+    def testItemInsertionSuccessRotation(self):
         """
-        Two item
+        Single item
         Split Horizontal
-        Rotation == False
+        Rotation == True
         RectMerge == False
         """
-        ITEM = item.Item(4, 3)
-        ITEM2 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'best_area_fit')
-        self.BIN.insert(ITEM2, 'best_area_fit')
+        F0 = self.freeRectangle(2, 1, 0, 0)
+        ITEM = item.Item(1, 2)
+        
+        self.BIN.rotation = True
+        self.BIN.freerects = [F0]
+        self.BIN.best_area(ITEM)
+
         with self.subTest():
-            correct = [self.freeRectangle(10, 2, 0, 3),
-                        self.freeRectangle(4, 2, 6, 0),
-                        self.freeRectangle(6, 1, 4, 2)]
-            self.assertEqual(self.BIN.freerects, correct)
+            self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (4, 0))
         with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2])
+            self.assertEqual(self.BIN.items, [ITEM])
 
 
-    def testThreeItemInsertion(self):
-        """
-        Three item
-        Split Horizontal
-        Rotation == False
-        RectMerge == False
-        """
-        ITEM = item.Item(4, 3)
-        ITEM2 = item.Item(2, 2)
-        ITEM3 = item.Item(5, 1)
-        self.BIN.insert(ITEM, 'best_area_fit')
-        self.BIN.insert(ITEM2, 'best_area_fit')
-        self.BIN.insert(ITEM3, 'best_area_fit')
-        with self.subTest():
-            correct = [self.freeRectangle(10, 2, 0, 3),
-                        self.freeRectangle(4, 2, 6, 0),
-                        self.freeRectangle(1, 1, 9, 2)]
-            self.assertEqual(self.BIN.freerects, correct)
-        with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (4, 0))
-            self.assertEqual(ITEM3.CornerPoint, (4, 2))
-        with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2, ITEM3])
-
-
-class WorstWidthFit(BaseTestCase):
+class WorstLongSide(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
+        self.BIN = guillotine.Guillotine(8, 4, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
-
+        
 
     def tearDown(self):
         del self.BIN
         del self.freeRectangle
 
-
-    def testItemTooBig(self):
+    
+    def testItemInsertionFailure(self):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
         Rotation == False
         RectMerge == False
         """
-        ITEM = item.Item(5, 11)
-        self.assertFalse(self.BIN.insert(ITEM, 'worst_width_fit'))
+        ITEM = item.Item(5, 9)
+        self.assertFalse(self.BIN.worst_shortside(ITEM))
+        
 
-
-    def testSingleItemInsertion(self):
+    def testItemInsertionSuccess(self):
         """
         Single item
         Split Horizontal
         Rotation == False
         RectMerge == False
         """
-        ITEM = item.Item(4, 3)
-        self.BIN.insert(ITEM, 'worst_width_fit')
+        F0 = self.freeRectangle(1, 3, 0, 0)
+        F1 = self.freeRectangle(2, 1, 1, 0)
+        ITEM = item.Item(1, 1)
+
+        self.BIN.freerects = [F0, F1]
+        self.BIN.worst_longside(ITEM)
+
         with self.subTest():
-            correct = [self.freeRectangle(6, 3, 4, 0),
-                       self.freeRectangle(10, 2, 0, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
+            correct = [self.freeRectangle(1, 2, 0, 1),
+                       self.freeRectangle(2, 1, 1, 0)]
+            self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
 
 
-    def testTwoItemInsertion(self):
+    def testItemInsertionSuccessRotation(self):
         """
-        Two item
+        Single item
         Split Horizontal
-        Rotation == False
+        Rotation == True
         RectMerge == False
         """
-        ITEM = item.Item(4, 3)
-        ITEM2 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'worst_width_fit')
-        self.BIN.insert(ITEM2, 'worst_width_fit')
+        F0 = self.freeRectangle(2, 1, 0, 0)
+        ITEM = item.Item(1, 2)
+        
+        self.BIN.rotation = True
+        self.BIN.freerects = [F0]
+        self.BIN.worst_longside(ITEM)
+
         with self.subTest():
-            correct = [self.freeRectangle(6, 3, 4, 0),
-                        self.freeRectangle(8, 2, 2, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
+            self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (0, 3))
         with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2])
+            self.assertEqual(self.BIN.items, [ITEM])
 
 
-    def testThreeItemInsertion(self):
-        """
-        Three item
-        Split Horizontal
-        Rotation == False
-        RectMerge == False
-        """
-        ITEM = item.Item(4, 3)
-        ITEM2 = item.Item(2, 2)
-        ITEM3 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'worst_width_fit')
-        self.BIN.insert(ITEM2, 'worst_width_fit')
-        self.BIN.insert(ITEM3, 'worst_width_fit')
-        with self.subTest():
-            correct = [self.freeRectangle(6, 3, 4, 0),
-                        self.freeRectangle(6, 2, 4, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
-        with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (0, 3))
-            self.assertEqual(ITEM3.CornerPoint, (2, 3))
-        with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2, ITEM3])
-
-
-class WorstHeightFit(BaseTestCase):
+class WorstShortSide(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
+        self.BIN = guillotine.Guillotine(8, 4, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
-
+        
 
     def tearDown(self):
         del self.BIN
         del self.freeRectangle
 
-
-    def testItemTooBig(self):
+    
+    def testItemInsertionFailure(self):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
         Rotation == False
         RectMerge == False
         """
-        ITEM = item.Item(5, 11)
-        self.assertFalse(self.BIN.insert(ITEM, 'worst_height_fit'))
+        ITEM = item.Item(5, 9)
+        self.assertFalse(self.BIN.worst_shortside(ITEM))
+        
 
-
-    def testSingleItemInsertion(self):
+    def testItemInsertionSuccess(self):
         """
         Single item
         Split Horizontal
         Rotation == False
         RectMerge == False
         """
-        ITEM = item.Item(4, 3)
-        self.BIN.insert(ITEM, 'worst_height_fit')
+        F0 = self.freeRectangle(1, 2, 0, 0)
+        F1 = self.freeRectangle(2, 2, 1, 0)
+        ITEM = item.Item(1, 1)
+
+        self.BIN.freerects = [F0, F1]
+        self.BIN.worst_shortside(ITEM)
+
         with self.subTest():
-            correct = [self.freeRectangle(6, 3, 4, 0),
-                       self.freeRectangle(10, 2, 0, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
+            correct = [self.freeRectangle(1, 2, 0, 0),
+                       self.freeRectangle(2, 1, 1, 1),
+                       self.freeRectangle(1, 1, 2, 0)]
+            self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.CornerPoint, (1, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
 
 
-    def testTwoItemInsertion(self):
+    def testItemInsertionSuccessRotation(self):
         """
-        Two item
+        Single item
         Split Horizontal
-        Rotation == False
+        Rotation == True
         RectMerge == False
         """
-        ITEM = item.Item(4, 3)
-        ITEM2 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'worst_height_fit')
-        self.BIN.insert(ITEM2, 'worst_height_fit')
+        F0 = self.freeRectangle(2, 1, 0, 0)
+        ITEM = item.Item(1, 2)
+        
+        self.BIN.rotation = True
+        self.BIN.freerects = [F0]
+        self.BIN.worst_shortside(ITEM)
+
         with self.subTest():
-            correct = [self.freeRectangle(10, 2, 0, 3),
-                       self.freeRectangle(4, 2, 6, 0),
-                       self.freeRectangle(6, 1, 4, 2)]
-            self.assertEqual(self.BIN.freerects, correct)
+            self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (4, 0))
         with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2])
-
-
-    def testThreeItemInsertion(self):
-        """
-        Three item
-        Split Horizontal
-        Rotation == False
-        RectMerge == False
-        """
-        ITEM = item.Item(4, 3)
-        ITEM2 = item.Item(2, 2)
-        ITEM3 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'worst_height_fit')
-        self.BIN.insert(ITEM2, 'worst_height_fit')
-        self.BIN.insert(ITEM3, 'worst_height_fit')
-        with self.subTest():
-            correct = [self.freeRectangle(10, 2, 0, 3),
-                       self.freeRectangle(6, 1, 4, 2),
-                       self.freeRectangle(2, 2, 8, 0)]
-            self.assertEqual(self.BIN.freerects, correct)
-        with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (4, 0))
-            self.assertEqual(ITEM3.CornerPoint, (6, 0))
-        with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2, ITEM3])
+            self.assertEqual(self.BIN.items, [ITEM])
 
 
 class WorstAreaFit(BaseTestCase):
@@ -552,7 +359,7 @@ class WorstAreaFit(BaseTestCase):
         del self.freeRectangle
 
 
-    def testItemTooBig(self):
+    def testItemInsertionFailure(self):
         """
         Single Item Fits no FreeRectangles
         Split Horizontal
@@ -563,71 +370,50 @@ class WorstAreaFit(BaseTestCase):
         self.assertFalse(self.BIN.insert(ITEM, 'worst_area_fit'))
 
 
-    def testSingleItemInsertion(self):
+    def testItemInsertionSuccess(self):
         """
         Single item
         Split Horizontal
         Rotation == False
         RectMerge == False
         """
-        ITEM = item.Item(4, 3)
-        self.BIN.insert(ITEM, 'worst_area_fit')
+        F0 = self.freeRectangle(2, 2, 0, 0)
+        F1 = self.freeRectangle(3, 3, 2, 0)
+        ITEM = item.Item(1, 1)
+        
+        self.BIN.freerects = [F0, F1]
+        self.BIN.worst_area(ITEM)
         with self.subTest():
-            correct = [self.freeRectangle(6, 3, 4, 0),
-                       self.freeRectangle(10, 2, 0, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
+            correct = [self.freeRectangle(2, 2, 0, 0),
+                        self.freeRectangle(2, 1, 3, 0),
+                        self.freeRectangle(3, 2, 2, 1)]
+            self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.CornerPoint, (2, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
 
 
-    def testTwoItemInsertion(self):
+    def testItemInsertionSuccessRotation(self):
         """
-        Two item
+        Single item
         Split Horizontal
-        Rotation == False
+        Rotation == True
         RectMerge == False
         """
-        ITEM = item.Item(4, 3)
-        ITEM2 = item.Item(2, 2)
-        self.BIN.insert(ITEM, 'worst_area_fit')
-        self.BIN.insert(ITEM2, 'worst_area_fit')
+        F0 = self.freeRectangle(2, 1, 0, 0)
+        ITEM = item.Item(1, 2)
+        
+        self.BIN.rotation = True
+        self.BIN.freerects = [F0]
+        self.BIN.worst_area(ITEM)
+
         with self.subTest():
-            correct = [self.freeRectangle(6, 3, 4, 0),
-                       self.freeRectangle(8, 2, 2, 3)]
-            self.assertEqual(self.BIN.freerects, correct)
+            self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (0, 3))
         with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2])
-
-
-    def testThreeItemInsertion(self):
-        """
-        Three item
-        Split Horizontal
-        Rotation == False
-        RectMerge == False
-        """
-        ITEM = item.Item(4, 3)
-        ITEM2 = item.Item(2, 2)
-        ITEM3 = item.Item(5, 1)
-        self.BIN.insert(ITEM, 'worst_area_fit')
-        self.BIN.insert(ITEM2, 'worst_area_fit')
-        self.BIN.insert(ITEM3, 'worst_area_fit')
-        with self.subTest():
-            correct = [self.freeRectangle(8, 2, 2, 3),
-                       self.freeRectangle(1, 1, 9, 0),
-                       self.freeRectangle(6, 2, 4, 1)]
-            self.assertEqual(self.BIN.freerects, correct)
-        with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
-            self.assertEqual(ITEM2.CornerPoint, (0, 3))
-            self.assertEqual(ITEM3.CornerPoint, (4, 0))
-        with self.subTest():
-            self.assertEqual(self.BIN.items, [ITEM, ITEM2, ITEM3])
+            self.assertEqual(self.BIN.items, [ITEM])
 
 
 class RectMerge(BaseTestCase):
@@ -684,12 +470,11 @@ class BinStats(BaseTestCase):
 def load_tests(loader, tests, pattern):
     suite = unittest.TestSuite()
     if pattern is None:
-        suite.addTests(loader.loadTestsFromTestCase(FirstFit))
-        suite.addTests(loader.loadTestsFromTestCase(BestWidthFit))
-        suite.addTests(loader.loadTestsFromTestCase(BestHeightFit))
+        suite.addTests(loader.loadTestsFromTestCase(BestShortSide))
+        suite.addTests(loader.loadTestsFromTestCase(BestLongSide))
         suite.addTests(loader.loadTestsFromTestCase(BestAreaFit))
-        suite.addTests(loader.loadTestsFromTestCase(WorstWidthFit))
-        suite.addTests(loader.loadTestsFromTestCase(WorstHeightFit))
+        suite.addTests(loader.loadTestsFromTestCase(WorstShortSide))
+        suite.addTests(loader.loadTestsFromTestCase(WorstLongSide))
         suite.addTests(loader.loadTestsFromTestCase(WorstAreaFit))
         suite.addTests(loader.loadTestsFromTestCase(RectMerge))
         suite.addTests(loader.loadTestsFromTestCase(BinStats))

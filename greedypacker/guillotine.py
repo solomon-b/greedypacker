@@ -10,10 +10,11 @@ import typing
 from typing import List
 from functools import reduce
 from collections import namedtuple
-from . import item
+from .item import Item
 
 
 class FreeRectangle(typing.NamedTuple('FreeRectangle', [('width', int), ('height', int), ('x', int), ('y', int)])):
+
     __slots__ = ()
     @property
     def area(self):
@@ -36,7 +37,7 @@ class Guillotine:
             self.freerects = [] # type: List[FreeRectangle]
         else:
             self.freerects = [FreeRectangle(self.x, self.y, 0, 0)] # type: List[FreeRectangle]
-        self.items = [] # type: List[item.Item]
+        self.items = [] # type: List[Item]
         self.rotation = rotation
 
 
@@ -44,7 +45,7 @@ class Guillotine:
         return "Guillotine(%r)" % (self.items)
 
 
-    def _fitted_rects(self, item: item.Item,
+    def _fitted_rects(self, item: Item,
                       rotation: bool = False) -> List[FreeRectangle]:
         """
         Returns a list of FreeRectangles that the item fits
@@ -58,8 +59,23 @@ class Guillotine:
 
 
     @staticmethod
+    def item_fits_rect(item: Item,
+                       rect: FreeRectangle,
+                       rotation: bool=False) -> bool:
+        if (not rotation and
+            item.width <= rect.width and 
+            item.height <= rect.height):
+            return True
+        if (rotation and 
+            item.height <= rect.width and 
+            item.width <= rect.height):
+            return True
+        return False
+
+
+    @staticmethod
     def _split_along_axis(freeRect: FreeRectangle,
-                          item: item.Item, split: bool) -> List[FreeRectangle]:
+                          item: Item, split: bool) -> List[FreeRectangle]:
         top_x = freeRect.x
         top_y = freeRect.y + item.height
         top_h = freeRect.height - item.height
@@ -90,7 +106,7 @@ class Guillotine:
         return result
 
 
-    def _split_free_rect(self, item: item.Item,
+    def _split_free_rect(self, item: Item,
                          freeRect: FreeRectangle) -> List[FreeRectangle]:
         """
         Determines the split axis based upon the split heuristic then calls
@@ -146,50 +162,262 @@ class Guillotine:
             return B
 
 
-    def first_fit(self, item: item.Item) -> bool:
+    def best_shortside(self, item: Item) -> bool:
         """
-        Select first indexed FreeRectangle (that fits item)
+        Pack Item into a FreeRectangle such that
+        the smaller leftover side is minimized, ie:
+        pick the FreeRectangle where min(Fw - Iw, Fh - Ih)
+        is the smallest.
         """
-        fitted_rects = self._fitted_rects(item)
-        if not fitted_rects and self.rotation:
-            fitted_rects = self._fitted_rects(item, rotation=True)
-            if fitted_rects:
-                item.rotate()
-        for freerect in fitted_rects:
-            item.CornerPoint = (freerect.x, freerect.y)
-            self.items.append(item)
-            self.freerects.remove(freerect)
+        best_rect = None
+        best_shortside = float('inf')
+        rotated = False
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            shortside = min(rect.width-item.width,
+                            rect.height-item.height)
+            if shortside < best_shortside:
+                best_rect = rect
+                best_shortside = shortside
+                rotated = False
 
-            splits = self._split_free_rect(item, freerect)
-            for rect in splits:
-                self.freerects.append(rect)
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                shortside = min(rect.width-item.height,
+                                rect.height-item.width)
+                if shortside < best_shortside:
+                    best_rect = rect
+                    best_shortside = shortside
+                    rotated = True
+
+        if best_rect:
+            if rotated:
+                item.rotate()
+            item.CornerPoint = best_rect.x, best_rect.y
+            self.items.append(item)
+            self.freerects.remove(best_rect)
+            splits = self._split_free_rect(item, best_rect)
+            self.freerects += splits
+            if self.rMerge:
+                self.rectangle_merge()
             return True
         return False
 
 
-    def _generic_algo(self, item, heuristic: str = 'best_width_fit', op = operator.lt, split_heuristic: str='default') -> bool:
+    def best_longside(self, item: Item) -> bool:
         """
-        Select FreeRectangle based on heuristic choices
+        Pack Item into a FreeRectangle such that
+        the larger leftover side is minimized, ie:
+        pick the FreeRectangle where max(Fw - Iw, Fh - Ih)
+        is the smallest.
         """
-        fitted_rects = self._fitted_rects(item)
-        smallest_rect = self._rectangle_reduce(self._fitted_rects(item), op, heuristic)
+        best_rect = None
+        best_longside = float('inf')
+        rotated = False
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            longside = max(rect.width-item.width,
+                           rect.height-item.height)
+            if longside < best_longside:
+                best_rect = rect
+                best_longside = longside
 
         if self.rotation:
-            fitted_rects_rot = self._fitted_rects(item, rotation=True)
-            smallest_rotated = self._rectangle_reduce(fitted_rects_rot, op, heuristic)
-            best = self._compare_two_freerects(smallest_rect, smallest_rotated)
-            if best == smallest_rotated:
-                item.rotate()
-        else:
-            best = smallest_rect
-        if best:
-            item.CornerPoint = (best.x, best.y)
-            self.items.append(item)
-            self.freerects.remove(best)
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                longside = max(rect.width-item.height,
+                           rect.height-item.width)
+                if longside < best_longside:
+                    best_rect = rect
+                    best_longside = longside
+                    rotated = True
 
-            splits = self._split_free_rect(item, best)
-            for rect in splits:
-                self.freerects.append(rect)
+        if best_rect:
+            if rotated:
+                item.rotate()
+            item.CornerPoint = best_rect.x, best_rect.y
+            self.items.append(item)
+            self.freerects.remove(best_rect)
+            splits = self._split_free_rect(item, best_rect)
+            self.freerects += splits
+            if self.rMerge:
+                self.rectangle_merge()
+            return True
+        return False
+
+
+    def best_area(self, item: Item) -> bool:
+        """
+        Insert item into rectangle with smallest
+        area
+        """
+        best_rect = None
+        best_area = float('inf')
+        rotated = False
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            area = rect.width*rect.height 
+            if area < best_area:
+                best_rect = rect
+                best_area = area
+                rotated = False
+
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                area = rect.width*rect.height 
+                if area < best_area:
+                    best_rect = rect
+                    best_area = area
+                    rotated = True
+
+        if best_rect:
+            if rotated:
+                item.rotate()
+            item.CornerPoint = best_rect.x, best_rect.y
+            self.items.append(item)
+            self.freerects.remove(best_rect)
+            splits = self._split_free_rect(item, best_rect)
+            self.freerects += splits
+            if self.rMerge:
+                self.rectangle_merge()
+            return True
+        return False
+
+
+    def worst_shortside(self, item: Item) -> bool:
+        """
+        Pack Item into a FreeRectangle such that
+        the smaller leftover side is minimized, ie:
+        pick the FreeRectangle where min(Fw - Iw, Fh - Ih)
+        is the greatest.
+        """
+        best_rect = None
+        best_shortside = -1
+        rotated = False
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            shortside = min(rect.width-item.width,
+                            rect.height-item.height)
+            if shortside > best_shortside:
+                best_rect = rect
+                best_shortside = shortside
+                rotated = False
+
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                shortside = min(rect.width-item.height,
+                                rect.height-item.width)
+                if shortside > best_shortside:
+                    best_rect = rect
+                    best_shortside = shortside
+                    rotated = True
+
+        if best_rect:
+            if rotated:
+                item.rotate()
+            item.CornerPoint = best_rect.x, best_rect.y
+            self.items.append(item)
+            self.freerects.remove(best_rect)
+            splits = self._split_free_rect(item, best_rect)
+            self.freerects += splits
+            if self.rMerge:
+                self.rectangle_merge()
+            return True
+        return False
+
+
+    def worst_longside(self, item: Item) -> bool:
+        """
+        Pack Item into a FreeRectangle such that
+        the larger leftover side is minimized, ie:
+        pick the FreeRectangle where max(Fw - Iw, Fh - Ih)
+        is the greatest.
+        """
+        best_rect = None
+        best_longside = -1
+        rotated = False
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            longside = max(rect.width-item.width,
+                           rect.height-item.height)
+            if longside > best_longside:
+                best_rect = rect
+                best_longside = longside
+
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                longside = max(rect.width-item.height,
+                               rect.height-item.width)
+                if longside > best_longside:
+                    best_rect = rect
+                    best_longside = longside
+                    rotated = True
+
+        if best_rect:
+            if rotated:
+                item.rotate()
+            item.CornerPoint = best_rect.x, best_rect.y
+            self.items.append(item)
+            self.freerects.remove(best_rect)
+            splits = self._split_free_rect(item, best_rect)
+            self.freerects += splits
+            if self.rMerge:
+                self.rectangle_merge()
+            return True
+        return False
+
+
+    def worst_area(self, item: Item) -> bool:
+        """
+        Insert item into rectangle with largest
+        area
+        """
+        best_rect = None
+        best_area = -1
+        rotated = False
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            area = rect.width*rect.height 
+            if area > best_area:
+                best_rect = rect
+                best_area = area
+                rotated = False
+
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                area = rect.width*rect.height 
+                if area > best_area:
+                    best_rect = rect
+                    best_area = area
+                    rotated = True
+
+        if best_rect:
+            if rotated:
+                item.rotate()
+            item.CornerPoint = best_rect.x, best_rect.y
+            self.items.append(item)
+            self.freerects.remove(best_rect)
+            splits = self._split_free_rect(item, best_rect)
+            self.freerects += splits
+            if self.rMerge:
+                self.rectangle_merge()
             return True
         return False
 
@@ -233,53 +461,24 @@ class Guillotine:
                     self.freerects.append(merged_rect)
 
 
-    def insert(self, item: item.Item, heuristic: str = 'best_area_fit', split_heuristic='default') -> bool:
+    def insert(self, item: Item, heuristic: str = 'best_area') -> bool:
         """
         Public method for selecting heuristic and inserting item
         """
-        if heuristic == 'first_fit':
-            res = self.first_fit(item)
-            if res:
-                if self.rMerge:
-                    self.rectangle_merge()
-                return True
-        elif heuristic == 'best_width_fit':
-            res = self._generic_algo(item, 'width', operator.lt, split_heuristic)
-            if res:
-                if self.rMerge:
-                    self.rectangle_merge()
-                return True
-        elif heuristic == 'best_height_fit':
-            res = self._generic_algo(item, 'height', operator.lt, split_heuristic)
-            if res:
-                if self.rMerge:
-                    self.rectangle_merge()
-                return True
-        elif heuristic == 'best_area_fit':
-            res = self._generic_algo(item, 'area', operator.lt, split_heuristic)
-            if res:
-                if self.rMerge:
-                    self.rectangle_merge()
-                return True
-        elif heuristic == 'worst_width_fit':
-            res = self._generic_algo(item, 'width', operator.gt, split_heuristic)
-            if res:
-                if self.rMerge:
-                    self.rectangle_merge()
-                return True
-        elif heuristic == 'worst_height_fit':
-            res = self._generic_algo(item, 'height', operator.gt, split_heuristic)
-            if res:
-                if self.rMerge:
-                    self.rectangle_merge()
-                return True
-        elif heuristic == 'worst_area_fit':
-            res = self._generic_algo(item, 'area', operator.gt, split_heuristic)
-            if res:
-                if self.rMerge:
-                    self.rectangle_merge()
-                return True
-        return False
+        if heuristic == 'best_shortside':
+            return self.best_shortside(item)
+        elif heuristic == 'best_longside':
+            return self.best_longside(item)
+        elif heuristic == 'best_area':
+            return self.best_area(item)
+        elif heuristic == 'worst_shortside':
+            return self.worst_shortside(item)
+        elif heuristic == 'worst_longside':
+            return self.worst_longside(item)
+        elif heuristic == 'worst_area':
+            return self.worst_area(item)
+        else:
+            return False
 
 
     def bin_stats(self) -> dict:

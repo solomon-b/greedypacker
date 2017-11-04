@@ -23,13 +23,9 @@ class FreeRectangle(typing.NamedTuple('FreeRectangle', [('width', int), ('height
 class MaximalRectangle:
     def __init__(self, x: int = 8,
                  y: int = 4,
-                 rotation: bool = True,
-                 rectangle_merge: bool=False,
-                 split_heuristic: str='default') -> None:
+                 rotation: bool = True) -> None:
         self.x = x
         self.y = y
-        self.rMerge = rectangle_merge
-        self.split_heuristic = split_heuristic
 
 
         if x == 0 or y == 0:
