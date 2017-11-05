@@ -9,14 +9,10 @@ A 2D greedypackering library based on on Jukka Jylänki's article ["A Thousand
 Ways to Pack the Bin - A Practical Approach to Two-Dimensional Rectangle Bin
 Packing."](http://clb.demon.fi/files/RectangleBinPack.pdf)
 
-This library is intended for offline greedypackering and takes a greedy
-heuristic. Next Fit, First Fit, Best Width, Best Height, Best Area, Worst
-Width, Worst Width, and Worst Area heuristics are available for both Shelf and
-Guillotine style cuts.  
+This library is intended for offline greedypackeing. All algorithms
+heuristics and optimizations from Jukka's article will be included.
 
-The project is still in early development. Maximal Rectangle Cut and Skyline
-Cuts will be included along with the full set of opimitizations outlined in
-Jukka's article.  See TODO.md for complete list of in progress features.  
+The project is still in early development. See TODO.md for complete list of in progress features.  
 
 ### Example Usage:
 ```
