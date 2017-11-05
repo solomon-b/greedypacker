@@ -8,14 +8,13 @@ for packed bins.
 
 """
 from typing import List, Union, Callable, Optional, Any
-from sortedcontainers import SortedListWithKey
 from . import item
 from . import shelf
 from . import guillotine
 from . import maximal_rectangles
 
 # Type Aliases:
-Algorithm = Union[shelf.Sheet, guillotine.Guillotine]
+Algorithm = Union[shelf.Sheet, guillotine.Guillotine, maximal_rectangles.MaximalRectangle]
 
 
 class BinManager:
@@ -50,8 +49,8 @@ class BinManager:
         self.rectangle_merge = rectangle_merge
         self.wastemap = wastemap
 
-        defaultBin = self._bin_factory() # type: Algorithm
-        self.bins = [defaultBin] # type: List[Algorithm]
+        defaultBin = self._bin_factory() 
+        self.bins = [defaultBin]
 
 
     def add_items(self, *items: item.Item) -> None:
@@ -61,7 +60,7 @@ class BinManager:
             self.items.sort(key=lambda el: el.width*el.height, reverse=True)
 
 
-    def _bin_factory(self) -> Optional[Algorithm]:
+    def _bin_factory(self) -> Any:
         """
         Returns a bin with the specificed algorithm,
         heuristic, and dimensions

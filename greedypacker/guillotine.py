@@ -11,7 +11,7 @@ import bisect
 from typing import List
 from functools import reduce
 from collections import namedtuple
-from sortedcontainers import SortedListWithKey
+from sortedcontainers import SortedListWithKey # type: ignore
 from .item import Item
 
 

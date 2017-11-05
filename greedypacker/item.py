@@ -26,8 +26,6 @@ class Item:
         self.rotated = False if self.rotated == True else True
 
 
-    def area(self) -> int:
-        return self.x * self.y
     def __lt__(self, other: 'Item') -> bool:
         return True if self.y < other.y else False
 

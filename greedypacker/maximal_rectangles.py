@@ -204,7 +204,7 @@ class MaximalRectangle:
         Loop through all FreeRectangles and prune
         any overlapping the itemBounds
         """
-        result = []
+        result = [] # type: List[FreeRectangle]
         for rect in self.freerects:
             if self.checkInstersection(rect, itemBounds):
                 overlap = self.findOverlap(rect, itemBounds)
@@ -364,8 +364,8 @@ class MaximalRectangle:
             if not self.item_fits_rect(item, rect):
                 continue
             topy = item.height + rect.y  
-            if ((topy == best_topy and rect.x < best_rect.x) or
-                 topy < best_topy):
+            if ((topy == best_topy and rect.x < best_rect.x) or # type: ignore
+                 topy < best_topy): 
                 best_rect = rect
                 best_topy = topy
 

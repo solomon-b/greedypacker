@@ -7,7 +7,7 @@ ssbothwell@gmail.com
 """
 from functools import reduce
 from typing import List
-from sortedcontainers import SortedListWithKey
+from sortedcontainers import SortedListWithKey # type: ignore
 from . import item
 from . import guillotine
 
@@ -181,7 +181,7 @@ class Sheet:
             # Looks redundent but is to get optimal bestfit calc 
             self.rotate_to_shelf(item, shelf)
             if self.item_fits_shelf(item, shelf):
-                if shelf.y - item.height < best_width:
+                if shelf.y - item.height < best_height:
                     best_width = shelf.available_width - item.height
                     best_shelf = shelf
         if best_shelf:
