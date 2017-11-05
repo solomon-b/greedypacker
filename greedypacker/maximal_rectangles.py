@@ -472,3 +472,23 @@ class MaximalRectangle:
             self.prune_overlaps(itemBounds)
             return True
         return False
+
+
+    def insert(self, item: Item, heuristic: str = 'best_area') -> bool:
+        """
+        Public method for selecting heuristic and inserting item
+        """
+        if heuristic == 'best_shortside':
+            return self.best_shortside(item)
+        elif heuristic == 'best_longside':
+            return self.best_longside(item)
+        elif heuristic == 'best_area':
+            return self.best_area(item)
+        elif heuristic == 'bottom_left':
+            return self.best_bottomleft(item)
+        elif heuristic == 'contact_point':
+            return self.contact_point(item)
+        else:
+            return False
+
+

@@ -13,6 +13,7 @@ class Item:
         self.CornerPoint = CornerPoint
         self.x = CornerPoint[0]
         self.y = CornerPoint[1]
+        self.area = self.width * self.height
         self.rotated = False
 
 

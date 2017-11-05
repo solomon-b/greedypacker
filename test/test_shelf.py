@@ -301,8 +301,7 @@ class FirstFit(BaseTestCase):
         self.sheet.insert(ITEM, heuristic='first_fit')
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM]
-            correct.available_width = 2
+            correct.insert(ITEM)
             self.assertEqual(self.sheet.shelves[0].__dict__,
                              correct.__dict__)
 
@@ -320,8 +319,8 @@ class FirstFit(BaseTestCase):
         self.sheet.insert(ITEM2, heuristic='first_fit')
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM, ITEM2]
-            correct.available_width = 2
+            correct.insert(ITEM)
+            correct.insert(ITEM2)
             self.assertEqual(self.sheet.shelves[0].__dict__,
                              correct.__dict__)
         with self.subTest():
@@ -339,14 +338,12 @@ class FirstFit(BaseTestCase):
         self.sheet.insert(ITEM2, heuristic='first_fit')
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM]
-            correct.available_width = 5
+            correct.insert(ITEM)
             self.assertEqual(self.sheet.shelves[0].__dict__,
                              correct.__dict__)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 2)
-            correct.items = [ITEM2]
-            correct.available_width = 2
+            correct.insert(ITEM2)
             self.assertEqual(self.sheet.shelves[1].__dict__,
                              correct.__dict__)
         with self.subTest():
@@ -364,8 +361,7 @@ class FirstFit(BaseTestCase):
         res = self.sheet.insert(ITEM2, heuristic='first_fit')
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM]
-            correct.available_width = 5
+            correct.insert(ITEM)
             self.assertEqual(self.sheet.shelves[0].__dict__,
                              correct.__dict__)
         with self.subTest():
@@ -387,14 +383,13 @@ class FirstFit(BaseTestCase):
         self.sheet.insert(ITEM3, heuristic='first_fit')
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM, ITEM3]
-            correct.available_width = 1
+            correct.insert(ITEM)
+            correct.insert(ITEM3)
             self.assertEqual(self.sheet.shelves[0].__dict__,
                              correct.__dict__)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 2)
-            correct.items = [ITEM2]
-            correct.available_width = 4
+            correct.insert(ITEM2)
             self.assertEqual(self.sheet.shelves[1].__dict__,
                              correct.__dict__)
         with self.subTest():
@@ -424,14 +419,13 @@ class BestWidthFit(BaseTestCase):
         self.sheet.insert(ITEM3, heuristic='best_width_fit')
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM]
-            correct.available_width = 4
+            correct.insert(ITEM)
             self.assertEqual(self.sheet.shelves[0].__dict__,
                              correct.__dict__)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 2)
-            correct.items = [ITEM2, ITEM3]
-            correct.available_width = 1
+            correct.insert(ITEM2)
+            correct.insert(ITEM3)
             self.assertEqual(self.sheet.shelves[1].__dict__,
                              correct.__dict__)
         with self.subTest():
@@ -460,14 +454,13 @@ class BestHeightFit(BaseTestCase):
         self.sheet.insert(ITEM3, heuristic='best_width_fit')
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM]
-            correct.available_width = 4
+            correct.insert(ITEM)
             self.assertEqual(self.sheet.shelves[0].__dict__,
                              correct.__dict__)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 2)
-            correct.items = [ITEM2, ITEM3]
-            correct.available_width = 1
+            correct.insert(ITEM2)
+            correct.insert(ITEM3)
             self.assertEqual(self.sheet.shelves[1].__dict__,
                              correct.__dict__)
         with self.subTest():
@@ -496,13 +489,14 @@ class BestAreaFit(BaseTestCase):
         self.sheet.insert(ITEM3, heuristic='best_width_fit')
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM]
+            correct.insert(ITEM)
             correct.available_width = 4
             self.assertEqual(self.sheet.shelves[0].__dict__,
                              correct.__dict__)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 2)
-            correct.items = [ITEM2, ITEM3]
+            correct.insert(ITEM2)
+            correct.insert(ITEM3)
             correct.available_width = 1
             self.assertEqual(self.sheet.shelves[1].__dict__,
                              correct.__dict__)
@@ -532,14 +526,14 @@ class WorstWidthFit(BaseTestCase):
         self.sheet.insert(ITEM3, heuristic='worst_width_fit')
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM, ITEM3]
+            correct.insert(ITEM)
+            correct.insert(ITEM3)
             correct.available_width = 2
             self.assertEqual(self.sheet.shelves[0].__dict__,
                              correct.__dict__)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 2)
-            correct.items = [ITEM2]
-            correct.available_width = 3
+            correct.insert(ITEM2)
             self.assertEqual(self.sheet.shelves[1].__dict__,
                              correct.__dict__)
         with self.subTest():
@@ -568,14 +562,13 @@ class WorstHeightFit(BaseTestCase):
         self.sheet.insert(ITEM3, heuristic='worst_height_fit')
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
-            correct.items = [ITEM]
-            correct.available_width = 4
+            correct.insert(ITEM)
             self.assertEqual(self.sheet.shelves[0].__dict__,
                              correct.__dict__)
         with self.subTest():
             correct = shelf.Shelf(8, 3, 2)
-            correct.items = [ITEM2, ITEM3]
-            correct.available_width = 1
+            correct.insert(ITEM2)
+            correct.insert(ITEM3)
             self.assertEqual(self.sheet.shelves[1].__dict__,
                              correct.__dict__)
         with self.subTest():
@@ -606,17 +599,15 @@ class WorstAreaFit(BaseTestCase):
             correct = shelf.Shelf(8, 2, 0)
             correct.items = [ITEM, ITEM3]
             correct.available_width = 2
-            self.assertEqual(self.sheet.shelves[0].__dict__,
-                             correct.__dict__)
+            self.assertCountEqual(self.sheet.shelves[0].items, correct.items)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 2)
             correct.items = [ITEM2]
             correct.available_width = 3
-            self.assertEqual(self.sheet.shelves[1].__dict__,
-                             correct.__dict__)
+            self.assertCountEqual(self.sheet.shelves[1].items, correct.items)
         with self.subTest():
             correct = [ITEM, ITEM2, ITEM3]
-            self.assertEqual(self.sheet.items, correct)
+            self.assertCountEqual(self.sheet.items, correct)
 
 
 #class BinStats(BaseTestCase):

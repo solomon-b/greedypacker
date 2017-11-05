@@ -7,6 +7,7 @@ ssbothwell@gmail.com
 """
 from functools import reduce
 from typing import List
+from sortedcontainers import SortedListWithKey
 from . import item
 from . import guillotine
 
@@ -19,6 +20,7 @@ class Shelf:
         self.y = y
         self.x = x
         self.available_width = self.x
+        self.area = self.available_width * self.y
         self.vertical_offset = v_offset
         self.items = [] # type: List[item.Item]
 
@@ -33,6 +35,7 @@ class Shelf:
             item.CornerPoint = (self.x - self.available_width, self.vertical_offset)
             self.items.append(item)
             self.available_width -= item.width
+            self.area = self.available_width * self.y
             return True
         return False
 
@@ -46,7 +49,7 @@ class Sheet:
         self.x = x
         self.y = y
         self.available_height = self.y
-        self.shelves = [] # type: List[Shelf]
+        self.shelves = SortedListWithKey([], key=lambda x: x.area)
         self.items = [] # type: List[item.Item]
         self.rotation = rotation
         self.use_waste_map = wastemap

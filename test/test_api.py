@@ -86,6 +86,35 @@ class BestBinFit(BaseTestCase):
             self.assertEqual(ITEM3.CornerPoint, (8,0))
 
 
+    def testMaximalRectangleBSS(self):
+        """
+        Best Bin Fit
+        Maximal Rectangle Bins (Best Short Side)
+        Split Horizontal
+        Item Sorting == False
+        Item Rotation == False
+        """
+        M = greedypacker.BinManager(8, 4,
+                                    pack_algo='maximal_rectangle',
+                                    heuristic='best_shortside',
+                                    sorting=False,
+                                    rotation=False)
+
+        I = greedypacker.Item(1, 1)
+        I2 = greedypacker.Item(2, 2)
+        F0 = greedypacker.maximal_rectangles.FreeRectangle(7, 1, 1, 0)
+        F1 = greedypacker.maximal_rectangles.FreeRectangle(8, 1, 0, 3)
+        F2 = greedypacker.maximal_rectangles.FreeRectangle(6, 4, 2, 0)
+        M.add_items(I, I2)
+        M.execute()
+        with self.subTest():
+            self.assertCountEqual(M.bins[0].freerects, [F0, F1, F2])
+        with self.subTest():
+            self.assertEqual(I.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(I2.CornerPoint, (0,1))
+
+
     def testShelfBWFSortingRotation(self):
         """
         Best Bin Fit

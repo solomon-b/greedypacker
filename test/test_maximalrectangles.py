@@ -425,6 +425,25 @@ class RotationTests(BaseTestCase):
             self.assertEqual(I.rotated, True)
 
 
+class Insert(BaseTestCase):
+    def setUp(self):
+        self.M = maximal_rectangles.MaximalRectangle(8, 4, rotation=True)
+
+
+    def tearDown(self):
+        del self.M
+    
+
+    def testInsert(self):
+        """
+        Item Insertion
+        Rotation = False
+        """
+        I = item.Item(2, 2)
+        F0 = maximal_rectangles.FreeRectangle(8, 4, 0, 0)
+        self.assertTrue(self.M.insert(I, 'best_shortside'))
+
+
 def load_tests(loader, tests, pattern):
     suite = unittest.TestSuite()
     if pattern is None:
@@ -435,6 +454,7 @@ def load_tests(loader, tests, pattern):
         suite.addTests(loader.loadTestsFromTestCase(BestBottomLeft))
         suite.addTests(loader.loadTestsFromTestCase(ContactPoint))
         suite.addTests(loader.loadTestsFromTestCase(RotationTests))
+        suite.addTests(loader.loadTestsFromTestCase(Insert))
     else:
         tests = loader.loadTestsFromName(pattern,
                                          module=sys.modules[__name__])

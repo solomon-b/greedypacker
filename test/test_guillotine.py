@@ -1,6 +1,7 @@
 import sys
 import unittest
 
+from sortedcontainers import SortedListWithKey
 from greedypacker import guillotine
 from greedypacker import item
 from .base import BaseTestCase
@@ -40,7 +41,7 @@ class BestShortSide(BaseTestCase):
         F1 = self.freeRectangle(2, 2, 1, 0)
         ITEM = item.Item(1, 1)
 
-        self.BIN.freerects = [F0, F1]
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
         self.BIN.best_shortside(ITEM)
 
         with self.subTest():
@@ -108,9 +109,9 @@ class BestLongSide(BaseTestCase):
         F1 = self.freeRectangle(2, 1, 1, 0)
         ITEM = item.Item(1, 1)
 
-        self.BIN.freerects = [F0, F1]
-
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
         self.BIN.best_longside(ITEM)
+
         with self.subTest():
             correct = [self.freeRectangle(1, 3, 0, 0),
                        self.freeRectangle(1, 1, 2, 0)]
@@ -176,7 +177,7 @@ class BestAreaFit(BaseTestCase):
         F1 = self.freeRectangle(3, 3, 2, 0)
         ITEM = item.Item(1, 1)
         
-        self.BIN.freerects = [F0, F1]
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
         self.BIN.best_area(ITEM)
         with self.subTest():
             correct = [self.freeRectangle(2, 1, 0, 1),
@@ -244,7 +245,7 @@ class WorstLongSide(BaseTestCase):
         F1 = self.freeRectangle(2, 1, 1, 0)
         ITEM = item.Item(1, 1)
 
-        self.BIN.freerects = [F0, F1]
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
         self.BIN.worst_longside(ITEM)
 
         with self.subTest():
@@ -312,7 +313,7 @@ class WorstShortSide(BaseTestCase):
         F1 = self.freeRectangle(2, 2, 1, 0)
         ITEM = item.Item(1, 1)
 
-        self.BIN.freerects = [F0, F1]
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
         self.BIN.worst_shortside(ITEM)
 
         with self.subTest():
@@ -381,7 +382,7 @@ class WorstAreaFit(BaseTestCase):
         F1 = self.freeRectangle(3, 3, 2, 0)
         ITEM = item.Item(1, 1)
         
-        self.BIN.freerects = [F0, F1]
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
         self.BIN.worst_area(ITEM)
         with self.subTest():
             correct = [self.freeRectangle(2, 2, 0, 0),

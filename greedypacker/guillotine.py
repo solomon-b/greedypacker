@@ -7,9 +7,11 @@ ssbothwell@gmail.com
 """
 import operator
 import typing
+import bisect
 from typing import List
 from functools import reduce
 from collections import namedtuple
+from sortedcontainers import SortedListWithKey
 from .item import Item
 
 
@@ -34,9 +36,10 @@ class Guillotine:
 
 
         if x == 0 or y == 0:
-            self.freerects = [] # type: List[FreeRectangle]
+            #self.freerects = [] # type: List[FreeRectangle]
+            self.freerects = SortedListWithKey(iterable=None, key=lambda x: x.area, load=1000)
         else:
-            self.freerects = [FreeRectangle(self.x, self.y, 0, 0)] # type: List[FreeRectangle]
+            self.freerects = SortedListWithKey([FreeRectangle(self.x, self.y, 0, 0)], key=lambda x: x.area, load=1000)
         self.items = [] # type: List[Item]
         self.rotation = rotation
 
@@ -200,7 +203,8 @@ class Guillotine:
             self.items.append(item)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
-            self.freerects += splits
+            for rect in splits:
+                self.freerects.add(rect)
             if self.rMerge:
                 self.rectangle_merge()
             return True
@@ -244,7 +248,8 @@ class Guillotine:
             self.items.append(item)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
-            self.freerects += splits
+            for rect in splits:
+                self.freerects.add(rect)
             if self.rMerge:
                 self.rectangle_merge()
             return True
@@ -285,7 +290,8 @@ class Guillotine:
             self.items.append(item)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
-            self.freerects += splits
+            for rect in splits:
+                self.freerects.add(rect)
             if self.rMerge:
                 self.rectangle_merge()
             return True
@@ -330,7 +336,8 @@ class Guillotine:
             self.items.append(item)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
-            self.freerects += splits
+            for rect in splits:
+                self.freerects.add(rect)
             if self.rMerge:
                 self.rectangle_merge()
             return True
@@ -374,7 +381,8 @@ class Guillotine:
             self.items.append(item)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
-            self.freerects += splits
+            for rect in splits:
+                self.freerects.add(rect)
             if self.rMerge:
                 self.rectangle_merge()
             return True
@@ -415,7 +423,8 @@ class Guillotine:
             self.items.append(item)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
-            self.freerects += splits
+            for rect in splits:
+                self.freerects.add(rect)
             if self.rMerge:
                 self.rectangle_merge()
             return True
