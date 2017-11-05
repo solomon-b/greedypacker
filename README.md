@@ -20,37 +20,72 @@ Jukka's article.  See TODO.md for complete list of in progress features.
 
 ### Example Usage:
 ```
+In [2]: import greedypacker
 
-In [7]: import greedypacker
+In [3]: M = greedypacker.BinManager(8, 4, pack_algo='shelf', heuristic='best_width_fit', wastemap=True, rotation=True)
 
-In [8]: M = greedypacker.BinManager(8,4, pack_algo='s
-   ...: helf', heuristic='best_width_fit', wastemap=T
-   ...: rue, rotation=True)
+In [4]: ITEM = greedypacker.Item(4, 2)
 
-In [9]: ITEM = greedypacker.Item(4, 2)
+In [5]: ITEM2 = greedypacker.Item(5, 2)
 
-In [10]: ITEM2 = greedypacker.Item(5, 2)
+In [6]: ITEM3 = greedypacker.Item(2, 2)
 
-In [11]: ITEM3 = greedypacker.Item(2, 2)
+In [7]: M.add_items(ITEM, ITEM2, ITEM3)
 
-In [12]: M.add_items(ITEM, ITEM2, ITEM3)
+In [8]: M.execute()
 
-In [13]: M.execute()
-
-In [14]: M.bins
-Out[14]: [Sheet(width=8, height=4, shelves=[{'y': 2, 'x': 8, 'available_width': 0, 'vertical_offset': 0, 'items': [Item(x=5, y=2, CornerPoint=(0, 0))]}, {'y': 2, 'x': 8, 'available_width': 4, 'vertical_offset': 2, 'items': [Item(x=4, y=2, CornerPoint=(0, 2))]}])]
+In [9]: M.bins
+Out[9]: [Sheet(width=8, height=4, shelves=SortedListWithKey([{'y': 2, 'x': 8, 'available_width': 0, 'area': 6, 'vertical_offset': 0, 'items': [Item(x=5, y=2, CornerPoint=(0, 0))]}, {'y': 2, 'x': 8, 'available_width': 4, 'area': 8, 'vertical_offset': 2, 'items': [Item(x=4, y=2, CornerPoint=(0, 2))]}], key=<function Sheet.__init__.<locals>.<lambda> at 0x7f903b4f19d8>, load=1000))]
 ```
 
 #### Algorithm Choices:
 * Shelf:
-  Split the bin into rows based on the height of the first
-  item in the row.
+  Divide the bin into horizontal rows with heights equal to the
+  first Item inserted. Track the rows in a list and choose a
+  row using whichever desired heuristic.
+
+  Sample Code:
+  ```
+  M = greedypacker.BinManager(8, 4, pack_algo='shelf', heuristic='best_width_fit', wastemap=True, rotation=True)
+  ```
 
 * Guillotine:
-  Make orthogonal cuts into the bin to create areas that 
-  match the sizes of the items.
+  Place items into the bin starting with its lower left corner.
+  For each insertion, split the bin into smaller sections
+  (FreeRectangles) which are tracked in a list. Whenever a new
+  item is inserted into the bin, find a FreeRectangle using
+  whichever heuristic then place the item into that FreeRectangle's
+  lower left corner. If there is left over width or height in
+  the FreeRectangle, split the FreeRectangle so that the remainder
+  space makes up its own FreeRectangle(s).
 
-#### Heuristic choices:
+  Sample Code:
+  ```
+  M = greedypacker.BinManager(8, 4, pack_algo='guillotine', heuristic='best_longside', rectangle_merge=True, rotation=True)
+  ```
+
+* Maximal Rectangles:
+  In the Guillotine algorithm FreeRectangles can be split either
+  on their horizontal or vertical axis. The choice of axis can
+  be fixed or can be specified using the Split Rules optimization.
+  Rather then choosing a split axis, Maximal Rectangles adds both
+  possible splits to the list of FreeRectangles. This ensures that
+  the largest possible rectangular areas are present in the
+  FreeRectangles list at all times. 
+
+  Because a single point in the bin can now be represented by 
+  multiple FreeRectangles, the list must be carefully pruned 
+  between Item insertions. Any FreeRectangle that intersects
+  the area occupied by the newly inserted Item is split such to
+  remove the intersection. Additionally, any FreeRectangle which
+  is fully overlapped by another FreeRectangle is deleleted from
+  the list.
+
+  ```
+  M = greedypacker.BinManager(8, 4, pack_algo='maximal_rectangle', heuristic='bottom_left', rotation=True)
+  ```
+
+#### Shelf Heuristic choices:
 * next_fit:
   Check the currently open Shelf and insert if the item fits.
   Otherwise create a new shelf and close the previous shelf.
@@ -76,6 +111,42 @@ Out[14]: [Sheet(width=8, height=4, shelves=[{'y': 2, 'x': 8, 'available_width': 
   Place the item in the shelf or FreeRectangle which would result
   in the most remaining free area.
 
+#### Guillotine Heuristic Choices
+* best_shortside:
+  Choose a FreeRectangle (F) where the shorter remainder side after
+  inserted the Item (I) is minimized. ie, choose the FreeRectangle
+  where min(Fw - Iw, Fh - Ih) is smallest.
+* best_longside:
+  Choose a FreeRectangle (F) where the longer remainder side after
+  inserted the Item (I) is minimized. ie, choose the FreeRectangle
+  where max(Fw - Iw, Fh - Ih) is smallest.
+* best_area:
+  Choose the FreeRectangle with the smallest area that still fits
+  the Item.
+* worst_shortside:
+  Choose a FreeRectangle (F) where the shorter remainder side after
+  inserted the Item (I) is minimized. ie, choose the FreeRectangle
+  where min(Fw - Iw, Fh - Ih) is largest.
+* worst_longside:
+  Choose a FreeRectangle (F) where the longer remainder side after
+  inserted the Item (I) is minimized. ie, choose the FreeRectangle
+  where max(Fw - Iw, Fh - Ih) is largest.
+* worst_area:
+  Choose the FreeRectangle with the largest area that still fits
+  the Item.
+
+#### Additional Maximal Rectangle Heuristic Choices
+Maximal Rectangles uses all the Guillotine heuristics plus the
+following:
+* bottom_left:
+  Choose the FreeRectangle where the Y coordinate of the Item's
+  top side is smallest. If there is a tie, pick the choice with
+  the smallest X coordinate.
+* contact_point:
+  Choose the FreeRectangle where the maximum amount of the Item's
+  perimiter is touching either occupied space or the edges of
+  the bin.
+
 #### Optional Optimizations:
 
 All optimizations are passed in as keyword arguments when the GreedyPacker
@@ -99,7 +170,10 @@ In [15]: M = greedypacker.BinManager(8, 4, 'shelf', 'best_width_fit', wastemap=T
 ##### Guillotine Packing:
 
 ###### Rectangle Merge
-Defragments the Free Rectangles between each item insertion.
+The guillotine algorithm has a tendency to leave fragmented
+groupings of FreeRectangles which could potentially be connected
+into larger FreeRectangles. This optimization Defragments the 
+FreeRectangle list between each item insertion.
 
 Usage:
 ```
