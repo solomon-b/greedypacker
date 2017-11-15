@@ -1,0 +1,160 @@
+import sys
+import unittest
+
+
+from greedypacker import skyline
+from greedypacker import item
+from .base import BaseTestCase
+from .util import stdout_redirect
+
+
+class Methods(BaseTestCase):
+    def setUp(self):
+        self.S = skyline.Skyline(8, 4)
+
+
+    def tearDown(self):
+        del self.S
+
+
+    def testClipSegmentFullOverlap(self):
+        """
+        Segmented fully adjacent to item
+        """
+        I = item.Item(4, 1, CornerPoint=[0,0])
+        S = skyline.SkylineSegment(0, 0, 4) 
+        res = self.S.clip_segment(S, I)
+
+        self.assertEqual(res, [])
+
+
+    def testClipSegmentExtendsLeft(self):
+        """
+        Segmented hangs over left
+        """
+        I = item.Item(4, 1, CornerPoint=[2,0])
+        S = skyline.SkylineSegment(0, 0, 4) 
+        res = self.S.clip_segment(S, I)
+
+        self.assertEqual(res, [skyline.SkylineSegment(0,0,2)])
+
+
+    def testClipSegmentExtendsRight(self):
+        """
+        Segmented hangs over left
+        """
+        I = item.Item(4, 1, CornerPoint=[0,0])
+        S = skyline.SkylineSegment(2, 0, 4) 
+        res = self.S.clip_segment(S, I)
+
+        self.assertEqual(res, [skyline.SkylineSegment(4,0,2)])
+
+
+    def testClipSegmentExtendsBoth(self):
+        """
+        Segmented hangs over left
+        """
+        I = item.Item(2, 1, CornerPoint=[2,0])
+        S = skyline.SkylineSegment(0, 0, 6) 
+        res = self.S.clip_segment(S, I)
+
+        self.assertCountEqual(res, [skyline.SkylineSegment(0, 0, 2), skyline.SkylineSegment(4,0,2)])
+
+
+    def testUpdateSegment(self):
+        """
+        Clip initial (0,0,8) segment
+        with a (2,2) item at (0,0)
+        """
+        I = item.Item(2, 2, CornerPoint=[0,0])
+        S1 = skyline.SkylineSegment(0, 2, 2)
+        S2 = skyline.SkylineSegment(2, 0, 6)
+
+        res = self.S.update_segment(self.S.skyline[0], I)
+        self.assertCountEqual(res, [S1, S2])
+
+    
+    def testMergeSegments(self):
+        """
+        Two segment merge
+        """
+        S1 = skyline.SkylineSegment(0, 0, 2)
+        S2 = skyline.SkylineSegment(2, 0, 6)
+        S3 = skyline.SkylineSegment(0, 0, 8)
+        self.S.skyline.pop()
+        self.S.skyline.update([S1, S2])
+        self.S.merge_segments()
+        self.assertEqual(self.S.skyline, [S3])
+
+
+    def testMergeSegments(self):
+        """
+        Three segment merge
+        """
+        S1 = skyline.SkylineSegment(0, 0, 2)
+        S2 = skyline.SkylineSegment(2, 0, 4)
+        S3 = skyline.SkylineSegment(6, 0, 2)
+        S4 = skyline.SkylineSegment(0, 0, 8)
+        self.S.skyline.pop()
+        self.S.skyline.update([S1, S2, S3])
+        self.S.merge_segments()
+        self.assertEqual(self.S.skyline, [S4])
+        
+
+    def testCheckFitTrue(self):
+        """
+        Assert item does fit above line segment
+        """
+        I = item.Item(2, 2, CornerPoint=[0,0])
+        S1 = skyline.SkylineSegment(0, 1, 2)
+        S2 = skyline.SkylineSegment(2, 0, 6)
+        self.S.skyline.pop()
+        self.S.skyline.extend([S1, S2])
+        self.assertEqual(self.S.check_fit(I, 0), (True, 1))
+
+
+    def testCheckFitFalse(self):
+        """
+        Assert item does fit above line segment
+        """
+        I = item.Item(2, 2, CornerPoint=[0,0])
+        S1 = skyline.SkylineSegment(0, 0, 1)
+        S2 = skyline.SkylineSegment(1, 3, 7)
+        self.S.skyline.pop()
+        self.S.skyline.extend([S1, S2])
+        self.assertEqual(self.S.check_fit(I, 1), (False, None))
+
+
+class BottomLeft(BaseTestCase):
+    def setUp(self):
+        self.S = skyline.Skyline(8, 4)
+
+
+    def tearDown(self):
+        del self.S
+
+    
+    def testOneItemInsert(self):
+        """
+        Single Item Fits
+        """
+        I = item.Item(2, 2)
+        self.S.bottom_left(I)
+        print(self.S.items)
+        print(self.S.skyline)
+
+
+def load_tests(loader, tests, pattern):
+    suite = unittest.TestSuite()
+    if pattern is None:
+        suite.addTests(loader.loadTestsFromTestCase(Methods))
+        suite.addTests(loader.loadTestsFromTestCase(BottomLeft))
+    else:
+        tests = loader.loadTestsFromName(pattern,
+                                         module=sys.modules[__name__])
+        failedTests = [t for t in tests._tests
+                       if type(t) == unittest.loader._FailedTest]
+        if len(failedTests) == 0:
+            suite.addTests(tests)
+    return suite
+
