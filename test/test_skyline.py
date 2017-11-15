@@ -140,8 +140,9 @@ class BottomLeft(BaseTestCase):
         """
         I = item.Item(2, 2)
         self.S.bottom_left(I)
-        print(self.S.items)
-        print(self.S.skyline)
+        S1 = skyline.SkylineSegment(0, 2, 2)
+        S2 = skyline.SkylineSegment(2, 0, 6)
+        self.assertCountEqual(self.S.skyline, [S1, S2])
 
 
 def load_tests(loader, tests, pattern):

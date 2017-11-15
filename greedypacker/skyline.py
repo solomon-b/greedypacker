@@ -12,10 +12,9 @@ from sortedcontainers import SortedList
 from .item import Item
 
 
-class SkylineSegment(NamedTuple):
-    x: int
-    y: int
-    width: int
+SkylineSegment = NamedTuple('SkylineSegment', [('x', int),
+                                               ('y', int),
+                                               ('width', int)])
 
 
 class Skyline:
