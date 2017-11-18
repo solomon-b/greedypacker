@@ -87,7 +87,7 @@ class Methods(BaseTestCase):
         self.assertEqual(self.S.skyline, [S3])
 
 
-    def testMergeSegments(self):
+    def testMergeThreeSegments(self):
         """
         Three segment merge
         """
@@ -127,7 +127,7 @@ class Methods(BaseTestCase):
 
 class BottomLeft(BaseTestCase):
     def setUp(self):
-        self.S = skyline.Skyline(8, 4)
+        self.S = skyline.Skyline(8, 5)
 
 
     def tearDown(self):
@@ -143,6 +143,26 @@ class BottomLeft(BaseTestCase):
         S1 = skyline.SkylineSegment(0, 2, 2)
         S2 = skyline.SkylineSegment(2, 0, 6)
         self.assertCountEqual(self.S.skyline, [S1, S2])
+
+
+    def testMultiItemInsert(self):
+        """
+        5 item insertion to match Figure 7 from
+        Jukka's article.
+        """
+        I0 = item.Item(2, 2)
+        I1 = item.Item(2, 1)
+        I2 = item.Item(3, 3)
+        I3 = item.Item(3, 2)
+        I4 = item.Item(4, 2, [3,2])
+        self.S.bottom_left(I0)
+        self.S.bottom_left(I1)
+        self.S.bottom_left(I2)
+        self.S.bottom_left(I3)
+        self.S.bottom_left(I4)
+        S0 = skyline.SkylineSegment(0, 4, 3)
+        S1 = skyline.SkylineSegment(7, 0, 1)
+        self.assertCountEqual(self.S.skyline, [S1, S0])
 
 
 def load_tests(loader, tests, pattern):

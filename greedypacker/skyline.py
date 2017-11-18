@@ -40,24 +40,33 @@ class Skyline:
         Return the rest.
         """
         # Segment not under new item
-        item_end_x = item.CornerPoint[0] + item.width
-        if segment.x > item.x+item.width:
+        itemx = item.CornerPoint[0]
+        item_end_x = itemx + item.width
+        segx = segment.x
+        seg_end_x = segx + segment.width
+        if segx > item_end_x or segx+segment.width<itemx:
             return [segment]
         # Segment fully under new item
-        elif segment.x >= item.CornerPoint[0] and segment.width+segment.x <= item_end_x:
+        elif segx >= itemx and seg_end_x <= item_end_x:
             return []
         # Segment partialy under new item (to the left)
-        elif segment.x < item.CornerPoint[0] and segment.x+segment.width <= item_end_x:
-            new_segment = SkylineSegment(segment.x, segment.y, item.CornerPoint[0]-segment.x)        
+        elif segx < itemx and seg_end_x <= item_end_x:
+            new_segment = SkylineSegment(segx, segment.y, itemx-segx)        
             return [new_segment]
         # Segment partially under new item (to the right)
-        elif segment.x >= item.CornerPoint[0] and segment.x+segment.width > item_end_x:
-            new_segment = SkylineSegment(item_end_x, segment.y, (segment.x+segment.width)-item_end_x)
+        elif segx >= itemx and segx+segment.width > item_end_x:
+            new_segment = SkylineSegment(item_end_x,
+                                         segment.y,
+                                         (seg_end_x)-item_end_x)
             return [new_segment]
         # Segment wider then item in both directions
-        elif segment.x < item.CornerPoint[0] and segment.x+segment.width > item_end_x:
-            new_segment_left = SkylineSegment(segment.x, segment.y, item.CornerPoint[0]-segment.x)
-            new_segment_right = SkylineSegment(item_end_x, segment.y, (segment.x+segment.width)-item_end_x)
+        elif segx < itemx and segx+segment.width > item_end_x:
+            new_segment_left = SkylineSegment(segx,
+                                              segment.y,
+                                              itemx-segx)
+            new_segment_right = SkylineSegment(item_end_x,
+                                               segment.y,
+                                               (seg_end_x)-item_end_x)
             return [new_segment_left, new_segment_right]
         else:
             return []
@@ -74,7 +83,7 @@ class Skyline:
 
         # Create new segment if room above item
         if item.height + item.CornerPoint[1] < self.height:
-            new_seg_y = segment.y + item.height
+            new_seg_y = item.CornerPoint[1] + item.height
             new_seg = SkylineSegment(segment.x, new_seg_y, item.width)
             new_segments.add(new_seg)
        
@@ -129,12 +138,12 @@ class Skyline:
         return (True, y)
             
 
-    def bottom_left(self, item: Item) -> bool:
+    def find_pos_bl(self, item: Item) -> SkylineSegment:
         """
-        Inserts the item such that its top edge
-        has the lowest available y coordinate.
+        Find the best location for item using
+        bottom_left heuristic.
+        returns segment and height to place item.
         """
-
         best_height = float('inf')
         best_width = float('inf')
         best_seg = None
@@ -144,7 +153,7 @@ class Skyline:
         for i, segment in enumerate(self.skyline):
             fits, y = self.check_fit(item, i)
             if fits:
-                if ((item.height+segment.y < best_height) or 
+                if ((item.height+y < best_height) or 
                     (segment.y+item.height == best_height and
                     segment.width < best_width)):
                     best_seg = segment
@@ -159,6 +168,15 @@ class Skyline:
                     best_height = item.width + y
                     best_width = segment.width
                     best_y = y
+        return (best_seg, best_y, rotation)
+        
+
+    def bottom_left(self, item: Item) -> bool:
+        """
+        Inserts the item such that its top edge
+        has the lowest available y coordinate.
+        """
+        best_seg, best_y, rotation = self.find_pos_bl(item)
         if best_seg:
             if rotation:
                 item.rotate()
