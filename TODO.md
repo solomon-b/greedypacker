@@ -1,5 +1,4 @@
 ### To Do:
-* Skyline Best Fet
-* Skyline Wastemap Optimization
+* Skyline Best Fit
 * Shelf Floor-Ceiling optimization
 * Flask demo app

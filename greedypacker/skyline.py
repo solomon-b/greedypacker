@@ -9,6 +9,8 @@ import operator
 import typing
 from typing import List, NamedTuple, Tuple
 from sortedcontainers import SortedList
+
+from . import guillotine
 from .item import Item
 
 
@@ -20,13 +22,17 @@ SkylineSegment = NamedTuple('SkylineSegment', [('x', int),
 class Skyline:
     def __init__(self, width: int = 8,
                  height: int = 4,
-                 rotation: bool = True) -> None:
+                 rotation: bool = True,
+                 wastemap: bool = True) -> None:
         self.width = width
         self.height = height
         starting_segment = SkylineSegment(0, 0, width)
         self.skyline = SortedList([starting_segment])
         self.items = [] # type: List[Item]
         self.rotation = rotation
+        self.use_waste_map = wastemap
+        if self.use_waste_map:
+            self.wastemap = guillotine.Guillotine(0, 0, rotation = self.rotation)
 
 
     def __repr__(self) -> str:
@@ -72,11 +78,15 @@ class Skyline:
             return []
 
 
-    def update_segment(self, segment: SkylineSegment, item: Item) -> List[SkylineSegment]:
+    def update_segment(self, segment: SkylineSegment, y:int, item: Item) -> List[SkylineSegment]:
         """
         Clips the line segment under the new item and returns
         an updated skyline segment list.
         """
+        if self.use_waste_map:
+            seg_i = self.skyline.index(segment)
+            self.add_to_wastemap(seg_i, item, y)
+
         new_segments = SortedList([])
         for seg in self.skyline:
             new_segments.update(self.clip_segment(seg, item))
@@ -136,6 +146,37 @@ class Skyline:
             if width > 0 and i == len(self.skyline):
                 return (False, None)
         return (True, y)
+
+
+    def add_to_wastemap(self, seg_index: int,
+                        item: Item, 
+                        y: int) -> bool:
+        """
+        Identify wasted space when caused by inserting
+        item above segment. Add this space as 
+        FreeRectangles into the wastemap
+        """
+        # New node edges
+        item_left = self.skyline[seg_index].x
+        item_right = item_left + self.skyline[seg_index].width
+        for seg in self.skyline[seg_index:]:
+            if seg.x >= item_right or seg.x + seg.width <= item_left:
+                break
+            left_side = seg.x
+            right_side = min(item_right, seg.x + seg.width)
+
+            w_width = right_side - left_side
+            w_height = y - seg.y
+            w_x = left_side
+            w_y = seg.y
+            if w_x > 0 and w_y > 0:
+                waste_rect = guillotine.FreeRectangle(w_width,
+                                                      w_height,
+                                                      w_x,
+                                                      w_y)
+
+                self.wastemap.freerects.append(waste_rect)
+                self.wastemap.rectangle_merge()
             
 
     def find_pos_bl(self, item: Item) -> SkylineSegment:
@@ -182,9 +223,35 @@ class Skyline:
                 item.rotate()
             item.CornerPoint = (best_seg.x, best_y)
             self.items.append(item)
-            self.skyline = self.update_segment(best_seg, item)
+            self.skyline = self.update_segment(best_seg, best_y, item)
             self.merge_segments()
             return True
         return False
 
 
+    def best_fit(self, item: Item) ->  bool:
+        """
+        Insert the item in the position which
+        minimizes the amount of space lost to
+        the wastemap. In the case of ties, break
+        with the bottom_left heuristic.
+        """
+        pass
+
+
+    def insert(self, item: Item,
+               heuristic: str = 'bottom_left') -> bool:
+        """
+        Wrapper for insertion heuristics
+        """
+        if self.wastemap:
+            res = self.wastemap.insert(item, heuristic='best_area')
+            if res:
+                self.items.append(item)
+                return True
+        if heuristic == 'bottom_left':
+            return self.bottom_left(item)
+        if heuristic == 'best_fit':
+            return self.best_fit(item)
+        else:
+            return False

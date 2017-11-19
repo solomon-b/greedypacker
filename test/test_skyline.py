@@ -1,7 +1,6 @@
 import sys
 import unittest
 
-
 from greedypacker import skyline
 from greedypacker import item
 from .base import BaseTestCase
@@ -70,7 +69,7 @@ class Methods(BaseTestCase):
         S1 = skyline.SkylineSegment(0, 2, 2)
         S2 = skyline.SkylineSegment(2, 0, 6)
 
-        res = self.S.update_segment(self.S.skyline[0], I)
+        res = self.S.update_segment(self.S.skyline[0], 0, I)
         self.assertCountEqual(res, [S1, S2])
 
     
@@ -155,11 +154,11 @@ class BottomLeft(BaseTestCase):
         I2 = item.Item(3, 3)
         I3 = item.Item(3, 2)
         I4 = item.Item(4, 2, [3,2])
-        self.S.bottom_left(I0)
-        self.S.bottom_left(I1)
-        self.S.bottom_left(I2)
-        self.S.bottom_left(I3)
-        self.S.bottom_left(I4)
+        self.S.insert(I0, 'bottom_left')
+        self.S.insert(I1, 'bottom_left')
+        self.S.insert(I2, 'bottom_left')
+        self.S.insert(I3, 'bottom_left')
+        self.S.insert(I4, 'bottom_left')
         S0 = skyline.SkylineSegment(0, 4, 3)
         S1 = skyline.SkylineSegment(7, 0, 1)
         self.assertCountEqual(self.S.skyline, [S1, S0])
