@@ -3,6 +3,7 @@ import unittest
 
 from greedypacker import skyline
 from greedypacker import item
+from greedypacker import guillotine
 from .base import BaseTestCase
 from .util import stdout_redirect
 
@@ -153,7 +154,7 @@ class BottomLeft(BaseTestCase):
         I1 = item.Item(2, 1)
         I2 = item.Item(3, 3)
         I3 = item.Item(3, 2)
-        I4 = item.Item(4, 2, [3,2])
+        I4 = item.Item(4, 2)
         self.S.insert(I0, 'bottom_left')
         self.S.insert(I1, 'bottom_left')
         self.S.insert(I2, 'bottom_left')
@@ -164,11 +165,51 @@ class BottomLeft(BaseTestCase):
         self.assertCountEqual(self.S.skyline, [S1, S0])
 
 
+class WasteMap(BaseTestCase):
+    def setUp(self):
+        self.S = skyline.Skyline(8, 5)
+        I0 = item.Item(2, 2)
+        I1 = item.Item(2, 1)
+        I2 = item.Item(3, 3)
+        I3 = item.Item(3, 2)
+        I4 = item.Item(4, 2)
+        self.S.insert(I0, 'bottom_left')
+        self.S.insert(I1, 'bottom_left')
+        self.S.insert(I2, 'bottom_left')
+        self.S.insert(I3, 'bottom_left')
+        self.S.insert(I4, 'bottom_left')
+
+    def tearDown(self):
+        del self.S
+
+
+    def testWastemapCreation(self):
+        """
+        5 item insertion to match Figure 7 from
+        Jukka's article.
+        """
+        F0 = guillotine.FreeRectangle(1, 1, 2, 1)
+        F1 = guillotine.FreeRectangle(1, 2, 3, 1)
+
+        self.assertCountEqual(self.S.wastemap.freerects, [F0, F1])
+        
+
+    def testWastemapInsertion(self):
+        """
+        5 item insertion to match Figure 7 from
+        Jukka's article.
+        """
+        I5 = item.Item(1, 2)
+        self.S.insert(I5)
+        self.assertEqual(I5.CornerPoint, (3, 1))
+
+
 def load_tests(loader, tests, pattern):
     suite = unittest.TestSuite()
     if pattern is None:
         suite.addTests(loader.loadTestsFromTestCase(Methods))
         suite.addTests(loader.loadTestsFromTestCase(BottomLeft))
+        suite.addTests(loader.loadTestsFromTestCase(WasteMap))
     else:
         tests = loader.loadTestsFromName(pattern,
                                          module=sys.modules[__name__])

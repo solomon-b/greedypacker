@@ -158,7 +158,7 @@ class Skyline:
         """
         # New node edges
         item_left = self.skyline[seg_index].x
-        item_right = item_left + self.skyline[seg_index].width
+        item_right = item_left + item.width
         for seg in self.skyline[seg_index:]:
             if seg.x >= item_right or seg.x + seg.width <= item_left:
                 break
@@ -169,13 +169,12 @@ class Skyline:
             w_height = y - seg.y
             w_x = left_side
             w_y = seg.y
-            if w_x > 0 and w_y > 0:
+            if w_width > 0 and w_height > 0:
                 waste_rect = guillotine.FreeRectangle(w_width,
                                                       w_height,
                                                       w_x,
                                                       w_y)
-
-                self.wastemap.freerects.append(waste_rect)
+                self.wastemap.freerects.add(waste_rect)
                 self.wastemap.rectangle_merge()
             
 
