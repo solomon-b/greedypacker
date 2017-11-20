@@ -107,21 +107,20 @@ class Skyline:
         new_segments = SortedList([self.skyline[0]])
         for seg in self.skyline[1:]:
             last = new_segments[-1]
-            if seg.y == last.y:
-                if (seg.x >= last.x and 
-                    seg.x <= last.x+last.width):
-                    if seg.x+seg.width > last.x+last.width:
-                        new_last = SkylineSegment(last.x, last.y, 
-                                                  seg.x+seg.width)
-                        new_segments.remove(last)
-                        new_segments.add(new_last)
-                        continue
+            if seg.y == last.y and seg.x == last.x+last.width:
+                new_last = SkylineSegment(last.x, last.y, 
+                                          (seg.x+seg.width)-last.x)
+                new_segments.remove(last)
+                new_segments.add(new_last)
+                continue
             new_segments.add(seg)
 
         self.skyline = new_segments
 
 
-    def check_fit(self, item: Item, sky_index: int) -> Tuple[bool, int]:
+    def check_fit(self, item_width: int,
+                  item_height: int,
+                  sky_index: int) -> Tuple[bool, int]:
         """
         Returns true if the item will fit above the skyline
         segment sky_index. Also works if the item is wider 
@@ -130,16 +129,16 @@ class Skyline:
         i = sky_index
         x = self.skyline[i].x
         y = self.skyline[i].y
-        width = item.width
+        width = item_width
 
-        if x + item.width > self.width:
+        if x + item_width > self.width:
             return (False, None)
-        if y + item.height > self.height:
+        if y + item_height > self.height:
             return (False, None)
 
         while width > 0:
             y = max(y, self.skyline[i].y)
-            if (y + item.height > self.height):
+            if (y + item_height > self.height):
                 return (False, None)
             width -= self.skyline[i].width
             i += 1
@@ -178,6 +177,25 @@ class Skyline:
                 self.wastemap.rectangle_merge()
             
 
+    def calc_waste(self, seg_index: int,
+                   item: Item, y: int) -> int:
+        """
+        Returns the total wasted area if item is
+        inserted above segment
+        """
+        wasted_area = 0
+        item_left = self.skyline[seg_index].x
+        item_right = item_left + item.width
+        for seg in self.skyline[seg_index:]:
+            if seg.x >= item_right or seg.x + seg.width <= item_left:
+                break
+            left_side = seg.x
+            right_side = min(item_right, seg.x + seg.width)
+            wasted_area += (right_side - left_side) * (y - seg.y)
+        
+        return wasted_area
+
+
     def find_pos_bl(self, item: Item) -> SkylineSegment:
         """
         Find the best location for item using
@@ -191,7 +209,7 @@ class Skyline:
         rotation = False
          
         for i, segment in enumerate(self.skyline):
-            fits, y = self.check_fit(item, i)
+            fits, y = self.check_fit(item.width, item.height, i)
             if fits:
                 if ((item.height+y < best_height) or 
                     (segment.y+item.height == best_height and
@@ -200,6 +218,8 @@ class Skyline:
                     best_height = item.height + y
                     best_width = segment.width
                     best_y = y
+            fits, y = self.check_fit(item.height, item.width, i)
+            if fits:
                 if ((item.width+segment.y < best_height) or
                     (segment.y+item.width == best_height and
                     segment.width < best_width)):
@@ -211,31 +231,40 @@ class Skyline:
         return (best_seg, best_y, rotation)
         
 
-    def bottom_left(self, item: Item) -> bool:
+    def find_pos_bf(self, item: Item) -> SkylineSegment:
         """
-        Inserts the item such that its top edge
-        has the lowest available y coordinate.
+        Find the best location for item using
+        bottom_left heuristic.
+        returns segment and height to place item.
         """
-        best_seg, best_y, rotation = self.find_pos_bl(item)
-        if best_seg:
-            if rotation:
-                item.rotate()
-            item.CornerPoint = (best_seg.x, best_y)
-            self.items.append(item)
-            self.skyline = self.update_segment(best_seg, best_y, item)
-            self.merge_segments()
-            return True
-        return False
-
-
-    def best_fit(self, item: Item) ->  bool:
-        """
-        Insert the item in the position which
-        minimizes the amount of space lost to
-        the wastemap. In the case of ties, break
-        with the bottom_left heuristic.
-        """
-        pass
+        best_height = float('inf')
+        best_waste = float('inf')
+        best_y = 0
+        best_seg = None
+        rotation = False
+         
+        for i, segment in enumerate(self.skyline):
+            fits, y = self.check_fit(item.width, item.height, i)
+            if fits:
+                wasted_area = self.calc_waste(i, item, y)
+                if (wasted_area < best_waste or
+                    (wasted_area == best_waste and
+                    item.height+y < best_height)):
+                    best_seg = segment
+                    best_height = item.height + y
+                    best_width = segment.width
+                    best_y = y
+            fits, y = self.check_fit(item.height, item.width, i)
+            if fits:
+                if (wasted_area < best_waste or
+                    (wasted_area == best_waste and
+                    item.width+y < best_height)):
+                    best_seg = segment
+                    best_height = item.height + y
+                    best_width = segment.width
+                    best_y = y
+                    rotation = True
+        return (best_seg, best_y, rotation)
 
 
     def insert(self, item: Item,
@@ -249,8 +278,18 @@ class Skyline:
                 self.items.append(item)
                 return True
         if heuristic == 'bottom_left':
-            return self.bottom_left(item)
-        if heuristic == 'best_fit':
-            return self.best_fit(item)
+            best_seg, best_y, rotation = self.find_pos_bl(item)
+        elif heuristic == 'best_fit':
+            best_seg, best_y, rotation = self.find_pos_bf(item)
         else:
-            return False
+            return
+
+        if best_seg:
+            if rotation:
+                item.rotate()
+            item.CornerPoint = (best_seg.x, best_y)
+            self.items.append(item)
+            self.skyline = self.update_segment(best_seg, best_y, item)
+            self.merge_segments()
+            return True
+        return False
