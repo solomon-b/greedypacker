@@ -12,6 +12,7 @@ from . import item
 from . import shelf
 from . import guillotine
 from . import maximal_rectangles
+from . import skyline
 
 # Type Aliases:
 Algorithm = Union[shelf.Sheet, guillotine.Guillotine, maximal_rectangles.MaximalRectangle]
@@ -72,6 +73,8 @@ class BinManager:
             return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap)
         elif self.algorithm == 'maximal_rectangle':
             return maximal_rectangles.MaximalRectangle(self.bin_width, self.bin_height, self.rotation)
+        elif self.algorithm == 'skyline':
+            return skyline.Skyline(self.bin_width, self.bin_height, self.rotation)
         raise ValueError('Error: No such Algorithm')
 
 
@@ -89,7 +92,7 @@ class BinManager:
             self.bins[-1].insert(item, self.heuristic)
 
 
-    def _bin_best_fit(self, item: item.Item) -> str:
+    def _bin_best_fit(self, item: item.Item) -> bool:
         """
         Insert into the bin that best fits the item
         """
@@ -101,8 +104,23 @@ class BinManager:
         if self.rotation and (item.height <= self.bin_width or item.width >= self.bin_height):
             item_fits = True
         if not item_fits:
-            return "Error! item too big for bin"
+            raise ValueError("Error! item too big for bin")
 
+        if self.algorithm == 'skyline':
+            best_bin = None
+            best_y = float('inf')
+            for binn in self.bins:
+                for i, seg in enumerate(binn.skyline):
+                    fits, y = binn.check_fit(item.width, item.height, i)
+                    if fits and y < best_y:
+                        best_y = y
+                        best_bin = binn
+                    fits, y = binn.check_fit(item.height, item.width, i)
+                    if fits and y < best_y:
+                        best_y = y
+                        best_bin = binn
+            if best_bin:
+                return best_bin.insert(item, self.heuristic)
 
         if self.algorithm == 'guillotine' or self.algorithm == 'maximal_rectangle':
             best_rect = None 
@@ -123,8 +141,7 @@ class BinManager:
                     best_bin_index = i
 
             if best_rect:
-                self.bins[i].insert(item, self.heuristic)
-                return 'Success'
+                return self.bins[i].insert(item, self.heuristic)
 
         if self.algorithm == 'shelf':
             best_area = float('inf')
@@ -145,12 +162,11 @@ class BinManager:
                     best_area = area
                     best_bin = binn
             if best_bin:
-                best_bin.insert(item, self.heuristic)
-                return 'Success'
+                return best_bin.insert(item, self.heuristic)
 
         self.bins.append(self._bin_factory())
         self.bins[-1].insert(item, self.heuristic)
-        return 'Success'
+        return True
 
 
     def execute(self) -> None:

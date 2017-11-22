@@ -29,6 +29,8 @@ class Skyline:
         starting_segment = SkylineSegment(0, 0, width)
         self.skyline = SortedList([starting_segment])
         self.items = [] # type: List[Item]
+        self.area = self.width * self.height
+        self.free_area = self.width * self.height
         self.rotation = rotation
         self.use_waste_map = wastemap
         if self.use_waste_map:
@@ -276,6 +278,7 @@ class Skyline:
             res = self.wastemap.insert(item, heuristic='best_area')
             if res:
                 self.items.append(item)
+                self.free_area -= item.width * item.height
                 return True
         if heuristic == 'bottom_left':
             best_seg, best_y, rotation = self.find_pos_bl(item)
@@ -289,6 +292,7 @@ class Skyline:
                 item.rotate()
             item.CornerPoint = (best_seg.x, best_y)
             self.items.append(item)
+            self.free_area -= item.width * item.height
             self.skyline = self.update_segment(best_seg, best_y, item)
             self.merge_segments()
             return True
