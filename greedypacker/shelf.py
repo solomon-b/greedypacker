@@ -51,6 +51,8 @@ class Sheet:
         self.available_height = self.y
         self.shelves = SortedListWithKey([], key=lambda x: x.area)
         self.items = [] # type: List[item.Item]
+        self.area = self.x * self.y
+        self.free_area = self.x * self.y
         self.rotation = rotation
         self.use_waste_map = wastemap
         if self.use_waste_map:
@@ -99,6 +101,7 @@ class Sheet:
 
 
     def add_to_shelf(self, item: item.Item, shelf: Shelf) -> bool:
+        """ Item insertion helper method for heuristic methods """
         if not self.item_fits_shelf(item, shelf):
             return False
         if self.rotation:
@@ -106,13 +109,13 @@ class Sheet:
         res = shelf.insert(item)
         if res:
             self.items.append(item)
-            #if self.use_waste_map:
-            #    waste_rect = guillotine.FreeRectangle
+            self.free_area -= item.area
             return True
         return False
 
 
     def add_to_wastemap(self, shelf: Shelf) -> None:
+        """ Add lost space above items to the wastemap """
         # Add space above items to wastemap
         for item in shelf.items:
             if item.height < shelf.y:
@@ -267,6 +270,7 @@ class Sheet:
                 res = self.wastemap.insert(item, heuristic='best_area')
                 if res:
                     self.items.append(item)
+                    self.free_area -= item.area
                     return True
 
             # Ugly python switch statement
@@ -295,6 +299,7 @@ class Sheet:
                 res = self.wastemap.insert(item, heuristic='best_area')
                 if res:
                     self.items.append(item)
+                    self.free_area -= item.area
                     return True
             # 6) Attempt to create a new shelf for the item
             return self.create_shelf(item)
