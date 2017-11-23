@@ -5,7 +5,7 @@ python:
   - "3.6-dev"
   - "3.7-dev"
 script:
-  - coverage run -m unittest test
+  - python -m unittest test
 
 after_success:
   - coveralls
