@@ -6,6 +6,5 @@ python:
   - "3.7-dev"
 script:
   - python -m unittest test
-
 after_success:
   - coveralls
