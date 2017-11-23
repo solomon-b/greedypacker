@@ -89,7 +89,10 @@ class MaximalRectangle:
         Returns the lower left and upper right 
         corners of the item's bounding box.
         """
-        return (item.CornerPoint[0], item.CornerPoint[1], item.CornerPoint[0]+item.width, item.CornerPoint[1]+item.height)
+        return (item.CornerPoint[0],
+                item.CornerPoint[1],
+                item.CornerPoint[0]+item.width,
+                item.CornerPoint[1]+item.height)
 
 
     @staticmethod
@@ -180,7 +183,7 @@ class MaximalRectangle:
 
     def remove_redundent(self) -> List[FreeRectangle]:
         """
-        Remove all FreeRectangle full encapsulated
+        Remove all FreeRectangles full encapsulated
         inside another FreeRectangle.
         """
         i = 0

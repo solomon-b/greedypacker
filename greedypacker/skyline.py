@@ -153,7 +153,7 @@ class Skyline:
                         item: Item, 
                         y: int) -> bool:
         """
-        Identify wasted space when caused by inserting
+        Identify wasted space when inserting
         item above segment. Add this space as 
         FreeRectangles into the wastemap
         """
