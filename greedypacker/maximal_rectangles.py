@@ -26,6 +26,8 @@ class MaximalRectangle:
                  rotation: bool = True) -> None:
         self.x = x
         self.y = y
+        self.area = self.x * self.y
+        self.free_area = self.area
 
 
         if x == 0 or y == 0:
@@ -251,6 +253,7 @@ class MaximalRectangle:
                 item.rotate()
             item.CornerPoint = best_rect.x, best_rect.y
             self.items.append(item)
+            self.free_area -= item.area
             maximals = self.split_rectangle(best_rect, item)
             self.freerects.remove(best_rect)
             self.freerects += maximals
@@ -297,6 +300,7 @@ class MaximalRectangle:
                 item.rotate()
             item.CornerPoint = best_rect.x, best_rect.y
             self.items.append(item)
+            self.free_area -= item.area
             maximals = self.split_rectangle(best_rect, item)
             self.freerects.remove(best_rect)
             self.freerects += maximals
@@ -342,6 +346,7 @@ class MaximalRectangle:
                 item.rotate()
             item.CornerPoint = best_rect.x, best_rect.y
             self.items.append(item)
+            self.free_area -= item.area
             maximals = self.split_rectangle(best_rect, item)
             self.freerects.remove(best_rect)
             self.freerects += maximals
@@ -388,6 +393,7 @@ class MaximalRectangle:
                 item.rotate()
             item.CornerPoint = best_rect.x, best_rect.y
             self.items.append(item)
+            self.free_area -= item.area
             maximals = self.split_rectangle(best_rect, item)
             self.freerects.remove(best_rect)
             self.freerects += maximals
@@ -467,6 +473,7 @@ class MaximalRectangle:
                 item.rotate()
             item.CornerPoint = best_rect.x, best_rect.y
             self.items.append(item)
+            self.free_area -= item.area
             maximals = self.split_rectangle(best_rect, item)
             self.freerects.remove(best_rect)
             self.freerects += maximals
