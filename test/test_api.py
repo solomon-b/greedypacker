@@ -39,6 +39,7 @@ class BestBinFit(BaseTestCase):
         """
         M = greedypacker.BinManager(10, 5,
                                     pack_algo='guillotine',
+                                    bin_algo="bin_best_fit",
                                     heuristic='best_area',
                                     sorting=True,
                                     rotation=True)
@@ -57,6 +58,7 @@ class BestBinFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(ITEM3.CornerPoint, (0,3))
 
+
     def testGuillotineBWFRotation(self):
         """
         Best Bin Fit
@@ -67,6 +69,7 @@ class BestBinFit(BaseTestCase):
         """
         M = greedypacker.BinManager(10, 5,
                                     pack_algo='guillotine',
+                                    bin_algo="bin_best_fit",
                                     heuristic='best_area',
                                     sorting=False,
                                     rotation=True)
@@ -96,6 +99,7 @@ class BestBinFit(BaseTestCase):
         """
         M = greedypacker.BinManager(8, 4,
                                     pack_algo='maximal_rectangle',
+                                    bin_algo="bin_best_fit",
                                     heuristic='best_shortside',
                                     sorting=False,
                                     rotation=False)
@@ -124,6 +128,7 @@ class BestBinFit(BaseTestCase):
         """
         M = greedypacker.BinManager(10, 5,
                                     pack_algo='shelf',
+                                    bin_algo="bin_best_fit",
                                     heuristic='best_width_fit',
                                     sorting=True,
                                     rotation=True)
@@ -152,6 +157,7 @@ class BestBinFit(BaseTestCase):
         """
         M = greedypacker.BinManager(10, 5,
                                     pack_algo='shelf',
+                                    bin_algo="bin_best_fit",
                                     heuristic='best_width_fit',
                                     sorting=False,
                                     rotation=True)
@@ -169,6 +175,35 @@ class BestBinFit(BaseTestCase):
             self.assertEqual(ITEM2.CornerPoint, (0,1))
         with self.subTest():
             self.assertEqual(ITEM3.CornerPoint, (4,1))
+
+
+    def testSkyline(self):
+        """
+        Bin Best Fit
+        Skyline (bottom_left)
+        Item Sorting == True
+        Item Rotation == True
+        """
+        M = greedypacker.BinManager(10, 5,
+                               pack_algo='skyline',
+                               bin_algo="bin_best_fit",
+                               sorting=True,
+                               rotation=True)
+
+        ITEM = greedypacker.Item(10, 3)
+        ITEM2 = greedypacker.Item(10, 4)
+        ITEM3 = greedypacker.Item(1, 1)
+        M.add_items(ITEM, ITEM2, ITEM3)
+        M.execute()
+        correct = [ITEM, ITEM2, ITEM3]
+        with self.subTest():
+            self.assertCountEqual(M.items, correct)
+        with self.subTest():
+            self.assertEqual(ITEM.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(ITEM2.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(ITEM3.CornerPoint, (0,3))
 
 
 class BinFirstFit(BaseTestCase):
@@ -200,6 +235,7 @@ class BinFirstFit(BaseTestCase):
             self.assertEqual(ITEM2.CornerPoint, (0,0))
         with self.subTest():
             self.assertEqual(ITEM3.CornerPoint, (0,0))
+
 
     def testGuillotineBWFRotation(self):
         """
@@ -286,6 +322,35 @@ class BinFirstFit(BaseTestCase):
             self.assertEqual(ITEM2.CornerPoint, (0,1))
         with self.subTest():
             self.assertEqual(ITEM3.CornerPoint, (4,1))
+
+
+    def testSkyline(self):
+        """
+        Bin First Fit
+        Skyline (bottom_left)
+        Item Sorting == True
+        Item Rotation == True
+        """
+        M = greedypacker.BinManager(10, 5,
+                               pack_algo='skyline',
+                               bin_algo="bin_first_fit",
+                               sorting=True,
+                               rotation=True)
+
+        ITEM = greedypacker.Item(10, 3)
+        ITEM2 = greedypacker.Item(10, 4)
+        ITEM3 = greedypacker.Item(1, 1)
+        M.add_items(ITEM, ITEM2, ITEM3)
+        M.execute()
+        correct = [ITEM, ITEM2, ITEM3]
+        with self.subTest():
+            self.assertCountEqual(M.items, correct)
+        with self.subTest():
+            self.assertEqual(ITEM.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(ITEM2.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(ITEM3.CornerPoint, (0,4))
 
 
 def load_tests(loader, tests, pattern):

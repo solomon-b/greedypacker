@@ -280,7 +280,7 @@ class Skyline:
                 self.items.append(item)
                 self.free_area -= item.width * item.height
                 return True
-        if heuristic == 'bottom_left':
+        if heuristic == 'bottom_left' or heuristic == 'default':
             best_seg, best_y, rotation = self.find_pos_bl(item)
         elif heuristic == 'best_fit':
             best_seg, best_y, rotation = self.find_pos_bf(item)
