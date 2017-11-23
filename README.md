@@ -11,9 +11,8 @@ Ways to Pack the Bin - A Practical Approach to Two-Dimensional Rectangle Bin
 Packing."](http://clb.demon.fi/files/RectangleBinPack.pdf)
 
 This library is intended for offline greedypackeing. All algorithms
-heuristics and optimizations from Jukka's article will be included.
+heuristics and optimizations from Jukka's article are included.
 
-The project is still in early development. See TODO.md for complete list of in progress features.  
 
 ### Example Usage:
 ```
@@ -82,6 +81,22 @@ Out[9]: [Sheet(width=8, height=4, shelves=SortedListWithKey([{'y': 2, 'x': 8, 'a
   M = greedypacker.BinManager(8, 4, pack_algo='maximal_rectangle', heuristic='bottom_left', rotation=True)
   ```
 
+* Skyline:
+  Rather then track a list of all FreeRectangles or Shelves, the
+  Skyline algorithm packs the list from bottom to top and only
+  tracks the top edge of the topmost items packed into the bin.
+  This creates a 'skyline', or envelope. The skyline list grows
+  linearly with the number of packed items.
+
+  Because it only tracks the topmost edge, this algorithm is
+  lossy and has the potential to lose track of useable space trapped
+  behind the skyline. This can be countered by using the wastemap
+  optimization from the Shelf algorithm.
+
+  ```
+  S = greedypacker.BinManager(8, 4, pack_algo='skyline', heuristic='bottom_left', rotation=True)
+  ```
+
 #### Shelf Heuristic choices:
 * next_fit:
   Check the currently open Shelf and insert if the item fits.
@@ -144,6 +159,13 @@ following:
   perimiter is touching either occupied space or the edges of
   the bin.
 
+#### Skyline Heuristics
+* bottom_left:
+  see Maximal Rectangle bottom_left above.
+* best_fit:
+  place the item such that the amount of space lost to wastemap
+  is minimized.
+
 #### Optional Optimizations:
 
 All optimizations are passed in as keyword arguments when the GreedyPacker
@@ -194,6 +216,11 @@ Usage:
 ```
 In [15]: M = greedypacker.BinManager(8, 4, 'guillotine', 'best_width_fit', split_heuristic='SplitMinimizeArea')
 ```
+
+##### Shelf Packing:
+
+###### Wastemap
+See the Shelf wastemap description above.
 
 ### install notes
 
