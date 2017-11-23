@@ -27,7 +27,7 @@ class Guillotine:
     def __init__(self, x: int = 8,
                  y: int = 4,
                  rotation: bool = True,
-                 rectangle_merge: bool=False,
+                 rectangle_merge: bool=True,
                  split_heuristic: str='default') -> None:
         self.x = x
         self.y = y
