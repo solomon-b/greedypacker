@@ -181,6 +181,8 @@ class NextFit(BaseTestCase):
             self.assertEqual(ITEM2.CornerPoint, (3,0))
             self.assertEqual(ITEM2.width, 3)
             self.assertEqual(ITEM2.height, 2)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 20)
 
 
     def testTwoInsertsB(self):
@@ -197,6 +199,9 @@ class NextFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0,0))
             self.assertEqual(ITEM2.CornerPoint, (0,2))
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 14)
+
 
     def testTwoInsertsC(self):
         """
@@ -213,6 +218,8 @@ class NextFit(BaseTestCase):
             self.assertFalse(res)
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 26)
 
 
 class NextFitNoRotation(BaseTestCase):
@@ -234,6 +241,8 @@ class NextFitNoRotation(BaseTestCase):
             self.assertEqual(self.sheet.items, correct)
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 20)
 
 
     def testTwoInsertsA(self):
@@ -252,6 +261,8 @@ class NextFitNoRotation(BaseTestCase):
             self.assertEqual(ITEM.width, 3)
             self.assertEqual(ITEM.height, 2)
             self.assertEqual(ITEM2.CornerPoint, (3,0))
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 20)
 
 
     def testTwoInsertsB(self):
@@ -268,6 +279,9 @@ class NextFitNoRotation(BaseTestCase):
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0,0))
             self.assertEqual(ITEM2.CornerPoint, (0,2))
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 14)
+
 
     def testTwoInsertsC(self):
         """
@@ -284,14 +298,18 @@ class NextFitNoRotation(BaseTestCase):
             self.assertFalse(res)
         with self.subTest():
             self.assertEqual(ITEM.CornerPoint, (0,0))
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 11)
 
 
 class FirstFit(BaseTestCase):
     def setUp(self):
         self.sheet = shelf.Sheet(8, 4)
 
+
     def tearDown(self):
         del self.sheet
+
 
     def testSingleInsert(self):
         """
@@ -308,6 +326,9 @@ class FirstFit(BaseTestCase):
         with self.subTest():
             correct = [ITEM]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 20)
+
 
     def testTwoInsertsA(self):
         """
@@ -326,6 +347,8 @@ class FirstFit(BaseTestCase):
         with self.subTest():
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 20)
 
 
     def testTwoInsertsB(self):
@@ -349,6 +372,8 @@ class FirstFit(BaseTestCase):
         with self.subTest():
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 14)
 
 
     def testTwoInsertsC(self):
@@ -369,6 +394,8 @@ class FirstFit(BaseTestCase):
         with self.subTest():
             correct = [ITEM]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 26)
 
 
     def testThreeInsertsA(self):
@@ -395,6 +422,8 @@ class FirstFit(BaseTestCase):
         with self.subTest():
             correct = [ITEM, ITEM2, ITEM3]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 10)
 
 
 
@@ -431,6 +460,8 @@ class BestWidthFit(BaseTestCase):
         with self.subTest():
             correct = [ITEM, ITEM2, ITEM3]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 10)
 
 
 class BestHeightFit(BaseTestCase):
@@ -466,6 +497,8 @@ class BestHeightFit(BaseTestCase):
         with self.subTest():
             correct = [ITEM, ITEM2, ITEM3]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 10)
 
 
 class BestAreaFit(BaseTestCase):
@@ -503,6 +536,8 @@ class BestAreaFit(BaseTestCase):
         with self.subTest():
             correct = [ITEM, ITEM2, ITEM3]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 10)
 
 
 class WorstWidthFit(BaseTestCase):
@@ -539,6 +574,8 @@ class WorstWidthFit(BaseTestCase):
         with self.subTest():
             correct = [ITEM, ITEM2, ITEM3]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 10)
 
 
 class WorstHeightFit(BaseTestCase):
@@ -574,6 +611,8 @@ class WorstHeightFit(BaseTestCase):
         with self.subTest():
             correct = [ITEM, ITEM2, ITEM3]
             self.assertEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 13)
 
 
 class WorstAreaFit(BaseTestCase):
@@ -608,6 +647,8 @@ class WorstAreaFit(BaseTestCase):
         with self.subTest():
             correct = [ITEM, ITEM2, ITEM3]
             self.assertCountEqual(self.sheet.items, correct)
+        with self.subTest():
+            self.assertEqual(self.sheet.free_area, 10)
 
 
 #class BinStats(BaseTestCase):

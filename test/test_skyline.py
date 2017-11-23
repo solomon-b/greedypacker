@@ -198,7 +198,10 @@ class BottomLeft(BaseTestCase):
         self.S.insert(I4, 'bottom_left')
         S0 = skyline.SkylineSegment(0, 4, 3)
         S1 = skyline.SkylineSegment(7, 0, 1)
-        self.assertCountEqual(self.S.skyline, [S1, S0])
+        with self.subTest():
+            self.assertCountEqual(self.S.skyline, [S1, S0])
+        with self.subTest():
+            self.assertEqual(self.S.free_area, 11)
 
 
 class BestFit(BaseTestCase):
@@ -210,15 +213,15 @@ class BestFit(BaseTestCase):
         del self.S
 
     
-    #def testOneItemInsert(self):
-    #    """
-    #    Single Item Fits
-    #    """
-    #    I = item.Item(2, 2)
-    #    self.S.insert(I, 'best_fit')
-    #    S1 = skyline.SkylineSegment(0, 2, 2)
-    #    S2 = skyline.SkylineSegment(2, 0, 6)
-    #    self.assertCountEqual(self.S.skyline, [S1, S2])
+    def testOneItemInsert(self):
+        """
+        Single Item Fits
+        """
+        I = item.Item(2, 2)
+        self.S.insert(I, 'best_fit')
+        S1 = skyline.SkylineSegment(0, 2, 2)
+        S2 = skyline.SkylineSegment(2, 0, 6)
+        self.assertCountEqual(self.S.skyline, [S1, S2])
 
 
     def testMultiItemInsert(self):
@@ -238,7 +241,10 @@ class BestFit(BaseTestCase):
 
         S0 = skyline.SkylineSegment(0, 2, 3)
         S1 = skyline.SkylineSegment(7, 3, 1)
-        self.assertCountEqual(self.S.skyline, [S1, S0])
+        with self.subTest():
+            self.assertCountEqual(self.S.skyline, [S1, S0])
+        with self.subTest():
+            self.assertEqual(self.S.free_area, 11)
 
 
 class WasteMap(BaseTestCase):

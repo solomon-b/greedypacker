@@ -74,6 +74,8 @@ class BestShortSide(BaseTestCase):
             self.assertEqual(ITEM.CornerPoint, (0, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
+        with self.subTest():
+            self.assertEqual(self.BIN.free_area, 30)
 
 
 class BestLongSide(BaseTestCase):
@@ -120,6 +122,8 @@ class BestLongSide(BaseTestCase):
             self.assertEqual(ITEM.CornerPoint, (1, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
+        with self.subTest():
+            self.assertEqual(self.BIN.free_area, 49)
 
 
     def testItemInsertionSuccessRotation(self):
@@ -142,6 +146,8 @@ class BestLongSide(BaseTestCase):
             self.assertEqual(ITEM.CornerPoint, (0, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
+        with self.subTest():
+            self.assertEqual(self.BIN.free_area, 48)
 
 
 class BestAreaFit(BaseTestCase):
@@ -188,6 +194,8 @@ class BestAreaFit(BaseTestCase):
             self.assertEqual(ITEM.CornerPoint, (0, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
+        with self.subTest():
+            self.assertEqual(self.BIN.free_area, 49)
 
 
     def testItemInsertionSuccessRotation(self):
@@ -210,6 +218,8 @@ class BestAreaFit(BaseTestCase):
             self.assertEqual(ITEM.CornerPoint, (0, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
+        with self.subTest():
+            self.assertEqual(self.BIN.free_area, 48)
 
 
 class WorstLongSide(BaseTestCase):
@@ -256,6 +266,8 @@ class WorstLongSide(BaseTestCase):
             self.assertEqual(ITEM.CornerPoint, (0, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
+        with self.subTest():
+            self.assertEqual(self.BIN.free_area, 31)
 
 
     def testItemInsertionSuccessRotation(self):
@@ -278,6 +290,8 @@ class WorstLongSide(BaseTestCase):
             self.assertEqual(ITEM.CornerPoint, (0, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
+        with self.subTest():
+            self.assertEqual(self.BIN.free_area, 30)
 
 
 class WorstShortSide(BaseTestCase):
@@ -325,6 +339,8 @@ class WorstShortSide(BaseTestCase):
             self.assertEqual(ITEM.CornerPoint, (1, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
+        with self.subTest():
+            self.assertEqual(self.BIN.free_area, 31)
 
 
     def testItemInsertionSuccessRotation(self):
@@ -347,6 +363,8 @@ class WorstShortSide(BaseTestCase):
             self.assertEqual(ITEM.CornerPoint, (0, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
+        with self.subTest():
+            self.assertEqual(self.BIN.free_area, 30)
 
 
 class WorstAreaFit(BaseTestCase):
@@ -393,6 +411,8 @@ class WorstAreaFit(BaseTestCase):
             self.assertEqual(ITEM.CornerPoint, (2, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
+        with self.subTest():
+            self.assertEqual(self.BIN.free_area, 49)
 
 
     def testItemInsertionSuccessRotation(self):
@@ -415,6 +435,8 @@ class WorstAreaFit(BaseTestCase):
             self.assertEqual(ITEM.CornerPoint, (0, 0))
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
+        with self.subTest():
+            self.assertEqual(self.BIN.free_area, 48)
 
 
 class RectMerge(BaseTestCase):

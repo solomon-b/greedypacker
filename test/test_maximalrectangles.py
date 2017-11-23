@@ -187,6 +187,8 @@ class BestArea(BaseTestCase):
             self.assertEqual(I.CornerPoint, (0,0))
         with self.subTest():
             self.assertEqual(I2.CornerPoint, (0,2))
+        with self.subTest():
+            self.assertEqual(self.M.free_area, 20)
 
 
 class BestShortside(BaseTestCase):
@@ -226,6 +228,8 @@ class BestShortside(BaseTestCase):
             self.assertEqual(I.CornerPoint, (0,0))
         with self.subTest():
             self.assertEqual(I2.CornerPoint, (0,1))
+        with self.subTest():
+            self.assertEqual(self.M.free_area, 27)
 
 
 class BestLongside(BaseTestCase):
@@ -265,6 +269,8 @@ class BestLongside(BaseTestCase):
             self.assertEqual(I.CornerPoint, (0,0))
         with self.subTest():
             self.assertEqual(I2.CornerPoint, (1,0))
+        with self.subTest():
+            self.assertEqual(self.M.free_area, 27)
 
 
 class BestBottomLeft(BaseTestCase):
@@ -307,6 +313,8 @@ class BestBottomLeft(BaseTestCase):
             self.assertEqual(I2.CornerPoint, (4,0))
         with self.subTest():
             self.assertEqual(I3.CornerPoint, (0,1))
+        with self.subTest():
+            self.assertEqual(self.M.free_area, 19)
 
 
 class ContactPoint(BaseTestCase):
@@ -349,6 +357,8 @@ class ContactPoint(BaseTestCase):
             self.assertEqual(I2.CornerPoint, (1,0))
         with self.subTest():
             self.assertEqual(I3.CornerPoint, (0,1))
+        with self.subTest():
+            self.assertEqual(self.M.free_area, 22)
 
 
 class RotationTests(BaseTestCase):

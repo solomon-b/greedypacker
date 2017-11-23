@@ -74,6 +74,7 @@ class Sheet:
             self.available_height -= new_shelf.y
             new_shelf.insert(item)
             self.items.append(item)
+            self.free_area -= item.area
             return True
         return False
 
@@ -321,23 +322,3 @@ class Sheet:
             }
 
         return stats
-
-if __name__ == '__main__':
-    SHEET = Sheet(8, 5)
-    ITEM = item.Item(2, 6)
-    ITEM2 = item.Item(3, 2)
-    ITEM3 = item.Item(1, 1)
-    ITEM4 = item.Item(4, 2)
-    ITEM5 = item.Item(1, 8)
-    SHEET.insert(ITEM, heuristic='worst_width_fit')
-    SHEET.insert(ITEM2, heuristic='worst_width_fit')
-    SHEET.insert(ITEM3, heuristic='worst_width_fit')
-    SHEET.insert(ITEM4, heuristic='worst_width_fit')
-    SHEET.insert(ITEM5, heuristic='worst_width_fit')
-    print(SHEET)
-    print()
-    for i, shelf in enumerate(SHEET.shelves):
-        print('Shelf #%s: %r' % (i, str(shelf.items)))
-    print()
-    print(SHEET.bin_stats())
-
