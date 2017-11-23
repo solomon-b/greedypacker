@@ -31,9 +31,10 @@ class Guillotine:
                  split_heuristic: str='default') -> None:
         self.x = x
         self.y = y
+        self.area = self.x * self.y
+        self.free_area = self.x * self.y
         self.rMerge = rectangle_merge
         self.split_heuristic = split_heuristic
-
 
         if x == 0 or y == 0:
             #self.freerects = [] # type: List[FreeRectangle]
@@ -165,6 +166,15 @@ class Guillotine:
             return B
 
 
+    def _add_item(self, item: Item, x: int, y: int, rotate: bool = False) -> bool:
+        """ Helper method for adding items to the bin """
+        if rotate:
+            item.rotate()
+        item.CornerPoint = x, y
+        self.items.append(item)
+        self.free_area -= item.area
+
+
     def best_shortside(self, item: Item) -> bool:
         """
         Pack Item into a FreeRectangle such that
@@ -197,14 +207,12 @@ class Guillotine:
                     rotated = True
 
         if best_rect:
-            if rotated:
-                item.rotate()
-            item.CornerPoint = best_rect.x, best_rect.y
-            self.items.append(item)
+            self._add_item(item, best_rect.x, best_rect.y, rotated)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
             for rect in splits:
                 self.freerects.add(rect)
+
             if self.rMerge:
                 self.rectangle_merge()
             return True
@@ -242,10 +250,7 @@ class Guillotine:
                     rotated = True
 
         if best_rect:
-            if rotated:
-                item.rotate()
-            item.CornerPoint = best_rect.x, best_rect.y
-            self.items.append(item)
+            self._add_item(item, best_rect.x, best_rect.y, rotated)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
             for rect in splits:
@@ -284,10 +289,7 @@ class Guillotine:
                     rotated = True
 
         if best_rect:
-            if rotated:
-                item.rotate()
-            item.CornerPoint = best_rect.x, best_rect.y
-            self.items.append(item)
+            self._add_item(item, best_rect.x, best_rect.y, rotated)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
             for rect in splits:
@@ -330,10 +332,7 @@ class Guillotine:
                     rotated = True
 
         if best_rect:
-            if rotated:
-                item.rotate()
-            item.CornerPoint = best_rect.x, best_rect.y
-            self.items.append(item)
+            self._add_item(item, best_rect.x, best_rect.y, rotated)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
             for rect in splits:
@@ -375,10 +374,7 @@ class Guillotine:
                     rotated = True
 
         if best_rect:
-            if rotated:
-                item.rotate()
-            item.CornerPoint = best_rect.x, best_rect.y
-            self.items.append(item)
+            self._add_item(item, best_rect.x, best_rect.y, rotated)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
             for rect in splits:
@@ -417,10 +413,7 @@ class Guillotine:
                     rotated = True
 
         if best_rect:
-            if rotated:
-                item.rotate()
-            item.CornerPoint = best_rect.x, best_rect.y
-            self.items.append(item)
+            self._add_item(item, best_rect.x, best_rect.y, rotated)
             self.freerects.remove(best_rect)
             splits = self._split_free_rect(item, best_rect)
             for rect in splits:
@@ -498,8 +491,8 @@ class Guillotine:
         stats = {
             'width': self.x,
             'height': self.y,
-            'area': self.x * self.y,
-            'efficiency': 1-(sum([F.width*F.height for F in self.freerects])/(self.x*self.y)),
+            'area': self.area,
+            'efficiency': (self.area - self.free_area) / self.area,
             'items': self.items,
             }
 

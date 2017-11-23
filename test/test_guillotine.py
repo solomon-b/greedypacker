@@ -65,7 +65,7 @@ class BestShortSide(BaseTestCase):
         ITEM = item.Item(1, 2)
         
         self.BIN.rotation = True
-        self.BIN.freerects = [F0]
+        self.BIN.freerects = SortedListWithKey([F0], key=lambda x: x.area, load=1000)
         self.BIN.best_shortside(ITEM)
 
         with self.subTest():
