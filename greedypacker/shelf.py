@@ -7,7 +7,6 @@ ssbothwell@gmail.com
 """
 from functools import reduce
 from typing import List
-from sortedcontainers import SortedListWithKey # type: ignore
 from . import item
 from . import guillotine
 
@@ -49,7 +48,7 @@ class Sheet:
         self.x = x
         self.y = y
         self.available_height = self.y
-        self.shelves = SortedListWithKey([], key=lambda x: x.area)
+        self.shelves = []
         self.items = [] # type: List[item.Item]
         self.area = self.x * self.y
         self.free_area = self.x * self.y
@@ -70,7 +69,7 @@ class Sheet:
         if item.height <= self.available_height:
             v_offset = self.y - self.available_height
             new_shelf = Shelf(self.x, item.height, v_offset)
-            self.shelves.add(new_shelf)
+            self.shelves.append(new_shelf)
             self.available_height -= new_shelf.y
             new_shelf.insert(item)
             self.items.append(item)
