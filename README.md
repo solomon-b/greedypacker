@@ -1,5 +1,6 @@
 # Two Dimensional Bin Packing
 [![Build Status](https://travis-ci.org/ssbothwell/greedypacker.svg?branch=master)](https://travis-ci.org/ssbothwell/greedypacker)
+[![Coverage Status](https://coveralls.io/repos/github/ssbothwell/greedypacker/badge.svg?branch=master)](https://coveralls.io/github/ssbothwell/greedypacker?branch=master)
 
 Solomon Bothwell
 
