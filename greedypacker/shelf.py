@@ -127,7 +127,7 @@ class Sheet:
                                                     freeHeight,
                                                     freeX,
                                                     freeY)
-                self.wastemap.freerects.append(freeRect)
+                self.wastemap.freerects.add(freeRect)
         # Move remaining shelf width to wastemap
         if shelf.available_width > 0:
             freeWidth = shelf.available_width
@@ -138,7 +138,7 @@ class Sheet:
                                                 freeHeight,
                                                 freeX,
                                                 freeY)
-            self.wastemap.freerects.append(freeRect)
+            self.wastemap.freerects.add(freeRect)
         # Close Shelf
         shelf.available_width = 0
         # Merge rectangles in wastemap
