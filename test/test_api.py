@@ -65,6 +65,21 @@ class BestBinFit(BaseTestCase):
             self.assertEqual(ITEM3.y, 3)
 
 
+    def testNoSuchAlgo(self):
+        with self.assertRaises(ValueError):
+            M = greedypacker.BinManager(8, 4, pack_algo='foo')
+
+
+    def testItemTooBig(self):
+        M = greedypacker.BinManager(8, 4,
+                                    pack_algo='skyline',
+                                    bin_algo='bin_best_fit')
+        I = greedypacker.Item(10,20)
+        with self.assertRaises(ValueError):
+            M.add_items(I)
+            M.execute()
+        
+
     def testGuillotineBWFRotation(self):
         """
         Best Bin Fit

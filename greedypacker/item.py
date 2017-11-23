@@ -23,21 +23,3 @@ class Item:
     def rotate(self) -> None:
         self.width, self.height = self.height, self.width
         self.rotated = False if self.rotated == True else True
-
-
-    def __lt__(self, other: 'Item') -> bool:
-        return True if self.y < other.y else False
-
-
-    def __le__(self, other: 'Item') -> bool:
-        return True if self.y <= other.y else False
-
-
-    def __gt__(self, other: 'Item') -> bool:
-        return True if self.y > other.y else False
-
-
-    def __ge__(self, other: 'Item') -> bool:
-        return True if self.y >= other.y else False
-
-

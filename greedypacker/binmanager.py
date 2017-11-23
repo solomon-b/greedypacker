@@ -99,9 +99,12 @@ class BinManager:
 
         # Ensure item can theoretically fit the bin
         item_fits = False
-        if item.width <= self.bin_width or item.height >= self.bin_height:
+        if (item.width <= self.bin_width and 
+            item.height <= self.bin_height):
             item_fits = True
-        if self.rotation and (item.height <= self.bin_width or item.width >= self.bin_height):
+        if (self.rotation and 
+            (item.height <= self.bin_width and 
+            item.width <= self.bin_height)):
             item_fits = True
         if not item_fits:
             raise ValueError("Error! item too big for bin")
