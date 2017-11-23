@@ -17,7 +17,7 @@ class Item:
 
 
     def __repr__(self):
-        return 'Item(x=%r, y=%r, CornerPoint=%r)' % (self.width, self.height, self.CornerPoint)
+        return 'Item(width=%r, height=%r, x=%r, y=%r)' % (self.width, self.height, self.x, self.y)
 
 
     def rotate(self) -> None:

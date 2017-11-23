@@ -70,7 +70,7 @@ class Sheet:
         if item.height <= self.available_height:
             v_offset = self.y - self.available_height
             new_shelf = Shelf(self.x, item.height, v_offset)
-            self.shelves.append(new_shelf)
+            self.shelves.add(new_shelf)
             self.available_height -= new_shelf.y
             new_shelf.insert(item)
             self.items.append(item)

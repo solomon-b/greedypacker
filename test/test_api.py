@@ -80,6 +80,18 @@ class BestBinFit(BaseTestCase):
             M.execute()
         
 
+    def testShelfBigInsert(self):
+        M = greedypacker.BinManager(2, 4, pack_algo='shelf', heuristic='best_width_fit', wastemap=True, rotation=True)
+
+        I1 = greedypacker.item.Item(1, 1)
+        I2 = greedypacker.item.Item(2, 1)
+        I3 = greedypacker.item.Item(2, 2)
+        M.add_items(*[I1,  I2, I3])
+        M.execute()
+
+        self.assertCountEqual(M.items, [I1, I2, I3])
+
+
     def testGuillotineBWFRotation(self):
         """
         Best Bin Fit
