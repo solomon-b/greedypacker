@@ -79,10 +79,9 @@ class Sheet:
         return False
 
 
-    @staticmethod
-    def item_fits_shelf(item: item.Item, shelf: Shelf) -> bool:
+    def item_fits_shelf(self, item: item.Item, shelf: Shelf) -> bool:
         if ((item.width <= shelf.available_width and item.height <= shelf.y) or
-           (item.height <= shelf.available_width and item.width <= shelf.y)):
+           (self.rotation and item.height <= shelf.available_width and item.width <= shelf.y)):
             return True
         return False
 
