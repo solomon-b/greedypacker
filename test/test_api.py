@@ -21,11 +21,14 @@ class APITests(BaseTestCase):
         with self.subTest():
             self.assertEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,2))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 2)
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (0,0))
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (5,0))
+            self.assertEqual(ITEM3.x, 5)
+            self.assertEqual(ITEM3.y, 0)
 
 
 class BestBinFit(BaseTestCase):
@@ -52,11 +55,14 @@ class BestBinFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (5,0))
+            self.assertEqual(ITEM.x, 5)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (0,0))
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (0,3))
+            self.assertEqual(ITEM3.x, 0)
+            self.assertEqual(ITEM3.y, 3)
 
 
     def testGuillotineBWFRotation(self):
@@ -82,11 +88,14 @@ class BestBinFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (3,0))
+            self.assertEqual(ITEM2.x, 3)
+            self.assertEqual(ITEM2.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (8,0))
+            self.assertEqual(ITEM3.x, 8)
+            self.assertEqual(ITEM3.y, 0)
 
 
     def testMaximalRectangleBSS(self):
@@ -114,9 +123,11 @@ class BestBinFit(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(M.bins[0].freerects, [F0, F1, F2])
         with self.subTest():
-            self.assertEqual(I.CornerPoint, (0,0))
+            self.assertEqual(I.x, 0)
+            self.assertEqual(I.y, 0)
         with self.subTest():
-            self.assertEqual(I2.CornerPoint, (0,1))
+            self.assertEqual(I2.x, 0)
+            self.assertEqual(I2.y, 1)
 
 
     def testShelfBWFSortingRotation(self):
@@ -141,11 +152,14 @@ class BestBinFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (6,0))
+            self.assertEqual(ITEM.x, 6)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (0,0))
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (4,0))
+            self.assertEqual(ITEM3.x, 4)
+            self.assertEqual(ITEM3.y, 0)
 
 
     def testShelfBWFRotation(self):
@@ -170,11 +184,14 @@ class BestBinFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (0,1))
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 1)
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (4,1))
+            self.assertEqual(ITEM3.x, 4)
+            self.assertEqual(ITEM3.y, 1)
 
 
     def testSkyline(self):
@@ -199,11 +216,14 @@ class BestBinFit(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (0,0))
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (0,3))
+            self.assertEqual(ITEM3.x, 0)
+            self.assertEqual(ITEM3.y, 3)
 
 
 class BinFirstFit(BaseTestCase):
@@ -230,11 +250,14 @@ class BinFirstFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (6,0))
+            self.assertEqual(ITEM.x, 6)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (0,0))
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (0,0))
+            self.assertEqual(ITEM3.x, 0)
+            self.assertEqual(ITEM3.y, 0)
 
 
     def testGuillotineBWFRotation(self):
@@ -260,11 +283,14 @@ class BinFirstFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (0,0))
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (6,0))
+            self.assertEqual(ITEM3.x, 6)
+            self.assertEqual(ITEM3.y, 0)
 
 
     def testShelfBWFSortingRotation(self):
@@ -289,11 +315,14 @@ class BinFirstFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (6,0))
+            self.assertEqual(ITEM.x, 6)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (0,0))
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (4,0))
+            self.assertEqual(ITEM3.x, 4)
+            self.assertEqual(ITEM3.y, 0)
 
 
     def testShelfBWFRotation(self):
@@ -317,11 +346,14 @@ class BinFirstFit(BaseTestCase):
         with self.subTest():
             self.assertEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (0,1))
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 1)
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (4,1))
+            self.assertEqual(ITEM3.x, 4)
+            self.assertEqual(ITEM3.y, 1)
 
 
     def testSkyline(self):
@@ -346,11 +378,14 @@ class BinFirstFit(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(M.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM2.CornerPoint, (0,0))
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 0)
         with self.subTest():
-            self.assertEqual(ITEM3.CornerPoint, (0,4))
+            self.assertEqual(ITEM3.x, 0)
+            self.assertEqual(ITEM3.y, 4)
 
 
 def load_tests(loader, tests, pattern):

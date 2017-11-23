@@ -91,10 +91,10 @@ class MaximalRectangle:
         Returns the lower left and upper right 
         corners of the item's bounding box.
         """
-        return (item.CornerPoint[0],
-                item.CornerPoint[1],
-                item.CornerPoint[0]+item.width,
-                item.CornerPoint[1]+item.height)
+        return (item.x,
+                item.y,
+                item.x+item.width,
+                item.y+item.height)
 
 
     @staticmethod
@@ -251,7 +251,7 @@ class MaximalRectangle:
         if best_rect:
             if rotated:
                 item.rotate()
-            item.CornerPoint = best_rect.x, best_rect.y
+            item.x, item.y = best_rect.x, best_rect.y
             self.items.append(item)
             self.free_area -= item.area
             maximals = self.split_rectangle(best_rect, item)
@@ -298,7 +298,7 @@ class MaximalRectangle:
         if best_rect:
             if rotated:
                 item.rotate()
-            item.CornerPoint = best_rect.x, best_rect.y
+            item.x, item.y = best_rect.x, best_rect.y
             self.items.append(item)
             self.free_area -= item.area
             maximals = self.split_rectangle(best_rect, item)
@@ -344,7 +344,7 @@ class MaximalRectangle:
         if best_rect:
             if rotated:
                 item.rotate()
-            item.CornerPoint = best_rect.x, best_rect.y
+            item.x, item.y = best_rect.x, best_rect.y
             self.items.append(item)
             self.free_area -= item.area
             maximals = self.split_rectangle(best_rect, item)
@@ -391,7 +391,7 @@ class MaximalRectangle:
         if best_rect:
             if rotated:
                 item.rotate()
-            item.CornerPoint = best_rect.x, best_rect.y
+            item.x, item.y = best_rect.x, best_rect.y
             self.items.append(item)
             self.free_area -= item.area
             maximals = self.split_rectangle(best_rect, item)
@@ -471,7 +471,7 @@ class MaximalRectangle:
         if best_rect:
             if rotated:
                 item.rotate()
-            item.CornerPoint = best_rect.x, best_rect.y
+            item.x, item.y = best_rect.x, best_rect.y
             self.items.append(item)
             self.free_area -= item.area
             maximals = self.split_rectangle(best_rect, item)

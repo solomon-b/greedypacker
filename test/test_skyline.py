@@ -283,7 +283,8 @@ class WasteMap(BaseTestCase):
         """
         I5 = item.Item(1, 2)
         self.S.insert(I5)
-        self.assertEqual(I5.CornerPoint, (3, 1))
+        self.assertEqual(I5.x, 3)
+        self.assertEqual(I5.y, 1)
 
 
 def load_tests(loader, tests, pattern):

@@ -160,7 +160,8 @@ class NextFit(BaseTestCase):
             correct= [ITEM]
             self.assertEqual(self.sheet.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
 
 
     def testTwoInsertsA(self):
@@ -175,10 +176,12 @@ class NextFit(BaseTestCase):
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
             self.assertEqual(ITEM.width, 3)
             self.assertEqual(ITEM.height, 2)
-            self.assertEqual(ITEM2.CornerPoint, (3,0))
+            self.assertEqual(ITEM2.x, 3)
+            self.assertEqual(ITEM2.y, 0)
             self.assertEqual(ITEM2.width, 3)
             self.assertEqual(ITEM2.height, 2)
         with self.subTest():
@@ -197,8 +200,10 @@ class NextFit(BaseTestCase):
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
-            self.assertEqual(ITEM2.CornerPoint, (0,2))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 2)
         with self.subTest():
             self.assertEqual(self.sheet.free_area, 14)
 
@@ -217,7 +222,8 @@ class NextFit(BaseTestCase):
         with self.subTest():
             self.assertFalse(res)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.sheet.free_area, 26)
 
@@ -240,7 +246,8 @@ class NextFitNoRotation(BaseTestCase):
             correct = [ITEM]
             self.assertEqual(self.sheet.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.sheet.free_area, 20)
 
@@ -257,10 +264,12 @@ class NextFitNoRotation(BaseTestCase):
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
             self.assertEqual(ITEM.width, 3)
             self.assertEqual(ITEM.height, 2)
-            self.assertEqual(ITEM2.CornerPoint, (3,0))
+            self.assertEqual(ITEM2.x, 3)
+            self.assertEqual(ITEM2.y, 0)
         with self.subTest():
             self.assertEqual(self.sheet.free_area, 20)
 
@@ -277,8 +286,10 @@ class NextFitNoRotation(BaseTestCase):
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
-            self.assertEqual(ITEM2.CornerPoint, (0,2))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
+            self.assertEqual(ITEM2.x, 0)
+            self.assertEqual(ITEM2.y, 2)
         with self.subTest():
             self.assertEqual(self.sheet.free_area, 14)
 
@@ -297,7 +308,8 @@ class NextFitNoRotation(BaseTestCase):
         with self.subTest():
             self.assertFalse(res)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0,0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.sheet.free_area, 11)
 

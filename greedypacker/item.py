@@ -10,7 +10,6 @@ class Item:
                  rotation: bool = True) -> None:
         self.width = width
         self.height = height
-        self.CornerPoint = CornerPoint
         self.x = CornerPoint[0]
         self.y = CornerPoint[1]
         self.area = self.width * self.height

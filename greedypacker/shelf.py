@@ -32,7 +32,7 @@ class Shelf:
 
     def insert(self, item: item.Item) -> bool:
         if item.width <= self.available_width and item.height <= self.y:
-            item.CornerPoint = (self.x - self.available_width, self.vertical_offset)
+            item.x, item.y = (self.x - self.available_width, self.vertical_offset)
             self.items.append(item)
             self.available_width -= item.width
             self.area = self.available_width * self.y
@@ -122,7 +122,7 @@ class Sheet:
             if item.height < shelf.y:
                 freeWidth = item.width
                 freeHeight = shelf.y - item.height
-                freeX = item.CornerPoint[0]
+                freeX = item.x
                 freeY = item.height + shelf.vertical_offset
                 freeRect = guillotine.FreeRectangle(freeWidth,
                                                     freeHeight,

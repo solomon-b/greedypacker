@@ -184,9 +184,11 @@ class BestArea(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(self.M.freerects, [F0, F1])
         with self.subTest():
-            self.assertEqual(I.CornerPoint, (0,0))
+            self.assertEqual(I.x, 0)
+            self.assertEqual(I.y, 0)
         with self.subTest():
-            self.assertEqual(I2.CornerPoint, (0,2))
+            self.assertEqual(I2.x, 0)
+            self.assertEqual(I2.y, 2)
         with self.subTest():
             self.assertEqual(self.M.free_area, 20)
 
@@ -225,9 +227,11 @@ class BestShortside(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(self.M.freerects, [F0, F1, F2])
         with self.subTest():
-            self.assertEqual(I.CornerPoint, (0,0))
+            self.assertEqual(I.x, 0)
+            self.assertEqual(I.y, 0)
         with self.subTest():
-            self.assertEqual(I2.CornerPoint, (0,1))
+            self.assertEqual(I2.x, 0)
+            self.assertEqual(I2.y, 1)
         with self.subTest():
             self.assertEqual(self.M.free_area, 27)
 
@@ -266,9 +270,11 @@ class BestLongside(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(self.M.freerects, [F0, F1, F2])
         with self.subTest():
-            self.assertEqual(I.CornerPoint, (0,0))
+            self.assertEqual(I.x, 0)
+            self.assertEqual(I.y, 0)
         with self.subTest():
-            self.assertEqual(I2.CornerPoint, (1,0))
+            self.assertEqual(I2.x, 1)
+            self.assertEqual(I2.y, 0)
         with self.subTest():
             self.assertEqual(self.M.free_area, 27)
 
@@ -308,11 +314,14 @@ class BestBottomLeft(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(self.M.freerects, [F0, F1])
         with self.subTest():
-            self.assertEqual(I.CornerPoint, (0,0))
+            self.assertEqual(I.x, 0)
+            self.assertEqual(I.y, 0)
         with self.subTest():
-            self.assertEqual(I2.CornerPoint, (4,0))
+            self.assertEqual(I2.x, 4)
+            self.assertEqual(I2.y, 0)
         with self.subTest():
-            self.assertEqual(I3.CornerPoint, (0,1))
+            self.assertEqual(I3.x, 0)
+            self.assertEqual(I3.y, 1)
         with self.subTest():
             self.assertEqual(self.M.free_area, 19)
 
@@ -352,11 +361,14 @@ class ContactPoint(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(self.M.freerects, [F0, F1])
         with self.subTest():
-            self.assertEqual(I.CornerPoint, (0,0))
+            self.assertEqual(I.x, 0)
+            self.assertEqual(I.y, 0)
         with self.subTest():
-            self.assertEqual(I2.CornerPoint, (1,0))
+            self.assertEqual(I2.x, 1)
+            self.assertEqual(I2.y, 0)
         with self.subTest():
-            self.assertEqual(I3.CornerPoint, (0,1))
+            self.assertEqual(I3.x, 0)
+            self.assertEqual(I3.y, 1)
         with self.subTest():
             self.assertEqual(self.M.free_area, 22)
 

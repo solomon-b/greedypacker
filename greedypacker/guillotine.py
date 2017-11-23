@@ -170,7 +170,7 @@ class Guillotine:
         """ Helper method for adding items to the bin """
         if rotate:
             item.rotate()
-        item.CornerPoint = x, y
+        item.x, item.y = x, y
         self.items.append(item)
         self.free_area -= item.area
 

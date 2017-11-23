@@ -49,7 +49,8 @@ class BestShortSide(BaseTestCase):
                        self.freeRectangle(2, 2, 1, 0)]
             self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
 
@@ -71,7 +72,8 @@ class BestShortSide(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
         with self.subTest():
@@ -119,7 +121,8 @@ class BestLongSide(BaseTestCase):
                        self.freeRectangle(1, 1, 2, 0)]
             self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (1, 0))
+            self.assertEqual(ITEM.x, 1)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
         with self.subTest():
@@ -143,7 +146,8 @@ class BestLongSide(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
         with self.subTest():
@@ -191,7 +195,8 @@ class BestAreaFit(BaseTestCase):
                         self.freeRectangle(3, 3, 2, 0)]
             self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
         with self.subTest():
@@ -215,7 +220,8 @@ class BestAreaFit(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
         with self.subTest():
@@ -263,7 +269,8 @@ class WorstLongSide(BaseTestCase):
                        self.freeRectangle(2, 1, 1, 0)]
             self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
         with self.subTest():
@@ -287,7 +294,8 @@ class WorstLongSide(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
         with self.subTest():
@@ -336,7 +344,8 @@ class WorstShortSide(BaseTestCase):
                        self.freeRectangle(1, 1, 2, 0)]
             self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (1, 0))
+            self.assertEqual(ITEM.x, 1)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
         with self.subTest():
@@ -360,7 +369,8 @@ class WorstShortSide(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
         with self.subTest():
@@ -408,7 +418,8 @@ class WorstAreaFit(BaseTestCase):
                         self.freeRectangle(3, 2, 2, 1)]
             self.assertCountEqual(self.BIN.freerects, correct)
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (2, 0))
+            self.assertEqual(ITEM.x, 2)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
         with self.subTest():
@@ -432,7 +443,8 @@ class WorstAreaFit(BaseTestCase):
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
         with self.subTest():
-            self.assertEqual(ITEM.CornerPoint, (0, 0))
+            self.assertEqual(ITEM.x, 0)
+            self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.BIN.items, [ITEM])
         with self.subTest():

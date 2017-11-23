@@ -48,7 +48,7 @@ class Skyline:
         Return the rest.
         """
         # Segment not under new item
-        itemx = item.CornerPoint[0]
+        itemx = item.x
         item_end_x = itemx + item.width
         segx = segment.x
         seg_end_x = segx + segment.width
@@ -94,8 +94,8 @@ class Skyline:
             new_segments.update(self.clip_segment(seg, item))
 
         # Create new segment if room above item
-        if item.height + item.CornerPoint[1] < self.height:
-            new_seg_y = item.CornerPoint[1] + item.height
+        if item.height + item.y < self.height:
+            new_seg_y = item.y + item.height
             new_seg = SkylineSegment(segment.x, new_seg_y, item.width)
             new_segments.add(new_seg)
        
@@ -290,7 +290,7 @@ class Skyline:
         if best_seg:
             if rotation:
                 item.rotate()
-            item.CornerPoint = (best_seg.x, best_y)
+            item.x, item.y = (best_seg.x, best_y)
             self.items.append(item)
             self.free_area -= item.width * item.height
             self.skyline = self.update_segment(best_seg, best_y, item)
