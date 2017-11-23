@@ -460,7 +460,7 @@ class Guillotine:
                                                 freerect.y)
                     self.freerects.remove(freerect)
                     self.freerects.remove(match_rect)
-                    self.freerects.append(merged_rect)
+                    self.freerects.add(merged_rect)
 
 
     def insert(self, item: Item, heuristic: str = 'best_area') -> bool:
