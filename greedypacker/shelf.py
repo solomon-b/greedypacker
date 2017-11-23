@@ -316,8 +316,8 @@ class Sheet:
         stats = {
             'width': self.x,
             'height': self.y,
-            'area': self.x * self.y,
-            'efficiency': sum([i.x*i.y for i in self.items])/(self.x*self.y),
+            'area': self.area,
+            'efficiency': (self.area-self.free_area)/self.area,
             'items': self.items,
             }
 

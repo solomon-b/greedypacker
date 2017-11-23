@@ -297,3 +297,19 @@ class Skyline:
             self.merge_segments()
             return True
         return False
+
+
+    def bin_stats(self) -> dict:
+        """
+        Returns a dictionary with compiled stats on the bin tree
+        """
+
+        stats = {
+            'width': self.x,
+            'height': self.y,
+            'area': self.area,
+            'efficiency': (self.area - self.free_area) / self.area,
+            'items': self.items,
+            }
+
+        return stats
