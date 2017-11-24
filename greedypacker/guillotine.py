@@ -448,7 +448,7 @@ class Guillotine:
                                                 freerect.y)
                     self.freerects.remove(freerect)
                     self.freerects.remove(match_rect)
-                    self.freerects.append(merged_rect)
+                    self.freerects.add(merged_rect)
 
             if matching_heights:
                 heights_adjacent = list(filter(lambda r: r.x == freerect.x + freerect.width, self.freerects))
