@@ -36,6 +36,9 @@ class BinManager:
         self.bin_height = bin_height
         self.items = [] # type: List[item.Item]
         self.bin_count = 0
+        self.bin_algo = bin_algo
+        self.pack_algo = pack_algo
+        self.heuristic = heuristic
 
         if bin_algo == 'bin_best_fit':
             self.bin_sel_algo = self._bin_best_fit
