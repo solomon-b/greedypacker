@@ -220,16 +220,17 @@ class Skyline:
                     best_height = item.height + y
                     best_width = segment.width
                     best_y = y
-            fits, y = self.check_fit(item.height, item.width, i)
-            if fits:
-                if ((item.width+segment.y < best_height) or
-                    (segment.y+item.width == best_height and
-                    segment.width < best_width)):
-                    rotation = True
-                    best_seg = segment
-                    best_height = item.width + y
-                    best_width = segment.width
-                    best_y = y
+            if self.rotation:
+                fits, y = self.check_fit(item.height, item.width, i)
+                if fits:
+                    if ((item.width+segment.y < best_height) or
+                        (segment.y+item.width == best_height and
+                        segment.width < best_width)):
+                        rotation = True
+                        best_seg = segment
+                        best_height = item.width + y
+                        best_width = segment.width
+                        best_y = y
         return (best_seg, best_y, rotation)
         
 
@@ -256,16 +257,17 @@ class Skyline:
                     best_height = item.height + y
                     best_width = segment.width
                     best_y = y
-            fits, y = self.check_fit(item.height, item.width, i)
-            if fits:
-                if (wasted_area < best_waste or
-                    (wasted_area == best_waste and
-                    item.width+y < best_height)):
-                    best_seg = segment
-                    best_height = item.height + y
-                    best_width = segment.width
-                    best_y = y
-                    rotation = True
+            if self.rotation:
+                fits, y = self.check_fit(item.height, item.width, i)
+                if fits:
+                    if (wasted_area < best_waste or
+                        (wasted_area == best_waste and
+                        item.width+y < best_height)):
+                        best_seg = segment
+                        best_height = item.height + y
+                        best_width = segment.width
+                        best_y = y
+                        rotation = True
         return (best_seg, best_y, rotation)
 
 
