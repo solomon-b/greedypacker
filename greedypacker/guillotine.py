@@ -106,7 +106,6 @@ class Guillotine:
         if top_w > 0 and top_h > 0:
             top_rect = FreeRectangle(top_w, top_h, top_x, top_y)
             result.append(top_rect)
-
         return result
 
 
@@ -212,7 +211,6 @@ class Guillotine:
             splits = self._split_free_rect(item, best_rect)
             for rect in splits:
                 self.freerects.add(rect)
-
             if self.rMerge:
                 self.rectangle_merge()
             return True
@@ -436,9 +434,8 @@ class Guillotine:
             matching_heights = list(filter(lambda r: (r.height == freerect.height and
                                                       r.y == freerect.y) and
                                                       r != freerect, self.freerects))
-
             if matching_widths:
-                widths_adjacent = list(filter(lambda r: r.y == freerect.y + freerect.height, self.freerects)) # type: List[FreeRectangle]
+                widths_adjacent = list(filter(lambda r: r.y == freerect.y + freerect.height, matching_widths)) # type: List[FreeRectangle]
 
                 if widths_adjacent:
                     match_rect = widths_adjacent[0]
@@ -451,7 +448,7 @@ class Guillotine:
                     self.freerects.add(merged_rect)
 
             if matching_heights:
-                heights_adjacent = list(filter(lambda r: r.x == freerect.x + freerect.width, self.freerects))
+                heights_adjacent = list(filter(lambda r: r.x == freerect.x + freerect.width, matching_heights))
                 if heights_adjacent:
                     match_rect = heights_adjacent[0]
                     merged_rect = FreeRectangle(freerect.width+match_rect.width,
