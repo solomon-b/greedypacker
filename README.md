@@ -16,22 +16,22 @@ heuristics and optimizations from Jukka's article are included.
 
 ### Example Usage:
 ```
-In [2]: import greedypacker
+In [1]: import greedypacker
 
-In [3]: M = greedypacker.BinManager(8, 4, pack_algo='shelf', heuristic='best_width_fit', wastemap=True, rotation=True)
+In [2]: M = greedypacker.BinManager(8, 4, pack_algo='shelf', heuristic='best_width_fit', wastemap=True, rotation=True)
 
-In [4]: ITEM = greedypacker.Item(4, 2)
+In [3]: ITEM = greedypacker.Item(4, 2)
 
-In [5]: ITEM2 = greedypacker.Item(5, 2)
+In [4]: ITEM2 = greedypacker.Item(5, 2)
 
-In [6]: ITEM3 = greedypacker.Item(2, 2)
+In [5]: ITEM3 = greedypacker.Item(2, 2)
 
-In [7]: M.add_items(ITEM, ITEM2, ITEM3)
+In [6]: M.add_items(ITEM, ITEM2, ITEM3)
 
-In [8]: M.execute()
+In [7]: M.execute()
 
-In [9]: M.bins
-Out[9]: [Sheet(width=8, height=4, shelves=SortedListWithKey([{'y': 2, 'x': 8, 'available_width': 0, 'area': 6, 'vertical_offset': 0, 'items': [Item(x=5, y=2, CornerPoint=(0, 0))]}, {'y': 2, 'x': 8, 'available_width': 4, 'area': 8, 'vertical_offset': 2, 'items': [Item(x=4, y=2, CornerPoint=(0, 2))]}], key=<function Sheet.__init__.<locals>.<lambda> at 0x7f903b4f19d8>, load=1000))]
+In [8]: M.bins
+Out[8]: [Sheet(width=8, height=4, shelves=[{'y': 2, 'x': 8, 'available_width': 0, 'area': 6, 'vertical_offset': 0, 'items': [Item(width=5, height=2, x=0, y=0)]}, {'y': 2, 'x': 8, 'available_width': 4, 'area': 8, 'vertical_offset': 2, 'items': [Item(width=4, height=2, x=0, y=2)]}])]
 ```
 
 #### Algorithm Choices:
