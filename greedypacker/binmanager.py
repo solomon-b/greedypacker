@@ -28,10 +28,11 @@ class BinManager:
                  pack_algo: str = 'guillotine',
                  heuristic: str ='default',
                  split_heuristic: str = 'default',
-                 sorting: bool = True,
                  rotation: bool = True,
                  rectangle_merge: bool = True,
-                 wastemap: bool = True) -> None:
+                 wastemap: bool = True,
+                 sorting: bool = True,
+                 sorting_heuristic: str = 'DESCA') -> None:
         self.bin_width = bin_width
         self.bin_height = bin_height
         self.items = [] # type: List[item.Item]
@@ -49,6 +50,7 @@ class BinManager:
 
         self.split_heuristic = split_heuristic
         self.sorting = sorting
+        self.sorting_heuristic = sorting_heuristic
         self.rotation = rotation
         self.rectangle_merge = rectangle_merge
         self.wastemap = wastemap
@@ -56,12 +58,65 @@ class BinManager:
         defaultBin = self._bin_factory() 
         self.bins = [defaultBin]
 
+    def items_sort(self): 
+        # By Area Ascending
+        if self.sorting_heuristic == 'ASCA':
+            key = lambda el: el.width*el.height
+            self.items.sort(key=key, reverse=False)
+        # By Area Descending
+        elif self.sorting_heuristic == 'DESCA':
+            key = lambda el: el.width*el.height
+            self.items.sort(key=key, reverse=True)
+        # By Shorter Side Ascending
+        elif self.sorting_heuristic == 'ASCSS':
+            key = lambda el: el.width if el.width < el.height else el.height
+            self.items.sort(key=key, reverse=False)
+        # By Shorter Side Descending
+        elif self.sorting_heuristic == 'DESCSS':
+            key = lambda el: el.width if el.width < el.height else el.height
+            self.items.sort(key=key, reverse=True)
+        # By Longer Side Ascending
+        elif self.sorting_heuristic == 'ASCLS':
+            key = lambda el: el.width if el.width > el.height else el.height
+            self.items.sort(key=key, reverse=False)
+        # By Longer Side Descending
+        elif self.sorting_heuristic == 'DESCLS':
+            key = lambda el: el.width if el.width > el.height else el.height
+            self.items.sort(key=key, reverse=True)
+        # By Perimiter Ascending
+        elif self.sorting_heuristic == 'ASCPERIM':
+            key = lambda el: (2*el.width)+(2*el.height)
+            self.items.sort(key=key, reverse=False)
+        # By Perimiter Descending
+        elif self.sorting_heuristic == 'DESCPERIM':
+            key = lambda el: (2*el.width)+(2*el.height)
+            self.items.sort(key=key, reverse=True)
+        # By Difference in Side Length Ascending
+        elif self.sorting_heuristic == 'ASCDIFF':
+            key = lambda el: abs(el.width-el.height)
+            self.items.sort(key=key, reverse=False)
+        # By Difference in Side Length Descending
+        elif self.sorting_heuristic == 'DESCDIFF':
+            key = lambda el: abs(el.width-el.height)
+            self.items.sort(key=key, reverse=True)
+        # By Side Ratio Ascending
+        elif self.sorting_heuristic == 'ASCRATIO':
+            key = lambda el: el.width/el.height
+            self.items.sort(key=key, reverse=False)
+        # By Side Ratio Descending
+        elif self.sorting_heuristic == 'DESCRATIO':
+            key = lambda el: el.width/el.height
+            self.items.sort(key=key, reverse=True)
+        # Default to DESCA
+        else:
+            key = lambda el: el.width*el.height
+            self.items.sort(key=key, reverse=True)
 
     def add_items(self, *items: item.Item) -> None:
         for item in items:
             self.items.append(item)
         if self.sorting:
-            self.items.sort(key=lambda el: el.width*el.height, reverse=True)
+            self.items_sort()
 
 
     def _bin_factory(self) -> Any:

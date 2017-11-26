@@ -6,11 +6,11 @@ Solomon Bothwell
 
 ssbothwell@gmail.com
 
-A 2D greedypackering library based on on Jukka Jylänki's article ["A Thousand
+A 2D bin packing library based on on Jukka Jylänki's article ["A Thousand
 Ways to Pack the Bin - A Practical Approach to Two-Dimensional Rectangle Bin
 Packing."](http://clb.demon.fi/files/RectangleBinPack.pdf)
 
-This library is intended for offline greedypackeing. All algorithms
+This library is intended for offline packing. All algorithms
 heuristics and optimizations from Jukka's article are included.
 
 
@@ -183,7 +183,25 @@ following:
 All optimizations are passed in as keyword arguments when the GreedyPacker
 instance is created:
 
-    
+##### Item Pre-Sort
+Items can be pre-sorted according to a number of settings for 
+the 'sorting_heuristic' named argument:
+
+* ASCA: Sort By Area Ascending
+* DESCA: Sort By Area Descending (This is the default setting)
+* ASCSS: Sort By Shorter Side Ascending
+* DESCSS: Sort By Shorter Side Descending
+* ASCLS: Sort By Longer Side Ascending
+* DESCLS: Sort By Longer Side Descending
+* ASCPERIM: Sort By Perimeter Ascending
+* DESCPERIM: Sort By Perimeter Descending
+* ASCDIFF: Sort by The ABS Difference Between Sides Ascending
+* DESCDIFF: Sort By The ABS Difference Between Sides Descending
+* ASCRATIO: Sort By The Ratio of The Sides Ascending
+* DESCRATIO: Sort By The Ratio of The Sides Descending
+
+Sorting can be disabled by setting the 'sorting' named argument to False.
+
 ##### Shelf Packing:
 
 ###### Wastemap
