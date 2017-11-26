@@ -37,7 +37,7 @@ Out[9]: [Sheet(width=8, height=4, shelves=SortedListWithKey([{'y': 2, 'x': 8, 'a
 #### Algorithm Choices:
 * Shelf:
 
-  ![Shelf Rendering](https://raw.githubusercontent.com/ssbothwell/greedypacker/master/static/shelfAlgorithm-next_fit_Heuristic.png)
+  ![Shelf Rendering](https://raw.githubusercontent.com/ssbothwell/greedypacker/master/static/shelfAlgorithm-next_fitHeuristic.png)
 
   Divide the bin into horizontal rows with heights equal to the
   first Item inserted. Track the rows in a list and choose a
@@ -50,7 +50,7 @@ Out[9]: [Sheet(width=8, height=4, shelves=SortedListWithKey([{'y': 2, 'x': 8, 'a
 
 * Guillotine:
 
-  ![Guillotine Rendering](https://raw.githubusercontent.com/ssbothwell/greedypacker/master/static/guillotineAlgorithm-best_shortside_Heuristic.png)
+  ![Guillotine Rendering](https://raw.githubusercontent.com/ssbothwell/greedypacker/master/static/guillotineAlgorithm-best_shortsideHeuristic.png)
 
   Place items into the bin starting with its lower left corner.
   For each insertion, split the bin into smaller sections
@@ -68,7 +68,7 @@ Out[9]: [Sheet(width=8, height=4, shelves=SortedListWithKey([{'y': 2, 'x': 8, 'a
 
 * Maximal Rectangles:
 
-  ![Maximal Rectangle Rendering](https://raw.githubusercontent.com/ssbothwell/greedypacker/master/static/maximal_rectangleAlgorithm-bottom_left_Heuristic.png)
+  ![Maximal Rectangle Rendering](https://raw.githubusercontent.com/ssbothwell/greedypacker/master/static/maximal_rectangleAlgorithm-bottom_leftHeuristic.png)
 
   In the Guillotine algorithm FreeRectangles can be split either
   on their horizontal or vertical axis. The choice of axis can
