@@ -233,7 +233,9 @@ class MaximalRectangle:
             if not self.item_fits_rect(item, rect):
                 continue
             area = rect.width*rect.height 
-            if area < best_area:
+            if ((area < best_area) or
+                (area == best_area and
+                rect.y < best_rect.y)):
                 best_rect = rect
                 best_area = area
                 rotated = False
@@ -243,7 +245,9 @@ class MaximalRectangle:
                 if not self.item_fits_rect(item, rect, rotation=True):
                     continue
                 area = rect.width*rect.height 
-                if area < best_area:
+                if ((area < best_area) or
+                    (area == best_area and
+                    rect.y < best_rect.y)):
                     best_rect = rect
                     best_area = area
                     rotated = True
@@ -279,7 +283,9 @@ class MaximalRectangle:
                 continue
             shortside = min(rect.width-item.width,
                             rect.height-item.height)
-            if shortside < best_shortside:
+            if ((shortside < best_shortside) or 
+                (shortside == best_shortside and 
+                 rect.y < best_rect.y)):
                 best_rect = rect
                 best_shortside = shortside
                 rotated = False
@@ -290,7 +296,9 @@ class MaximalRectangle:
                     continue
                 shortside = min(rect.width-item.width,
                                 rect.height-item.height)
-                if shortside < best_shortside:
+                if ((shortside < best_shortside) or 
+                    (shortside == best_shortside and 
+                     rect.y < best_rect.y)):
                     best_rect = rect
                     best_shortside = shortside
                     rotated = True
@@ -326,7 +334,9 @@ class MaximalRectangle:
                 continue
             longside = max(rect.width-item.width,
                            rect.height-item.height)
-            if longside < best_longside:
+            if ((longside < best_longside) or
+                (longside == best_longside and
+                rect.y < best_y)):
                 best_rect = rect
                 best_longside = longside
 
@@ -336,7 +346,9 @@ class MaximalRectangle:
                     continue
                 longside = max(rect.width-item.width,
                            rect.height-item.height)
-                if longside < best_longside:
+                if ((longside < best_longside) or
+                    (longside == best_longside and
+                    rect.y < best_rect.y)):
                     best_rect = rect
                     best_longside = longside
                     rotated = True
