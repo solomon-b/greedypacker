@@ -382,6 +382,23 @@ class BinFirstFit(BaseTestCase):
             self.assertEqual(ITEM3.x, 4)
             self.assertEqual(ITEM3.y, 1)
 
+    def testShelfBWFRotationIdenticalItems(self):
+        """
+        Manually insert two identical items
+        """
+        ITEM = greedypacker.Item(1, 2)
+        ITEM2 = greedypacker.Item(1, 2)
+        M = greedypacker.BinManager(10, 5,
+                               pack_algo='shelf',
+                               bin_algo='bin_first_fit',
+                               heuristic='best_width_fit',
+                               sorting_heuristic='ASCA',
+                               rotation=True)
+        M.add_items(ITEM, ITEM2)
+        M.execute()
+        #print(M.bins)
+        #self.assertCountEqual(M.bins[0].items, [ITEM, ITEM2])
+
 
     def testSkyline(self):
         """

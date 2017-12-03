@@ -29,13 +29,22 @@ class Shelf:
         #return "Shelf(Available Width=%r, Height=%r, Vertical Offset=%r)" % (self.available_width, self.y, self.vertical_offset)
 
 
-    def insert(self, item: item.Item) -> bool:
+    def insert(self, item: item.Item, rotation: bool=True) -> bool:
         if item.width <= self.available_width and item.height <= self.y:
             item.x, item.y = (self.x - self.available_width, self.vertical_offset)
             self.items.append(item)
             self.available_width -= item.width
             self.area = self.available_width * self.y
             return True
+        if rotation:
+            if (item.height <= self.available_width and
+                item.width <= self.y):
+                item.rotate()
+                item.x, item.y = (self.x - self.available_width, self.vertical_offset)
+                self.items.append(item)
+                self.available_width -= item.width
+                self.area = self.available_width * self.y
+                return True
         return False
 
 
@@ -105,7 +114,7 @@ class Sheet:
             return False
         if self.rotation:
             self.rotate_to_shelf(item, shelf)
-        res = shelf.insert(item)
+        res = shelf.insert(item, self.rotation)
         if res:
             self.items.append(item)
             self.free_area -= item.area

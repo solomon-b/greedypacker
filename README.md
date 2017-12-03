@@ -70,21 +70,17 @@ Out[8]: [Sheet(width=8, height=4, shelves=[{'y': 2, 'x': 8, 'available_width': 0
 
   ![Maximal Rectangle Rendering](https://raw.githubusercontent.com/ssbothwell/greedypacker/master/static/maximal_rectangleAlgorithm-bottom_leftHeuristic.png)
 
-  In the Guillotine algorithm FreeRectangles can be split either
-  on their horizontal or vertical axis. The choice of axis can
-  be fixed or can be specified using the Split Rules optimization.
-  Rather then choosing a split axis, Maximal Rectangles adds both
-  possible splits to the list of FreeRectangles. This ensures that
-  the largest possible rectangular areas are present in the
-  FreeRectangles list at all times. 
+  Rather then choosing a split axis like in the Guillotine Algorithm, Maximal
+  Rectangles adds both possible splits to the list of FreeRectangles. This
+  ensures that the largest possible rectangular areas are present in the
+  FreeRectangles list at all times.  
 
-  Because a single point in the bin can now be represented by 
-  multiple FreeRectangles, the list must be carefully pruned 
-  between Item insertions. Any FreeRectangle that intersects
-  the area occupied by the newly inserted Item is split such to
-  remove the intersection. Additionally, any FreeRectangle which
-  is fully overlapped by another FreeRectangle is deleleted from
-  the list.
+  Because a single point in the bin can now be represented by multiple
+  FreeRectangles, the list must be carefully pruned between Item insertions.
+  Any FreeRectangle that intersects the area occupied by the newly inserted
+  Item is split such to remove the intersection. Additionally, any
+  FreeRectangle which is fully overlapped by another FreeRectangle is deleleted
+  from the list.
 
   ```
   M = greedypacker.BinManager(8, 4, pack_algo='maximal_rectangle', heuristic='bottom_left', rotation=True)
@@ -94,16 +90,14 @@ Out[8]: [Sheet(width=8, height=4, shelves=[{'y': 2, 'x': 8, 'available_width': 0
 
   ![Skyline Rendering](https://raw.githubusercontent.com/ssbothwell/greedypacker/master/static/skylineAlgorithm-bottom_leftHeuristic.png)
 
-  Rather then track a list of all FreeRectangles or Shelves, the
-  Skyline algorithm packs the list from bottom to top and only
-  tracks the top edge of the topmost items packed into the bin.
-  This creates a 'skyline', or envelope. The skyline list grows
-  linearly with the number of packed items.
+  Rather then track a list of all FreeRectangles or Shelves, the Skyline
+  algorithm packs the list from bottom to top and only tracks the top edge of
+  the topmost items packed into the bin.  This creates a 'skyline', or
+  envelope. The skyline list grows linearly with the number of packed items.
 
-  Because it only tracks the topmost edge, this algorithm is
-  lossy and has the potential to lose track of useable space trapped
-  behind the skyline. This can be countered by using the wastemap
-  optimization from the Shelf algorithm.
+  Because it only tracks the topmost edge, this algorithm is lossy and has the
+  potential to lose track of useable space trapped behind the skyline. This can
+  be countered by using the wastemap optimization from the Shelf algorithm.
 
   ```
   S = greedypacker.BinManager(8, 4, pack_algo='skyline', heuristic='bottom_left', rotation=True)

@@ -118,6 +118,17 @@ class shelfObject(BaseTestCase):
             self.assertEqual(self.shelf.available_width, correct)
 
 
+    def testInsertTwoIdenticalItems(self):
+        """
+        Manually insert two identical items
+        """
+        ITEM = item.Item(1, 2)
+        ITEM2 = item.Item(1, 2)
+        self.shelf.insert(ITEM)
+        self.shelf.insert(ITEM2)
+        self.assertCountEqual(self.shelf.items, [ITEM, ITEM2])
+
+
     def testItemTooWide(self):
         """
         Manual insertion of oversized (width) object into a shelf
@@ -226,6 +237,17 @@ class NextFit(BaseTestCase):
             self.assertEqual(ITEM.y, 0)
         with self.subTest():
             self.assertEqual(self.sheet.free_area, 26)
+
+
+    def testTwoInsertsD(self):
+        """
+        Manually insert two identical items
+        """
+        ITEM = item.Item(1, 2)
+        ITEM2 = item.Item(1, 2)
+        self.sheet.insert(ITEM, heuristic='next_fit')
+        self.sheet.insert(ITEM2, heuristic='next_fit')
+        self.assertCountEqual(self.sheet.items, [ITEM, ITEM2])
 
 
 class NextFitNoRotation(BaseTestCase):
