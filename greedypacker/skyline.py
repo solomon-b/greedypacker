@@ -258,6 +258,7 @@ class Skyline:
                     best_height = item.height + y
                     best_width = segment.width
                     best_y = y
+                    rotation = False
             if self.rotation:
                 fits, y = self.check_fit(item.height, item.width, i)
                 if fits:
