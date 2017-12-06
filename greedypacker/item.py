@@ -14,6 +14,7 @@ class Item:
         self.y = CornerPoint[1]
         self.area = self.width * self.height
         self.rotated = False
+        self.id = 0
 
 
     def __repr__(self):

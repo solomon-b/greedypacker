@@ -16,7 +16,6 @@ from .item import Item
 
 
 class FreeRectangle(typing.NamedTuple('FreeRectangle', [('width', int), ('height', int), ('x', int), ('y', int)])):
-
     __slots__ = ()
     @property
     def area(self):
@@ -47,19 +46,6 @@ class Guillotine:
 
     def __repr__(self) -> str:
         return "Guillotine(%r)" % (self.items)
-
-
-    def _fitted_rects(self, item: Item,
-                      rotation: bool = False) -> List[FreeRectangle]:
-        """
-        Returns a list of FreeRectangles that the item fits
-        """
-        width = item.width if not rotation else item.height
-        height = item.height if not rotation else item.width
-        return [rect for rect
-                in self.freerects
-                if rect.width >= width
-                and rect.height >= height]
 
 
     @staticmethod
