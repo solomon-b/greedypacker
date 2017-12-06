@@ -369,6 +369,154 @@ class MaximalRectangle:
         return False
 
 
+    def worst_shortside(self, item: Item) -> bool:
+        """
+        Pack Item into a FreeRectangle such that
+        the smaller leftover side is maximized, ie:
+        pick the FreeRectangle where min(Fw - Iw, Fh - Ih)
+        is the greatest.
+        """
+        worst_rect = None
+        worst_shortside = float('inf')
+        rotated = False
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            shortside = min(rect.width-item.width,
+                            rect.height-item.height)
+            if ((shortside > worst_shortside) or 
+                (shortside == worst_shortside and 
+                 rect.y > worst_rect.y)):
+                worst_rect = rect
+                worst_shortside = shortside
+                rotated = False
+
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                shortside = min(rect.width-item.width,
+                                rect.height-item.height)
+                if ((shortside > worst_shortside) or 
+                    (shortside == worst_shortside and 
+                     rect.y > worst_rect.y)):
+                    worst_rect = rect
+                    worst_shortside = shortside
+                    rotated = True
+
+        if worst_rect:
+            if rotated:
+                item.rotate()
+            item.x, item.y = worst_rect.x, worst_rect.y
+            self.items.append(item)
+            self.free_area -= item.area
+            maximals = self.split_rectangle(worst_rect, item)
+            self.freerects.remove(worst_rect)
+            self.freerects += maximals
+            itemBounds = self.item_bounds(item)
+
+            self.prune_overlaps(itemBounds)
+            return True
+        return False
+
+
+    def worst_longside(self, item: Item) -> bool:
+        """
+        Pack Item into a FreeRectangle such that
+        the larger leftover side is maximized, ie:
+        pick the FreeRectangle where max(Fw - Iw, Fh - Ih)
+        is the greatest.
+        """
+        worst_rect = None
+        worst_longside = float('inf')
+        rotated = False
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            longside = max(rect.width-item.width,
+                           rect.height-item.height)
+            if ((longside > worst_longside) or
+                (longside == worst_longside and
+                rect.y > worst_y)):
+                worst_rect = rect
+                worst_longside = longside
+
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                longside = max(rect.width-item.width,
+                           rect.height-item.height)
+                if ((longside > worst_longside) or
+                    (longside == worst_longside and
+                    rect.y > worst_rect.y)):
+                    worst_rect = rect
+                    worst_longside = longside
+                    rotated = True
+
+        if worst_rect:
+            if rotated:
+                item.rotate()
+            item.x, item.y = worst_rect.x, worst_rect.y
+            self.items.append(item)
+            self.free_area -= item.area
+            maximals = self.split_rectangle(worst_rect, item)
+            self.freerects.remove(worst_rect)
+            self.freerects += maximals
+            itemBounds = self.item_bounds(item)
+
+            self.prune_overlaps(itemBounds)
+            return True
+        return False
+
+
+    def worst_area(self, item: Item) -> bool:
+        """
+        Insert item into rectangle with largest
+        area
+        """
+        worst_rect = None
+        worst_area = float('inf')
+        rotated = False
+        for rect in self.freerects:
+            if not self.item_fits_rect(item, rect):
+                continue
+            area = rect.width*rect.height 
+            if ((area > worst_area) or
+                (area == worst_area and
+                rect.y > worst_rect.y)):
+                worst_rect = rect
+                worst_area = area
+                rotated = False
+
+        if self.rotation:
+            for rect in self.freerects:
+                if not self.item_fits_rect(item, rect, rotation=True):
+                    continue
+                area = rect.width*rect.height 
+                if ((area > worst_area) or
+                    (area == worst_area and
+                    rect.y > worst_rect.y)):
+                    worst_rect = rect
+                    worst_area = area
+                    rotated = True
+
+        if worst_rect:
+            if rotated:
+                item.rotate()
+            item.x, item.y = worst_rect.x, worst_rect.y
+            self.items.append(item)
+            self.free_area -= item.area
+            maximals = self.split_rectangle(worst_rect, item)
+            self.freerects.remove(worst_rect)
+            self.freerects += maximals
+            itemBounds = self.item_bounds(item)
+
+            self.prune_overlaps(itemBounds)
+            return True
+        return False
+
+
     def best_bottomleft(self, item: Item) -> bool:
         """
         Pack Item into a FreeRectangle such that
@@ -506,6 +654,12 @@ class MaximalRectangle:
             return self.best_longside(item)
         elif heuristic == 'best_area':
             return self.best_area(item)
+        elif heuristic == 'worst_shortside':
+            return self.worst_shortside(item)
+        elif heuristic == 'worst_longside':
+            return self.worst_longside(item)
+        elif heuristic == 'worst_area':
+            return self.worst_area(item)
         elif heuristic == 'bottom_left':
             return self.best_bottomleft(item)
         elif heuristic == 'contact_point':
