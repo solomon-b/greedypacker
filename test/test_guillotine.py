@@ -10,7 +10,7 @@ from .util import stdout_redirect
 
 class BestShortSide(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(8, 4, rotation=False)
+        self.BIN = guillotine.GuillotineBSSF(8, 4, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
         
 
@@ -27,7 +27,7 @@ class BestShortSide(BaseTestCase):
         RectMerge == False
         """
         ITEM = item.Item(5, 9)
-        self.assertFalse(self.BIN.best_shortside(ITEM))
+        self.assertFalse(self.BIN.insert(ITEM))
         
 
     def testItemInsertionSuccess(self):
@@ -42,7 +42,7 @@ class BestShortSide(BaseTestCase):
         ITEM = item.Item(1, 1)
 
         self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
-        self.BIN.best_shortside(ITEM)
+        self.BIN.insert(ITEM)
 
         with self.subTest():
             correct = [self.freeRectangle(1, 1, 0, 1),
@@ -67,7 +67,7 @@ class BestShortSide(BaseTestCase):
         
         self.BIN.rotation = True
         self.BIN.freerects = SortedListWithKey([F0], key=lambda x: x.area, load=1000)
-        self.BIN.best_shortside(ITEM)
+        self.BIN.insert(ITEM)
 
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
@@ -82,7 +82,7 @@ class BestShortSide(BaseTestCase):
 
 class BestLongSide(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
+        self.BIN = guillotine.GuillotineBLSF(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -99,7 +99,7 @@ class BestLongSide(BaseTestCase):
         RectMerge == False
         """
         ITEM = item.Item(5, 11)
-        self.assertFalse(self.BIN.best_longside(ITEM))
+        self.assertFalse(self.BIN.insert(ITEM))
 
 
     def testItemInsertionSuccess(self):
@@ -114,7 +114,7 @@ class BestLongSide(BaseTestCase):
         ITEM = item.Item(1, 1)
 
         self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
-        self.BIN.best_longside(ITEM)
+        self.BIN.insert(ITEM)
 
         with self.subTest():
             correct = [self.freeRectangle(1, 3, 0, 0),
@@ -141,7 +141,7 @@ class BestLongSide(BaseTestCase):
         
         self.BIN.rotation = True
         self.BIN.freerects = [F0]
-        self.BIN.best_longside(ITEM)
+        self.BIN.insert(ITEM)
 
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
@@ -156,7 +156,7 @@ class BestLongSide(BaseTestCase):
 
 class BestAreaFit(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
+        self.BIN = guillotine.GuillotineBAF(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -188,7 +188,7 @@ class BestAreaFit(BaseTestCase):
         ITEM = item.Item(1, 1)
         
         self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
-        self.BIN.best_area(ITEM)
+        self.BIN.insert(ITEM)
         with self.subTest():
             correct = [self.freeRectangle(2, 1, 0, 1),
                         self.freeRectangle(1, 1, 1, 0),
@@ -215,7 +215,7 @@ class BestAreaFit(BaseTestCase):
         
         self.BIN.rotation = True
         self.BIN.freerects = [F0]
-        self.BIN.best_area(ITEM)
+        self.BIN.insert(ITEM)
 
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
@@ -230,7 +230,7 @@ class BestAreaFit(BaseTestCase):
 
 class WorstLongSide(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(8, 4, rotation=False)
+        self.BIN = guillotine.GuillotineWLSF(8, 4, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
         
 
@@ -247,7 +247,7 @@ class WorstLongSide(BaseTestCase):
         RectMerge == False
         """
         ITEM = item.Item(5, 9)
-        self.assertFalse(self.BIN.worst_shortside(ITEM))
+        self.assertFalse(self.BIN.insert(ITEM))
         
 
     def testItemInsertionSuccess(self):
@@ -262,7 +262,7 @@ class WorstLongSide(BaseTestCase):
         ITEM = item.Item(1, 1)
 
         self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
-        self.BIN.worst_longside(ITEM)
+        self.BIN.insert(ITEM)
 
         with self.subTest():
             correct = [self.freeRectangle(1, 2, 0, 1),
@@ -289,7 +289,7 @@ class WorstLongSide(BaseTestCase):
         
         self.BIN.rotation = True
         self.BIN.freerects = [F0]
-        self.BIN.worst_longside(ITEM)
+        self.BIN.insert(ITEM)
 
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
@@ -304,7 +304,7 @@ class WorstLongSide(BaseTestCase):
 
 class WorstShortSide(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(8, 4, rotation=False)
+        self.BIN = guillotine.GuillotineWSSF(8, 4, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
         
 
@@ -321,7 +321,7 @@ class WorstShortSide(BaseTestCase):
         RectMerge == False
         """
         ITEM = item.Item(5, 9)
-        self.assertFalse(self.BIN.worst_shortside(ITEM))
+        self.assertFalse(self.BIN.insert(ITEM))
         
 
     def testItemInsertionSuccess(self):
@@ -336,7 +336,7 @@ class WorstShortSide(BaseTestCase):
         ITEM = item.Item(1, 1)
 
         self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
-        self.BIN.worst_shortside(ITEM)
+        self.BIN.insert(ITEM)
 
         with self.subTest():
             correct = [self.freeRectangle(1, 2, 0, 0),
@@ -364,7 +364,7 @@ class WorstShortSide(BaseTestCase):
         
         self.BIN.rotation = True
         self.BIN.freerects = [F0]
-        self.BIN.worst_shortside(ITEM)
+        self.BIN.insert(ITEM)
 
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
@@ -379,7 +379,7 @@ class WorstShortSide(BaseTestCase):
 
 class WorstAreaFit(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
+        self.BIN = guillotine.GuillotineWAF(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -411,7 +411,7 @@ class WorstAreaFit(BaseTestCase):
         ITEM = item.Item(1, 1)
         
         self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
-        self.BIN.worst_area(ITEM)
+        self.BIN.insert(ITEM)
         with self.subTest():
             correct = [self.freeRectangle(2, 2, 0, 0),
                         self.freeRectangle(2, 1, 3, 0),
@@ -438,7 +438,7 @@ class WorstAreaFit(BaseTestCase):
         
         self.BIN.rotation = True
         self.BIN.freerects = [F0]
-        self.BIN.worst_area(ITEM)
+        self.BIN.insert(ITEM)
 
         with self.subTest():
             self.assertCountEqual(self.BIN.freerects, [])
@@ -453,7 +453,7 @@ class WorstAreaFit(BaseTestCase):
 
 class RectMerge(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
+        self.BIN = guillotine.GuillotineBAF(10, 5, rotation=False)
         self.freeRectangle = guillotine.FreeRectangle
         self.BIN.rMerge = True
 
@@ -479,7 +479,7 @@ class RectMerge(BaseTestCase):
 
 class BinStats(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.Guillotine(10, 5, rotation=False)
+        self.BIN = guillotine.GuillotineBAF(10, 5, rotation=False)
 
 
     def tearDown(self):

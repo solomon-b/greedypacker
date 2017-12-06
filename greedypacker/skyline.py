@@ -34,7 +34,7 @@ class Skyline:
         self.rotation = rotation
         self.use_waste_map = wastemap
         if self.use_waste_map:
-            self.wastemap = guillotine.Guillotine(0, 0, rotation = self.rotation)
+            self.wastemap = guillotine.GuillotineBAF(0, 0, rotation = self.rotation)
 
 
     def __repr__(self) -> str:
