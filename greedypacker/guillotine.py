@@ -119,24 +119,6 @@ class Guillotine:
 
 
     @staticmethod
-    def _rectangle_reduce(fitted_rects: List[FreeRectangle],
-                          op = operator.lt,
-                          field: str = 'width') -> FreeRectangle:
-        """
-        Reduces a list of FreeRectangles and returns the result
-        """
-        if fitted_rects:
-            if field == 'width':
-                compare = lambda a, b: a if op(a.width, b.width) else b
-            if field == 'height':
-                compare = lambda a, b: a if op(a.height, b.height) else b
-            if field == 'area':
-                compare = lambda a, b: a if op(a.area, b.area) else b
-            return reduce(compare, fitted_rects)
-        return None
-
-
-    @staticmethod
     def _compare_two_freerects(A: FreeRectangle, B: FreeRectangle) -> FreeRectangle:
         """
         Returns the smaller of two FreeRectangles
