@@ -189,7 +189,7 @@ class BinManager:
             for i, binn in enumerate(self.bins):
                 best_in_bin = None
                 for rect in binn.freerects:
-                    if binn.item_fits_rect(item, rect):
+                    if binn._item_fits_rect(item, rect):
                         best_in_bin = rect
                         break
                 if not best_in_bin:

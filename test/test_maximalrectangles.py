@@ -25,7 +25,7 @@ class StaticMethods(BaseTestCase):
         I = item.Item(2, 4)
         F = maximal_rectangles.FreeRectangle(2, 4, 0 ,0)
 
-        self.assertTrue(self.M.item_fits_rect(I, F))
+        self.assertTrue(self.M._item_fits_rect(I, F))
 
 
     def testItemDoesntFitsRect(self):
@@ -36,7 +36,7 @@ class StaticMethods(BaseTestCase):
         I = item.Item(2, 4)
         F = maximal_rectangles.FreeRectangle(2, 3, 0, 0)
 
-        self.assertFalse(self.M.item_fits_rect(I, F))
+        self.assertFalse(self.M._item_fits_rect(I, F))
 
     
     def testSplitRectangle(self):

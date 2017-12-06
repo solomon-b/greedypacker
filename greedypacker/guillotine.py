@@ -49,7 +49,7 @@ class Guillotine:
 
 
     @staticmethod
-    def item_fits_rect(item: Item,
+    def _item_fits_rect(item: Item,
                        rect: FreeRectangle,
                        rotation: bool=False) -> bool:
         if (not rotation and
@@ -171,7 +171,7 @@ class Guillotine:
         best_shortside = float('inf')
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             shortside = min(rect.width-item.width,
                             rect.height-item.height)
@@ -182,7 +182,7 @@ class Guillotine:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 shortside = min(rect.width-item.height,
                                 rect.height-item.width)
@@ -214,7 +214,7 @@ class Guillotine:
         best_longside = float('inf')
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             longside = max(rect.width-item.width,
                            rect.height-item.height)
@@ -224,7 +224,7 @@ class Guillotine:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 longside = max(rect.width-item.height,
                            rect.height-item.width)
@@ -254,7 +254,7 @@ class Guillotine:
         best_area = float('inf')
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             area = rect.width*rect.height 
             if area < best_area:
@@ -264,7 +264,7 @@ class Guillotine:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 area = rect.width*rect.height 
                 if area < best_area:
@@ -295,7 +295,7 @@ class Guillotine:
         best_shortside = -1
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             shortside = min(rect.width-item.width,
                             rect.height-item.height)
@@ -306,7 +306,7 @@ class Guillotine:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 shortside = min(rect.width-item.height,
                                 rect.height-item.width)
@@ -338,7 +338,7 @@ class Guillotine:
         best_longside = -1
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             longside = max(rect.width-item.width,
                            rect.height-item.height)
@@ -348,7 +348,7 @@ class Guillotine:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 longside = max(rect.width-item.height,
                                rect.height-item.width)
@@ -378,7 +378,7 @@ class Guillotine:
         best_area = -1
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             area = rect.width*rect.height 
             if area > best_area:
@@ -388,7 +388,7 @@ class Guillotine:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 area = rect.width*rect.height 
                 if area > best_area:

@@ -43,7 +43,7 @@ class MaximalRectangle:
 
 
     @staticmethod
-    def item_fits_rect(item: Item,
+    def _item_fits_rect(item: Item,
                        rect: FreeRectangle,
                        rotation: bool=False) -> bool:
         if (not rotation and
@@ -230,7 +230,7 @@ class MaximalRectangle:
         best_area = float('inf')
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             area = rect.width*rect.height 
             if ((area < best_area) or
@@ -242,7 +242,7 @@ class MaximalRectangle:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 area = rect.width*rect.height 
                 if ((area < best_area) or
@@ -279,7 +279,7 @@ class MaximalRectangle:
         best_shortside = float('inf')
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             shortside = min(rect.width-item.width,
                             rect.height-item.height)
@@ -292,7 +292,7 @@ class MaximalRectangle:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 shortside = min(rect.width-item.width,
                                 rect.height-item.height)
@@ -330,7 +330,7 @@ class MaximalRectangle:
         best_longside = float('inf')
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             longside = max(rect.width-item.width,
                            rect.height-item.height)
@@ -342,7 +342,7 @@ class MaximalRectangle:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 longside = max(rect.width-item.width,
                            rect.height-item.height)
@@ -380,7 +380,7 @@ class MaximalRectangle:
         worst_shortside = float('inf')
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             shortside = min(rect.width-item.width,
                             rect.height-item.height)
@@ -393,7 +393,7 @@ class MaximalRectangle:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 shortside = min(rect.width-item.width,
                                 rect.height-item.height)
@@ -431,7 +431,7 @@ class MaximalRectangle:
         worst_longside = float('inf')
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             longside = max(rect.width-item.width,
                            rect.height-item.height)
@@ -443,7 +443,7 @@ class MaximalRectangle:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 longside = max(rect.width-item.width,
                            rect.height-item.height)
@@ -479,7 +479,7 @@ class MaximalRectangle:
         worst_area = float('inf')
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             area = rect.width*rect.height 
             if ((area > worst_area) or
@@ -491,7 +491,7 @@ class MaximalRectangle:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 area = rect.width*rect.height 
                 if ((area > worst_area) or
@@ -529,7 +529,7 @@ class MaximalRectangle:
         best_topy = float('inf')
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
             topy = item.height + rect.y  
             if ((topy == best_topy and rect.x < best_rect.x) or # type: ignore
@@ -539,7 +539,7 @@ class MaximalRectangle:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 topy = item.height + rect.y  
                 if ((topy == best_topy and rect.x < best_rect.x) or
@@ -587,7 +587,7 @@ class MaximalRectangle:
         best_perim = -1
         rotated = False
         for rect in self.freerects:
-            if not self.item_fits_rect(item, rect):
+            if not self._item_fits_rect(item, rect):
                 continue
 
             perim = 0
@@ -609,7 +609,7 @@ class MaximalRectangle:
 
         if self.rotation:
             for rect in self.freerects:
-                if not self.item_fits_rect(item, rect, rotation=True):
+                if not self._item_fits_rect(item, rect, rotation=True):
                     continue
                 perim = 0
                 if rect.x == 0 or rect.x + item.width == self.x:
