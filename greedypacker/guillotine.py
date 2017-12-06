@@ -414,12 +414,12 @@ class Guillotine:
         Finds pairs of free rectangles and merges them if they are mergable.
         """
         for freerect in self.freerects:
-            matching_widths = list(filter(lambda r: (r.width == freerect.width and
-                                                     r.x == freerect.x) and
-                                                     r != freerect, self.freerects))
-            matching_heights = list(filter(lambda r: (r.height == freerect.height and
-                                                      r.y == freerect.y) and
-                                                      r != freerect, self.freerects))
+            widths_func = lambda r: (r.width == freerect.width and
+                                     r.x == freerect.x and r != freerect)
+            matching_widths = list(filter(widths_func, self.freerects))
+            heights_func = lambda r: (r.height == freerect.height and
+                                      r.y == freerect.y and r != freerect)
+            matching_heights = list(filter(heights_func, self.freerects))
             if matching_widths:
                 widths_adjacent = list(filter(lambda r: r.y == freerect.y + freerect.height, matching_widths)) # type: List[FreeRectangle]
 
