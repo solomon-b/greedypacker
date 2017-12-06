@@ -237,7 +237,7 @@ class GuillotineBLSF(Guillotine):
 class GuillotineWAF(Guillotine):
     @staticmethod
     def _rect_score(rect: FreeRectangle, item: Item) -> int:
-        return 0 - rect.area-item.area
+        return 0 - (rect.area-item.area)
         
 
 class GuillotineWSSF(Guillotine):
