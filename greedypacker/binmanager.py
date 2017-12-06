@@ -199,7 +199,17 @@ class BinManager:
             if best_bin:
                 return best_bin.insert(item, self.heuristic)
 
-        if self.algorithm == 'guillotine' or self.algorithm == 'maximal_rectangle':
+        if self.algorithm == 'guillotine':
+            best_bin = None
+            best_score = float('inf')
+            for binn in self.bins:
+                s, _, _ = binn._find_best_score(item)
+                if s and s < best_score:
+                    best_score = s
+                    best_bin = binn
+            return binn.insert(item)
+                
+        if self.algorithm == 'maximal_rectangle':
             best_rect = None 
             best_bin_index = None 
             for i, binn in enumerate(self.bins):
