@@ -147,7 +147,20 @@ class BinManager:
                 raise ValueError('Error: No such Heuristic')
 
         elif self.algorithm == 'shelf':
-            return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+            if self.heuristic == 'best_area_fit':
+                return shelf.ShelfBAF(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+            elif self.heuristic == 'best_width_fit':
+                return shelf.ShelfBWF(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+            elif self.heuristic == 'best_height_fit':
+                return shelf.ShelfBHF(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+            elif self.heuristic == 'worst_area_fit':
+                return shelf.ShelfWAF(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+            elif self.heuristic == 'worst_width_fit':
+                return shelf.ShelfWWF(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+            elif self.heuristic == 'worst_height_fit':
+                return shelf.ShelfWHF(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+            else:
+                return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap)
 
         elif self.algorithm == 'maximal_rectangle':
             if self.heuristic == 'best_area':
@@ -237,7 +250,7 @@ class BinManager:
             for i, binn in enumerate(self.bins):
                 area = None
                 for shelf in binn.shelves:
-                    if binn.item_fits_shelf(item, shelf):
+                    if binn._item_fits_shelf(item, shelf):
                         area = shelf.area
                         break
                 if ((item.width <= binn.x and 

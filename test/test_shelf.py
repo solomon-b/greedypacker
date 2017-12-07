@@ -463,7 +463,7 @@ class FirstFit(BaseTestCase):
 
 class BestWidthFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.Sheet(8, 4)
+        self.sheet = shelf.ShelfBWF(8, 4)
 
 
     def tearDown(self):
@@ -477,30 +477,23 @@ class BestWidthFit(BaseTestCase):
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(5, 2)
         ITEM3 = item.Item(2, 2)
-        self.sheet.insert(ITEM, heuristic='best_width_fit')
-        self.sheet.insert(ITEM2, heuristic='best_width_fit')
-        self.sheet.insert(ITEM3, heuristic='best_width_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
+        self.sheet.insert(ITEM3)
         with self.subTest():
-            correct = shelf.Shelf(8, 2, 0)
-            correct.insert(ITEM)
-            self.assertEqual(self.sheet.shelves[0].__dict__,
-                             correct.__dict__)
+            self.assertCountEqual(self.sheet.shelves[0].items, [ITEM])
         with self.subTest():
-            correct = shelf.Shelf(8, 2, 2)
-            correct.insert(ITEM2)
-            correct.insert(ITEM3)
-            self.assertEqual(self.sheet.shelves[1].__dict__,
-                             correct.__dict__)
+            self.assertCountEqual(self.sheet.shelves[1].items, [ITEM2, ITEM3])
         with self.subTest():
             correct = [ITEM, ITEM2, ITEM3]
-            self.assertEqual(self.sheet.items, correct)
+            self.assertCountEqual(self.sheet.items, correct)
         with self.subTest():
             self.assertEqual(self.sheet.free_area, 10)
 
 
 class BestHeightFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.Sheet(8, 4)
+        self.sheet = shelf.ShelfBHF(8, 4)
 
 
     def tearDown(self):
@@ -514,30 +507,23 @@ class BestHeightFit(BaseTestCase):
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(5, 2)
         ITEM3 = item.Item(2, 2)
-        self.sheet.insert(ITEM, heuristic='best_height_fit')
-        self.sheet.insert(ITEM2, heuristic='best_width_fit')
-        self.sheet.insert(ITEM3, heuristic='best_width_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
+        self.sheet.insert(ITEM3)
         with self.subTest():
-            correct = shelf.Shelf(8, 2, 0)
-            correct.insert(ITEM)
-            self.assertEqual(self.sheet.shelves[0].__dict__,
-                             correct.__dict__)
+            self.assertCountEqual(self.sheet.shelves[0].items, [ITEM, ITEM3])
         with self.subTest():
-            correct = shelf.Shelf(8, 2, 2)
-            correct.insert(ITEM2)
-            correct.insert(ITEM3)
-            self.assertEqual(self.sheet.shelves[1].__dict__,
-                             correct.__dict__)
+            self.assertCountEqual(self.sheet.shelves[1].items, [ITEM2])
         with self.subTest():
             correct = [ITEM, ITEM2, ITEM3]
-            self.assertEqual(self.sheet.items, correct)
+            self.assertCountEqual(self.sheet.items, correct)
         with self.subTest():
             self.assertEqual(self.sheet.free_area, 10)
 
 
 class BestAreaFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.Sheet(8, 4)
+        self.sheet = shelf.ShelfBWF(8, 4)
 
 
     def tearDown(self):
@@ -551,9 +537,9 @@ class BestAreaFit(BaseTestCase):
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(5, 2)
         ITEM3 = item.Item(2, 2)
-        self.sheet.insert(ITEM, heuristic='best_height_fit')
-        self.sheet.insert(ITEM2, heuristic='best_width_fit')
-        self.sheet.insert(ITEM3, heuristic='best_width_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
+        self.sheet.insert(ITEM3)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
             correct.insert(ITEM)
@@ -576,7 +562,7 @@ class BestAreaFit(BaseTestCase):
 
 class WorstWidthFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.Sheet(8, 4)
+        self.sheet = shelf.ShelfWWF(8, 4)
 
 
     def tearDown(self):
@@ -590,9 +576,9 @@ class WorstWidthFit(BaseTestCase):
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(5, 2)
         ITEM3 = item.Item(2, 2)
-        self.sheet.insert(ITEM, heuristic='worst_width_fit')
-        self.sheet.insert(ITEM2, heuristic='worst_width_fit')
-        self.sheet.insert(ITEM3, heuristic='worst_width_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
+        self.sheet.insert(ITEM3)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
             correct.insert(ITEM)
@@ -614,7 +600,7 @@ class WorstWidthFit(BaseTestCase):
 
 class WorstHeightFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.Sheet(8, 5)
+        self.sheet = shelf.ShelfWHF(8, 5)
 
 
     def tearDown(self):
@@ -628,9 +614,9 @@ class WorstHeightFit(BaseTestCase):
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(5, 3)
         ITEM3 = item.Item(2, 2)
-        self.sheet.insert(ITEM, heuristic='worst_height_fit')
-        self.sheet.insert(ITEM2, heuristic='worst_height_fit')
-        self.sheet.insert(ITEM3, heuristic='worst_height_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
+        self.sheet.insert(ITEM3)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
             correct.insert(ITEM)
@@ -651,7 +637,7 @@ class WorstHeightFit(BaseTestCase):
 
 class WorstAreaFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.Sheet(8, 4)
+        self.sheet = shelf.ShelfWAF(8, 4)
 
 
     def tearDown(self):
@@ -665,9 +651,9 @@ class WorstAreaFit(BaseTestCase):
         ITEM = item.Item(4, 2)
         ITEM2 = item.Item(5, 2)
         ITEM3 = item.Item(2, 2)
-        self.sheet.insert(ITEM, heuristic='worst_area_fit')
-        self.sheet.insert(ITEM2, heuristic='worst_area_fit')
-        self.sheet.insert(ITEM3, heuristic='worst_area_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
+        self.sheet.insert(ITEM3)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
             correct.items = [ITEM, ITEM3]

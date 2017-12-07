@@ -7,7 +7,7 @@ ssbothwell@gmail.com
 """
 from functools import reduce
 from typing import List
-from . import item
+from .item import Item
 from . import guillotine
 
 
@@ -21,7 +21,7 @@ class Shelf:
         self.available_width = self.x
         self.area = self.available_width * self.y
         self.vertical_offset = v_offset
-        self.items = [] # type: List[item.Item]
+        self.items = [] # type: List[Item]
 
 
     def __repr__(self):
@@ -29,7 +29,7 @@ class Shelf:
         #return "Shelf(Available Width=%r, Height=%r, Vertical Offset=%r)" % (self.available_width, self.y, self.vertical_offset)
 
 
-    def insert(self, item: item.Item, rotation: bool=True) -> bool:
+    def insert(self, item: Item, rotation: bool=True) -> bool:
         if item.width <= self.available_width and item.height <= self.y:
             item.x, item.y = (self.x - self.available_width, self.vertical_offset)
             self.items.append(item)
@@ -58,7 +58,7 @@ class Sheet:
         self.y = y
         self.available_height = self.y
         self.shelves = []
-        self.items = [] # type: List[item.Item]
+        self.items = [] # type: List[Item]
         self.area = self.x * self.y
         self.free_area = self.x * self.y
         self.rotation = rotation
@@ -71,7 +71,7 @@ class Sheet:
         return "Sheet(width=%s, height=%s, shelves=%s)" % (self.x, self.y, str(self.shelves))
 
 
-    def create_shelf(self, item: item.Item) -> bool:
+    def create_shelf(self, item: Item) -> bool:
         if (self.rotation and item.height > item.width and
            item.height < self.x and item.width < self.y):
             item.rotate()
@@ -87,15 +87,15 @@ class Sheet:
         return False
 
 
-    def item_fits_shelf(self, item: item.Item, shelf: Shelf) -> bool:
+    def _item_fits_shelf(self, item: Item, shelf: Shelf, rotation: bool = False) -> bool:
         if ((item.width <= shelf.available_width and item.height <= shelf.y) or
-           (self.rotation and item.height <= shelf.available_width and item.width <= shelf.y)):
+           (rotation and item.height <= shelf.available_width and item.width <= shelf.y)):
             return True
         return False
 
 
     @staticmethod
-    def rotate_to_shelf(item: item.Item, shelf: Shelf) -> bool:
+    def rotate_to_shelf(item: Item, shelf: Shelf) -> bool:
         """
         Rotate item to long side vertical if that orientation
         fits the shelf.
@@ -108,9 +108,9 @@ class Sheet:
         return False
 
 
-    def add_to_shelf(self, item: item.Item, shelf: Shelf) -> bool:
+    def add_to_shelf(self, item: Item, shelf: Shelf) -> bool:
         """ Item insertion helper method for heuristic methods """
-        if not self.item_fits_shelf(item, shelf):
+        if not self._item_fits_shelf(item, shelf):
             return False
         if self.rotation:
             self.rotate_to_shelf(item, shelf)
@@ -153,121 +153,43 @@ class Sheet:
         self.wastemap.rectangle_merge()
 
 
-    def next_fit(self, item: item.Item) -> bool:
+    def next_fit(self, item: Item) -> bool:
         open_shelf = self.shelves[-1]
-        if self.item_fits_shelf(item, open_shelf):
+        if self._item_fits_shelf(item, open_shelf):
             self.add_to_shelf(item, open_shelf)
             return True
         return False
 
 
-    def first_fit(self, item: item.Item) -> bool:
+    def first_fit(self, item: Item) -> bool:
         for shelf in self.shelves:
-            if self.item_fits_shelf(item, shelf):
+            if self._item_fits_shelf(item, shelf):
                 self.add_to_shelf(item, shelf)
                 return True
         return False
 
 
-    def best_width_fit(self, item: item.Item) -> bool:
-        best_shelf = None
-        best_width = float('inf')
+    @staticmethod
+    def _shelf_score(shelf: Shelf, item: Item) -> int:
+        pass
+
+
+    def _find_best_score(self, item: Item):
+        shelves = []
         for shelf in self.shelves:
-            # Looks redundent but is to get optimal bestfit calc 
-            self.rotate_to_shelf(item, shelf)
-            if self.item_fits_shelf(item, shelf):
-                if shelf.available_width - item.width < best_width:
-                    best_width = shelf.available_width - item.width
-                    best_shelf = shelf
-        if best_shelf:
-            self.add_to_shelf(item, best_shelf)
-            return True
-        return False
+            #self.rotate_to_shelf(item, shelf)
+            if self._item_fits_shelf(item, shelf):
+                shelves.append((self._shelf_score(shelf, item), shelf, False))
+            if self._item_fits_shelf(item, shelf, rotation=True):
+                shelves.append((self._shelf_score(shelf, item), shelf, True))
+        try:
+            score, shelf, rot = min(shelves, key=lambda x: x[0])
+            return score, shelf, rot
+        except ValueError:
+            return None, None, False
 
 
-    def best_height_fit(self, item: item.Item) -> bool:
-        best_shelf = None
-        best_height = float('inf')
-        for shelf in self.shelves:
-            # Looks redundent but is to get optimal bestfit calc 
-            self.rotate_to_shelf(item, shelf)
-            if self.item_fits_shelf(item, shelf):
-                if shelf.y - item.height < best_height:
-                    best_width = shelf.available_width - item.height
-                    best_shelf = shelf
-        if best_shelf:
-            self.add_to_shelf(item, best_shelf)
-            return True
-        return False
-
-
-    def best_area_fit(self, item: item.Item) -> bool:
-        best_shelf = None
-        best_area = float('inf')
-        for shelf in self.shelves:
-            # Looks redundent but is to get optimal bestfit calc 
-            self.rotate_to_shelf(item, shelf)
-            if self.item_fits_shelf(item, shelf):
-                remainder_area = (shelf.available_width - item.width)*shelf.y
-                if remainder_area < best_area:
-                    best_area = remainder_area
-                    best_shelf = shelf
-        if best_shelf:
-            self.add_to_shelf(item, best_shelf)
-            return True
-        return False
-
-
-    def worst_width_fit(self, item: item.Item) -> bool:
-        worst_shelf = None
-        worst_width = 0
-        for shelf in self.shelves:
-            # Looks redundent but is to get optimal bestfit calc 
-            self.rotate_to_shelf(item, shelf)
-            if self.item_fits_shelf(item, shelf):
-                if shelf.available_width - item.width > worst_width:
-                    worst_width = shelf.available_width - item.width
-                    worst_shelf = shelf
-        if worst_shelf:
-            self.add_to_shelf(item, worst_shelf)
-            return True
-        return False
-
-
-    def worst_height_fit(self, item: item.Item) -> bool:
-        worst_shelf = None
-        worst_height = 0
-        for shelf in self.shelves:
-            # Looks redundent but is to get optimal bestfit calc 
-            self.rotate_to_shelf(item, shelf)
-            if self.item_fits_shelf(item, shelf):
-                if shelf.y - item.width > worst_height:
-                    worst_height = shelf.available_width - item.width
-                    worst_shelf = shelf
-        if worst_shelf:
-            self.add_to_shelf(item, worst_shelf)
-            return True
-        return False
-
-
-    def worst_area_fit(self, item) -> bool:
-        worst_shelf = None
-        worst_area = 0
-        for shelf in self.shelves:
-            # Looks redundent but is to get optimal bestfit calc 
-            self.rotate_to_shelf(item, shelf)
-            if self.item_fits_shelf(item, shelf):
-                remainder_area = (shelf.available_width - item.width)*shelf.y
-                if remainder_area > worst_area:
-                    worst_area = remainder_area
-                    worst_shelf = shelf
-        if worst_shelf:
-            self.add_to_shelf(item, worst_shelf)
-            return True
-        return False
-
-
-    def insert(self, item: item.Item, heuristic: 'str' = 'next_fit') -> bool:
+    def insert(self, item: Item, heuristic: 'str' = 'best_width') -> bool:
         if (item.width <= self.x and item.height <= self.y):
             # 1) If there are no shelves, create one and insert the item
             if not self.shelves:
@@ -281,23 +203,22 @@ class Sheet:
                     self.free_area -= item.area
                     return True
 
-            # Ugly python switch statement
-            heuristics = {'next_fit': self.next_fit,
-                          'first_fit': self.first_fit,
-                          'best_width_fit': self.best_width_fit,
-                          'best_height_fit': self.best_height_fit,
-                          'best_area_fit': self.best_area_fit,
-                          'worst_width_fit': self.worst_width_fit,
-                          'worst_height_fit': self.worst_height_fit,
-                          'worst_area_fit': self.worst_area_fit }
-
             # 3) Try the desired heuristic
-            if heuristic in heuristics:
-                # Call Heuristic
-                res = heuristics[heuristic](item)
-                # If item inserted successfully
+            if heuristic == 'next_fit':
+                res = self.next_fit(item)
                 if res:
                     return True
+            elif heuristic == 'first_fit':
+                res = self.first_fit(item)
+                if res:
+                    return True
+
+            else:
+                _, best_shelf, rotated = self._find_best_score(item)
+                if best_shelf:
+                    self.add_to_shelf(item, best_shelf)
+                    return True
+
             # 4) If the item didn't fit then close the shelf
             #    and add its waste to the wastemap
             if self.use_waste_map:
@@ -329,3 +250,45 @@ class Sheet:
             }
 
         return stats
+
+
+class ShelfBAF(Sheet):
+    """ Best Area Fit """
+    @staticmethod
+    def _shelf_score(shelf: Shelf, item: Item) -> int:
+        return (shelf.available_width - item.width)*shelf.y
+
+
+class ShelfBHF(Sheet):
+    """ Best Height Fit """
+    @staticmethod
+    def _shelf_score(shelf: Shelf, item: Item) -> int:
+        return shelf.y - item.height
+
+
+class ShelfBWF(Sheet):
+    """ Best Width Fit """
+    @staticmethod
+    def _shelf_score(shelf: Shelf, item: Item) -> int:
+        return shelf.available_width - item.width
+
+
+class ShelfWAF(Sheet):
+    """ Worst Area Fit """
+    @staticmethod
+    def _shelf_score(shelf: Shelf, item: Item) -> int:
+        return 0 - ((shelf.available_width - item.width)*shelf.y)
+
+
+class ShelfWHF(Sheet):
+    """ Worst Height Fit """
+    @staticmethod
+    def _shelf_score(shelf: Shelf, item: Item) -> int:
+        return 0 - (shelf.y - item.height)
+
+
+class ShelfWWF(Sheet):
+    """ Worst Width Fit """
+    @staticmethod
+    def _shelf_score(shelf: Shelf, item: Item) -> int:
+        return 0 - (shelf.available_width - item.width)

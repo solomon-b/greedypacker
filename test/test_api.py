@@ -361,7 +361,8 @@ class BinFirstFit(BaseTestCase):
         """
         M = greedypacker.BinManager(10, 5,
                                pack_algo='shelf',
-                               bin_algo="bin_first_fit",
+                               bin_algo='bin_first_fit',
+                               heuristic='best_width_fit',
                                sorting=False,
                                rotation=True)
         ITEM = greedypacker.Item(1, 1)
