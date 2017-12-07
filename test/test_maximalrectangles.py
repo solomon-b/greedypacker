@@ -49,7 +49,7 @@ class StaticMethods(BaseTestCase):
         Ft = maximal_rectangles.FreeRectangle(4, 2, 0, 2)
         Fr = maximal_rectangles.FreeRectangle(2, 4, 2, 0)
 
-        remainders = self.M.split_rectangle(F, I)
+        remainders = self.M._split_rectangle(F, I)
         self.assertCountEqual(remainders, [Ft, Fr])
         
 
@@ -59,7 +59,7 @@ class StaticMethods(BaseTestCase):
         """
         F0 = maximal_rectangles.FreeRectangle(4, 4, 0, 0)
         B = (0, 0, 2, 2)
-        self.assertTrue(self.M.checkInstersection(F0, B))
+        self.assertTrue(self.M._check_intersection(F0, B))
 
 
     def testCheckIntersectionFalse(self):
@@ -68,7 +68,7 @@ class StaticMethods(BaseTestCase):
         """
         F0 = maximal_rectangles.FreeRectangle(4, 4, 0, 0)
         B = (5, 0, 9, 2)
-        self.assertFalse(self.M.checkInstersection(F0, B))
+        self.assertFalse(self.M._check_intersection(F0, B))
 
 
     def testItemBounds(self):
@@ -76,7 +76,7 @@ class StaticMethods(BaseTestCase):
         Returns the bounding box for an item
         """
         I = item.Item(4, 2, [2,1])
-        self.assertEqual(self.M.item_bounds(I), (2, 1, 6, 3))
+        self.assertEqual(self.M._item_bounds(I), (2, 1, 6, 3))
     
 
     def testFindOverlap(self):
@@ -88,7 +88,7 @@ class StaticMethods(BaseTestCase):
         F1 = maximal_rectangles.FreeRectangle(4, 2, 3, 0)
         B = (3, 0, 7, 2)
 
-        self.assertEqual(self.M.findOverlap(F0, B), (3, 0, 4, 2))
+        self.assertEqual(self.M._find_overlap(F0, B), (3, 0, 4, 2))
 
 
     def testClipOverlap(self):
@@ -100,8 +100,8 @@ class StaticMethods(BaseTestCase):
         F1 = maximal_rectangles.FreeRectangle(1, 1, 1, 1)
         B = (1, 1, 2, 2)
     
-        overlap = self.M.findOverlap(F0, B)
-        remainders = self.M.clipOverlap(F0, overlap)
+        overlap = self.M._find_overlap(F0, B)
+        remainders = self.M._clip_overlap(F0, overlap)
 
         Fl = maximal_rectangles.FreeRectangle(1, 3, 0, 0)
         Fr = maximal_rectangles.FreeRectangle(1, 3, 2, 0)
@@ -121,9 +121,9 @@ class StaticMethods(BaseTestCase):
         F2 = maximal_rectangles.FreeRectangle(2, 1, 5, 1)
 
         with self.subTest():
-            self.assertTrue(self.M.encapsulates(F0, F1))
+            self.assertTrue(self.M._encapsulates(F0, F1))
         with self.subTest():
-            self.assertFalse(self.M.encapsulates(F0, F2))
+            self.assertFalse(self.M._encapsulates(F0, F2))
 
 
     def testRemoveRedundent(self):
@@ -135,7 +135,7 @@ class StaticMethods(BaseTestCase):
         F2 = maximal_rectangles.FreeRectangle(2, 1, 5, 1)
         F3 = maximal_rectangles.FreeRectangle(1, 1, 5, 1)
         self.M.freerects = [F0, F1, F2, F3]
-        self.M.remove_redundent()
+        self.M._remove_redundent()
         self.assertCountEqual(self.M.freerects, [F0, F2])
 
 
@@ -144,7 +144,7 @@ class StaticMethods(BaseTestCase):
         F1 = maximal_rectangles.FreeRectangle(1, 1, 0, 0)
         self.M.freerects = [F0, F1]
         itemBounds = (0, 0, 2, 2)
-        self.M.prune_overlaps(itemBounds)
+        self.M._prune_overlaps(itemBounds)
         
         F2 = maximal_rectangles.FreeRectangle(2, 4, 2, 0)
         F3 = maximal_rectangles.FreeRectangle(4, 2, 0, 2)

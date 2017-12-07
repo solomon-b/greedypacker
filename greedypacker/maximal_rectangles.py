@@ -57,7 +57,7 @@ class MaximalRectangle:
 
 
     @staticmethod
-    def split_rectangle(rectangle: FreeRectangle,
+    def _split_rectangle(rectangle: FreeRectangle,
                         item: Item) -> List[FreeRectangle]:
         """
         Return a list of maximal free rectangles from a split
@@ -85,7 +85,7 @@ class MaximalRectangle:
     
 
     @staticmethod
-    def item_bounds(item: Item) -> tuple:
+    def _item_bounds(item: Item) -> tuple:
         """
         Returns the lower left and upper right 
         corners of the item's bounding box.
@@ -97,7 +97,7 @@ class MaximalRectangle:
 
 
     @staticmethod
-    def checkInstersection(free_rect: FreeRectangle,
+    def _check_intersection(free_rect: FreeRectangle,
                            bounding_box: tuple) -> bool:
         """ 
         Checks if bounding box intersects rectangle
@@ -113,7 +113,7 @@ class MaximalRectangle:
         
 
     @staticmethod
-    def findOverlap(F1: FreeRectangle, F2: tuple ) -> tuple:
+    def _find_overlap(F1: FreeRectangle, F2: tuple ) -> tuple:
         """
         returns the bottom left and top right 
         coordinates of the overlap
@@ -131,7 +131,7 @@ class MaximalRectangle:
         return (X5, Y5, X6, Y6)
 
     @staticmethod
-    def clipOverlap(rect: FreeRectangle,
+    def _clip_overlap(rect: FreeRectangle,
                          overlap: tuple) -> List[FreeRectangle]:
         """
         Return maximal rectangles for  non-intersected 
@@ -165,7 +165,7 @@ class MaximalRectangle:
        
         
     @staticmethod
-    def encapsulates(F0: FreeRectangle,
+    def _encapsulates(F0: FreeRectangle,
                      F1: FreeRectangle) -> bool:
         """
         Returns true if F1 is fully encapsulated
@@ -182,7 +182,7 @@ class MaximalRectangle:
         return True
 
 
-    def remove_redundent(self) -> List[FreeRectangle]:
+    def _remove_redundent(self) -> List[FreeRectangle]:
         """
         Remove all FreeRectangles full encapsulated
         inside another FreeRectangle.
@@ -191,11 +191,11 @@ class MaximalRectangle:
         while i < len(self.freerects):
             j = i + 1
             while j < len(self.freerects):
-                if self.encapsulates(self.freerects[j], self.freerects[i]):
+                if self._encapsulates(self.freerects[j], self.freerects[i]):
                     del self.freerects[i]
                     i -= 1
                     break
-                if self.encapsulates(self.freerects[i], self.freerects[j]):
+                if self._encapsulates(self.freerects[i], self.freerects[j]):
                     del self.freerects[j]
                     j -= 1
                 j += 1
@@ -203,21 +203,21 @@ class MaximalRectangle:
         return self.freerects
 
 
-    def prune_overlaps(self, itemBounds: tuple) -> None:
+    def _prune_overlaps(self, itemBounds: tuple) -> None:
         """
         Loop through all FreeRectangles and prune
         any overlapping the itemBounds
         """
         result = [] # type: List[FreeRectangle]
         for rect in self.freerects:
-            if self.checkInstersection(rect, itemBounds):
-                overlap = self.findOverlap(rect, itemBounds)
-                new_rects = self.clipOverlap(rect, overlap)
+            if self._check_intersection(rect, itemBounds):
+                overlap = self._find_overlap(rect, itemBounds)
+                new_rects = self._clip_overlap(rect, overlap)
                 result += new_rects
             else:
                 result.append(rect)
         self.freerects = result
-        self.remove_redundent()
+        self._remove_redundent()
 
     
     @staticmethod
@@ -251,12 +251,12 @@ class MaximalRectangle:
             item.x, item.y = best_rect.x, best_rect.y
             self.items.append(item)
             self.free_area -= item.area
-            maximals = self.split_rectangle(best_rect, item)
+            maximals = self._split_rectangle(best_rect, item)
             self.freerects.remove(best_rect)
             self.freerects += maximals
-            itemBounds = self.item_bounds(item)
+            itemBounds = self._item_bounds(item)
 
-            self.prune_overlaps(itemBounds)
+            self._prune_overlaps(itemBounds)
             return True
         return False
 
