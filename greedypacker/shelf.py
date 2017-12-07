@@ -71,7 +71,7 @@ class Sheet:
         return "Sheet(width=%s, height=%s, shelves=%s)" % (self.x, self.y, str(self.shelves))
 
 
-    def create_shelf(self, item: Item) -> bool:
+    def _create_shelf(self, item: Item) -> bool:
         if (self.rotation and item.height > item.width and
            item.height < self.x and item.width < self.y):
             item.rotate()
@@ -95,7 +95,7 @@ class Sheet:
 
 
     @staticmethod
-    def rotate_to_shelf(item: Item, shelf: Shelf) -> bool:
+    def _rotate_to_shelf(item: Item, shelf: Shelf) -> bool:
         """
         Rotate item to long side vertical if that orientation
         fits the shelf.
@@ -108,12 +108,12 @@ class Sheet:
         return False
 
 
-    def add_to_shelf(self, item: Item, shelf: Shelf) -> bool:
+    def _add_to_shelf(self, item: Item, shelf: Shelf) -> bool:
         """ Item insertion helper method for heuristic methods """
         if not self._item_fits_shelf(item, shelf):
             return False
         if self.rotation:
-            self.rotate_to_shelf(item, shelf)
+            self._rotate_to_shelf(item, shelf)
         res = shelf.insert(item, self.rotation)
         if res:
             self.items.append(item)
@@ -122,7 +122,7 @@ class Sheet:
         return False
 
 
-    def add_to_wastemap(self, shelf: Shelf) -> None:
+    def _add_to_wastemap(self, shelf: Shelf) -> None:
         """ Add lost space above items to the wastemap """
         # Add space above items to wastemap
         for item in shelf.items:
@@ -156,7 +156,7 @@ class Sheet:
     def next_fit(self, item: Item) -> bool:
         open_shelf = self.shelves[-1]
         if self._item_fits_shelf(item, open_shelf):
-            self.add_to_shelf(item, open_shelf)
+            self._add_to_shelf(item, open_shelf)
             return True
         return False
 
@@ -164,7 +164,7 @@ class Sheet:
     def first_fit(self, item: Item) -> bool:
         for shelf in self.shelves:
             if self._item_fits_shelf(item, shelf):
-                self.add_to_shelf(item, shelf)
+                self._add_to_shelf(item, shelf)
                 return True
         return False
 
@@ -177,7 +177,6 @@ class Sheet:
     def _find_best_score(self, item: Item):
         shelves = []
         for shelf in self.shelves:
-            #self.rotate_to_shelf(item, shelf)
             if self._item_fits_shelf(item, shelf):
                 shelves.append((self._shelf_score(shelf, item), shelf, False))
             if self._item_fits_shelf(item, shelf, rotation=True):
@@ -193,7 +192,7 @@ class Sheet:
         if (item.width <= self.x and item.height <= self.y):
             # 1) If there are no shelves, create one and insert the item
             if not self.shelves:
-                return self.create_shelf(item)
+                return self._create_shelf(item)
 
             # 2) If enabled, try to insert into the wastemap 
             if self.use_waste_map:
@@ -216,13 +215,13 @@ class Sheet:
             else:
                 _, best_shelf, rotated = self._find_best_score(item)
                 if best_shelf:
-                    self.add_to_shelf(item, best_shelf)
+                    self._add_to_shelf(item, best_shelf)
                     return True
 
             # 4) If the item didn't fit then close the shelf
             #    and add its waste to the wastemap
             if self.use_waste_map:
-                self.add_to_wastemap(self.shelves[-1])
+                self._add_to_wastemap(self.shelves[-1])
 
                 # 5) Attempt to insert into the wastemap
                 res = self.wastemap.insert(item, heuristic='best_area')
@@ -231,7 +230,7 @@ class Sheet:
                     self.free_area -= item.area
                     return True
             # 6) Attempt to create a new shelf for the item
-            return self.create_shelf(item)
+            return self._create_shelf(item)
         # 7) Nothing worked!
         return False
 

@@ -30,7 +30,7 @@ class WasteMap(BaseTestCase):
         self.sheet.insert(ITEM1, heuristic='next_fit')
         self.sheet.insert(ITEM2, heuristic='next_fit')
         self.sheet.insert(ITEM3, heuristic='next_fit')
-        self.sheet.add_to_wastemap(self.sheet.shelves[-1])
+        self.sheet._add_to_wastemap(self.sheet.shelves[-1])
 
         correct = [(1, 3, 7, 0), (4, 1, 3, 2)]
         self.assertEqual(self.sheet.wastemap.freerects, correct)
@@ -52,7 +52,7 @@ class WasteMap(BaseTestCase):
         self.sheet.insert(ITEM1, heuristic='next_fit')
         self.sheet.insert(ITEM2, heuristic='next_fit')
         self.sheet.insert(ITEM3, heuristic='next_fit')
-        self.sheet.add_to_wastemap(self.sheet.shelves[-1])
+        self.sheet._add_to_wastemap(self.sheet.shelves[-1])
 
         correct = [(1, 3, 7, 1), (4, 1, 3, 3)]
         self.assertEqual(self.sheet.wastemap.freerects, correct)
