@@ -221,7 +221,7 @@ class MaximalRectangle:
 
     
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> None:
+    def _score(rect: FreeRectangle, item: Item) -> None:
         pass
 
 
@@ -229,12 +229,12 @@ class MaximalRectangle:
         rects = []
         for rect in self.freerects:
             if self._item_fits_rect(item, rect):
-                rects.append((self._rect_score(rect, item), rect, False))
+                rects.append((self._score(rect, item), rect, False))
             if self._item_fits_rect(item, rect, rotation=True):
-                rects.append((self._rect_score(rect, item), rect, True))
+                rects.append((self._score(rect, item), rect, True))
         try:
-            score, rect, rot = min(rects, key=lambda x: x[0])
-            return score, rect, rot
+            _score, rect, rot = min(rects, key=lambda x: x[0])
+            return _score, rect, rot
         except ValueError:
             return None, None, False
 
@@ -279,43 +279,43 @@ class MaximalRectangle:
 
 class MaxRectsBAF(MaximalRectangle):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return rect.area-item.area
         
 
 class MaxRectsBSSF(MaximalRectangle):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return min(rect.width-item.width, rect.height-item.height)
 
 
 class MaxRectsBLSF(MaximalRectangle):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return max(rect.width-item.width, rect.height-item.height)
 
 
 class MaxRectsWAF(MaximalRectangle):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return 0 - (rect.area-item.area)
         
 
 class MaxRectsWSSF(MaximalRectangle):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return 0 - min(rect.width-item.width, rect.height-item.height)
 
 
 class MaxRectsWLSF(MaximalRectangle):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return 0 - max(rect.width-item.width, rect.height-item.height)
 
 
 class MaxRectsBL(MaximalRectangle):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return rect.y + rect.height + item.height
 
 
@@ -332,7 +332,7 @@ class MaxRectsCP(MaximalRectangle):
         return min(Xend, Yend) - max(Xstart, Ystart)
 
 
-    def _rect_score(self, rect: FreeRectangle, item: Item) -> int:
+    def _score(self, rect: FreeRectangle, item: Item) -> int:
         perim = 0
         if rect.x == 0 or rect.x + item.width == self.x:
             perim += item.height

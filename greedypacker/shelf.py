@@ -6,7 +6,7 @@ Solomon Bothwell
 ssbothwell@gmail.com
 """
 from functools import reduce
-from typing import List
+from typing import List, Tuple
 from .item import Item
 from . import guillotine
 
@@ -170,20 +170,25 @@ class Sheet:
 
 
     @staticmethod
-    def _shelf_score(shelf: Shelf, item: Item) -> int:
+    def _score(shelf: Shelf, item: Item) -> int:
         pass
 
 
-    def _find_best_score(self, item: Item):
+    def _find_best_score(self, item: Item) -> Tuple[int, Shelf, bool]:
+        """
+        Score all the shelves and return the best
+        one in a tuple with its score and if the item
+        needs to be rotated
+        """
         shelves = []
         for shelf in self.shelves:
             if self._item_fits_shelf(item, shelf):
-                shelves.append((self._shelf_score(shelf, item), shelf, False))
+                shelves.append((self._score(shelf, item), shelf, False))
             if self._item_fits_shelf(item, shelf, rotation=True):
-                shelves.append((self._shelf_score(shelf, item), shelf, True))
+                shelves.append((self._score(shelf, item), shelf, True))
         try:
-            score, shelf, rot = min(shelves, key=lambda x: x[0])
-            return score, shelf, rot
+            _score, shelf, rot = min(shelves, key=lambda x: x[0])
+            return _score, shelf, rot
         except ValueError:
             return None, None, False
 
@@ -203,18 +208,15 @@ class Sheet:
                     return True
 
             # 3) Try the desired heuristic
-            if heuristic == 'next_fit':
-                res = self.next_fit(item)
-                if res:
-                    return True
-            elif heuristic == 'first_fit':
+            if heuristic == 'first_fit':
                 res = self.first_fit(item)
                 if res:
                     return True
-
             else:
                 _, best_shelf, rotated = self._find_best_score(item)
                 if best_shelf:
+                    if rotated:
+                        item.rotate()
                     self._add_to_shelf(item, best_shelf)
                     return True
 
@@ -254,40 +256,64 @@ class Sheet:
 class ShelfBAF(Sheet):
     """ Best Area Fit """
     @staticmethod
-    def _shelf_score(shelf: Shelf, item: Item) -> int:
+    def _score(shelf: Shelf, item: Item) -> int:
         return (shelf.available_width - item.width)*shelf.y
 
 
 class ShelfBHF(Sheet):
     """ Best Height Fit """
     @staticmethod
-    def _shelf_score(shelf: Shelf, item: Item) -> int:
+    def _score(shelf: Shelf, item: Item) -> int:
         return shelf.y - item.height
 
 
 class ShelfBWF(Sheet):
     """ Best Width Fit """
     @staticmethod
-    def _shelf_score(shelf: Shelf, item: Item) -> int:
+    def _score(shelf: Shelf, item: Item) -> int:
         return shelf.available_width - item.width
 
 
 class ShelfWAF(Sheet):
     """ Worst Area Fit """
     @staticmethod
-    def _shelf_score(shelf: Shelf, item: Item) -> int:
+    def _score(shelf: Shelf, item: Item) -> int:
         return 0 - ((shelf.available_width - item.width)*shelf.y)
 
 
 class ShelfWHF(Sheet):
     """ Worst Height Fit """
     @staticmethod
-    def _shelf_score(shelf: Shelf, item: Item) -> int:
+    def _score(shelf: Shelf, item: Item) -> int:
         return 0 - (shelf.y - item.height)
 
 
 class ShelfWWF(Sheet):
     """ Worst Width Fit """
     @staticmethod
-    def _shelf_score(shelf: Shelf, item: Item) -> int:
+    def _score(shelf: Shelf, item: Item) -> int:
         return 0 - (shelf.available_width - item.width)
+
+
+class ShelfFF(Sheet):
+    """ First Fit """
+    def _find_best_score(self, item: Item) -> Tuple[int, Shelf, bool]:
+        if self.shelves:
+            for shelf in self.shelves:
+                if self._item_fits_shelf(item, shelf):
+                    return (0, open_shelf, False)
+                if self.rotation and self._item_fits_shelf(item, open_shelf, True):
+                    return (0, open_shelf, True)
+        return (0, None, False)
+
+
+class ShelfNF(Sheet):
+    """ Next Fit """
+    def _find_best_score(self, item: Item) -> Tuple[int, Shelf, bool]:
+        if self.shelves:
+            open_shelf = self.shelves[-1]
+            if self._item_fits_shelf(item, open_shelf):
+                return (0, open_shelf, False)
+            if self.rotation and self._item_fits_shelf(item, open_shelf, True):
+                return (0, open_shelf, True)
+        return (0, None, False)

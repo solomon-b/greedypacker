@@ -165,7 +165,7 @@ class Guillotine:
                     self.freerects.add(merged_rect)
 
 
-    def _rect_score(self, item: Item):
+    def _score(self, item: Item):
         pass
 
 
@@ -173,12 +173,12 @@ class Guillotine:
         rects = []
         for rect in self.freerects:
             if self._item_fits_rect(item, rect):
-                rects.append((self._rect_score(rect, item), rect, False))
+                rects.append((self._score(rect, item), rect, False))
             if self._item_fits_rect(item, rect, rotation=True):
-                rects.append((self._rect_score(rect, item), rect, True))
+                rects.append((self._score(rect, item), rect, True))
         try:
-            score, rect, rot = min(rects, key=lambda x: x[0])
-            return score, rect, rot
+            _score, rect, rot = min(rects, key=lambda x: x[0])
+            return _score, rect, rot
         except ValueError:
             return None, None, False
 
@@ -218,35 +218,35 @@ class Guillotine:
 
 class GuillotineBAF(Guillotine):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return rect.area-item.area
         
 
 class GuillotineBSSF(Guillotine):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return min(rect.width-item.width, rect.height-item.height)
 
 
 class GuillotineBLSF(Guillotine):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return max(rect.width-item.width, rect.height-item.height)
 
 
 class GuillotineWAF(Guillotine):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return 0 - (rect.area-item.area)
         
 
 class GuillotineWSSF(Guillotine):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return 0 - min(rect.width-item.width, rect.height-item.height)
 
 
 class GuillotineWLSF(Guillotine):
     @staticmethod
-    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+    def _score(rect: FreeRectangle, item: Item) -> int:
         return 0 - max(rect.width-item.width, rect.height-item.height)

@@ -159,6 +159,10 @@ class BinManager:
                 return shelf.ShelfWWF(self.bin_width, self.bin_height, self.rotation, self.wastemap)
             elif self.heuristic == 'worst_height_fit':
                 return shelf.ShelfWHF(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+            elif self.heuristic == 'next_fit':
+                return shelf.ShelfNF(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+            elif self.heuristic == 'first_fit':
+                return shelf.ShelfFF(self.bin_width, self.bin_height, self.rotation, self.wastemap)
             else:
                 return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap)
 
@@ -234,7 +238,7 @@ class BinManager:
             if best_bin:
                 return best_bin.insert(item, self.heuristic)
 
-        if self.algorithm == 'guillotine' or self.algorithm == 'maximal_rectangle':
+        if self.algorithm == 'guillotine' or self.algorithm == 'maximal_rectangle' or self.algorithm == 'shelf':
             best_bin = None
             best_score = float('inf')
             for binn in self.bins:
@@ -244,26 +248,6 @@ class BinManager:
                     best_bin = binn
             return binn.insert(item)
                 
-        if self.algorithm == 'shelf':
-            best_area = float('inf')
-            best_bin = None
-            for i, binn in enumerate(self.bins):
-                area = None
-                for shelf in binn.shelves:
-                    if binn._item_fits_shelf(item, shelf):
-                        area = shelf.area
-                        break
-                if ((item.width <= binn.x and 
-                     item.height <= binn.available_height) or
-                    (item.height <= binn.x and 
-                     item.width <= binn.available_height)):
-                    area = binn.x * binn.available_height
-
-                if area and area < best_area:
-                    best_area = area
-                    best_bin = binn
-            if best_bin:
-                return best_bin.insert(item, self.heuristic)
 
         self.bins.append(self._bin_factory())
         self.bins[-1].insert(item, self.heuristic)

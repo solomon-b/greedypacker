@@ -11,7 +11,7 @@ class APITests(BaseTestCase):
         """
         Example insertion from README.md
         """
-        M = greedypacker.BinManager(8, 4, pack_algo='shelf')
+        M = greedypacker.BinManager(8, 4, pack_algo='shelf', heuristic='next_fit')
         ITEM = greedypacker.Item(4, 2)
         ITEM2 = greedypacker.Item(5, 2)
         ITEM3 = greedypacker.Item(2, 2)
@@ -397,7 +397,6 @@ class BinFirstFit(BaseTestCase):
                                rotation=True)
         M.add_items(ITEM, ITEM2)
         M.execute()
-        #print(M.bins)
         #self.assertCountEqual(M.bins[0].items, [ITEM, ITEM2])
 
 

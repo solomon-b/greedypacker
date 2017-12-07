@@ -9,7 +9,7 @@ from .util import stdout_redirect
 
 class WasteMap(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.Sheet(8, 4, rotation=True, wastemap=True)
+        self.sheet = shelf.ShelfNF(8, 4, rotation=True, wastemap=True)
 
 
     def tearDown(self):
@@ -27,9 +27,9 @@ class WasteMap(BaseTestCase):
         ITEM2 = item.Item(2,2)
         ITEM3 = item.Item(2,2)
 
-        self.sheet.insert(ITEM1, heuristic='next_fit')
-        self.sheet.insert(ITEM2, heuristic='next_fit')
-        self.sheet.insert(ITEM3, heuristic='next_fit')
+        self.sheet.insert(ITEM1)
+        self.sheet.insert(ITEM2)
+        self.sheet.insert(ITEM3)
         self.sheet._add_to_wastemap(self.sheet.shelves[-1])
 
         correct = [(1, 3, 7, 0), (4, 1, 3, 2)]
@@ -48,10 +48,10 @@ class WasteMap(BaseTestCase):
         ITEM2 = item.Item(2,2)
         ITEM3 = item.Item(2,2)
 
-        self.sheet.insert(ITEM0, heuristic='next_fit')
-        self.sheet.insert(ITEM1, heuristic='next_fit')
-        self.sheet.insert(ITEM2, heuristic='next_fit')
-        self.sheet.insert(ITEM3, heuristic='next_fit')
+        self.sheet.insert(ITEM0)
+        self.sheet.insert(ITEM1)
+        self.sheet.insert(ITEM2)
+        self.sheet.insert(ITEM3)
         self.sheet._add_to_wastemap(self.sheet.shelves[-1])
 
         correct = [(1, 3, 7, 1), (4, 1, 3, 3)]
@@ -70,11 +70,11 @@ class WasteMap(BaseTestCase):
         ITEM3 = item.Item(3,3)
         ITEM4 = item.Item(1,2)
 
-        self.sheet.insert(ITEM0, heuristic='next_fit')
-        self.sheet.insert(ITEM1, heuristic='next_fit')
-        self.sheet.insert(ITEM2, heuristic='next_fit')
-        self.sheet.insert(ITEM3, heuristic='next_fit')
-        self.sheet.insert(ITEM4, heuristic='next_fit')
+        self.sheet.insert(ITEM0)
+        self.sheet.insert(ITEM1)
+        self.sheet.insert(ITEM2)
+        self.sheet.insert(ITEM3)
+        self.sheet.insert(ITEM4)
 
         with self.subTest():
             self.assertEqual(self.sheet.items, [ITEM0, ITEM1, ITEM2, ITEM3, ITEM4])
@@ -155,18 +155,20 @@ class shelfObject(BaseTestCase):
 
 class NextFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.Sheet(8, 4)
+        self.sheet = shelf.ShelfNF(8, 4)
         self.sheet.rotation = True
+
 
     def tearDown(self):
         del self.sheet
+
 
     def testSingleInsert(self):
         """
         Single item insertion
         """
         ITEM = item.Item(6, 2)
-        self.sheet.insert(ITEM, heuristic='next_fit')
+        self.sheet.insert(ITEM)
         with self.subTest():
             correct= [ITEM]
             self.assertEqual(self.sheet.items, correct)
@@ -181,8 +183,8 @@ class NextFit(BaseTestCase):
         """
         ITEM = item.Item(3, 2)
         ITEM2 = item.Item(3, 2)
-        self.sheet.insert(ITEM, heuristic='next_fit')
-        self.sheet.insert(ITEM2, heuristic='next_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
         with self.subTest():
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
@@ -205,8 +207,8 @@ class NextFit(BaseTestCase):
         """
         ITEM = item.Item(2, 2)
         ITEM2 = item.Item(7, 2)
-        self.sheet.insert(ITEM, heuristic='next_fit')
-        self.sheet.insert(ITEM2, heuristic='next_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
         with self.subTest():
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
@@ -225,8 +227,8 @@ class NextFit(BaseTestCase):
         """
         ITEM = item.Item(3, 2)
         ITEM2 = item.Item(7, 3)
-        self.sheet.insert(ITEM, heuristic='next_fit')
-        res = self.sheet.insert(ITEM2, heuristic='next_fit')
+        self.sheet.insert(ITEM)
+        res = self.sheet.insert(ITEM2)
         with self.subTest():
             correct = [ITEM]
             self.assertEqual(self.sheet.items, correct)
@@ -245,14 +247,14 @@ class NextFit(BaseTestCase):
         """
         ITEM = item.Item(1, 2)
         ITEM2 = item.Item(1, 2)
-        self.sheet.insert(ITEM, heuristic='next_fit')
-        self.sheet.insert(ITEM2, heuristic='next_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
         self.assertCountEqual(self.sheet.items, [ITEM, ITEM2])
 
 
 class NextFitNoRotation(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.Sheet(8, 4)
+        self.sheet = shelf.ShelfNF(8, 4)
         self.sheet.rotation = False
 
     def tearDown(self):
@@ -280,8 +282,8 @@ class NextFitNoRotation(BaseTestCase):
         """
         ITEM = item.Item(3, 2)
         ITEM2 = item.Item(3, 2)
-        self.sheet.insert(ITEM, heuristic='next_fit')
-        self.sheet.insert(ITEM2, heuristic='next_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
         with self.subTest():
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
@@ -302,8 +304,8 @@ class NextFitNoRotation(BaseTestCase):
         """
         ITEM = item.Item(2, 2)
         ITEM2 = item.Item(7, 2)
-        self.sheet.insert(ITEM, heuristic='next_fit')
-        self.sheet.insert(ITEM2, heuristic='next_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
         with self.subTest():
             correct = [ITEM, ITEM2]
             self.assertEqual(self.sheet.items, correct)
@@ -322,8 +324,8 @@ class NextFitNoRotation(BaseTestCase):
         """
         ITEM = item.Item(7, 3)
         ITEM2 = item.Item(3, 2)
-        self.sheet.insert(ITEM, heuristic='next_fit')
-        res = self.sheet.insert(ITEM2, heuristic='next_fit')
+        self.sheet.insert(ITEM)
+        res = self.sheet.insert(ITEM2)
         with self.subTest():
             correct = [ITEM]
             self.assertEqual(self.sheet.items, correct)
