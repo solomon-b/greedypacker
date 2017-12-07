@@ -231,27 +231,6 @@ class BinManager:
                     best_bin = binn
             return binn.insert(item)
                 
-        #if self.algorithm == 'maximal_rectangle':
-        #    best_rect = None 
-        #    best_bin_index = None 
-        #    for i, binn in enumerate(self.bins):
-        #        best_in_bin = None
-        #        for rect in binn.freerects:
-        #            if binn._item_fits_rect(item, rect):
-        #                best_in_bin = rect
-        #                break
-        #        if not best_in_bin:
-        #            continue
-        #        if not best_rect:
-        #            best_rect = best_in_bin
-        #            best_bin_index = i
-        #        elif best_in_bin.area < best_rect.area:
-        #            best_rect = best_in_bin
-        #            best_bin_index = i
-
-        #    if best_rect:
-        #        return self.bins[i].insert(item, self.heuristic)
-
         if self.algorithm == 'shelf':
             best_area = float('inf')
             best_bin = None
