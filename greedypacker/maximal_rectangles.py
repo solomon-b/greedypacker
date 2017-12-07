@@ -5,7 +5,6 @@ Maximal Rectangle 2D Bin Algorithm
 Solomon Bothwell
 ssbothwell@gmail.com
 """
-import operator
 import typing
 from typing import List, Tuple, Union
 from functools import reduce
@@ -220,452 +219,46 @@ class MaximalRectangle:
         self.freerects = result
         self.remove_redundent()
 
-
-    def best_area(self, item: Item) -> bool:
-        """
-        Insert item into rectangle with smallest
-        area
-        """
-        best_rect = None
-        best_area = float('inf')
-        rotated = False
-        for rect in self.freerects:
-            if not self._item_fits_rect(item, rect):
-                continue
-            area = rect.width*rect.height 
-            if ((area < best_area) or
-                (area == best_area and
-                rect.y < best_rect.y)):
-                best_rect = rect
-                best_area = area
-                rotated = False
-
-        if self.rotation:
-            for rect in self.freerects:
-                if not self._item_fits_rect(item, rect, rotation=True):
-                    continue
-                area = rect.width*rect.height 
-                if ((area < best_area) or
-                    (area == best_area and
-                    rect.y < best_rect.y)):
-                    best_rect = rect
-                    best_area = area
-                    rotated = True
-
-        if best_rect:
-            if rotated:
-                item.rotate()
-            item.x, item.y = best_rect.x, best_rect.y
-            self.items.append(item)
-            self.free_area -= item.area
-            maximals = self.split_rectangle(best_rect, item)
-            self.freerects.remove(best_rect)
-            self.freerects += maximals
-            itemBounds = self.item_bounds(item)
-
-            self.prune_overlaps(itemBounds)
-            return True
-        return False
-
-
-    def best_shortside(self, item: Item) -> bool:
-        """
-        Pack Item into a FreeRectangle such that
-        the smaller leftover side is minimized, ie:
-        pick the FreeRectangle where min(Fw - Iw, Fh - Ih)
-        is the smallest.
-        """
-        best_rect = None
-        best_shortside = float('inf')
-        rotated = False
-        for rect in self.freerects:
-            if not self._item_fits_rect(item, rect):
-                continue
-            shortside = min(rect.width-item.width,
-                            rect.height-item.height)
-            if ((shortside < best_shortside) or 
-                (shortside == best_shortside and 
-                 rect.y < best_rect.y)):
-                best_rect = rect
-                best_shortside = shortside
-                rotated = False
-
-        if self.rotation:
-            for rect in self.freerects:
-                if not self._item_fits_rect(item, rect, rotation=True):
-                    continue
-                shortside = min(rect.width-item.width,
-                                rect.height-item.height)
-                if ((shortside < best_shortside) or 
-                    (shortside == best_shortside and 
-                     rect.y < best_rect.y)):
-                    best_rect = rect
-                    best_shortside = shortside
-                    rotated = True
-
-        if best_rect:
-            if rotated:
-                item.rotate()
-            item.x, item.y = best_rect.x, best_rect.y
-            self.items.append(item)
-            self.free_area -= item.area
-            maximals = self.split_rectangle(best_rect, item)
-            self.freerects.remove(best_rect)
-            self.freerects += maximals
-            itemBounds = self.item_bounds(item)
-
-            self.prune_overlaps(itemBounds)
-            return True
-        return False
-
-
-    def best_longside(self, item: Item) -> bool:
-        """
-        Pack Item into a FreeRectangle such that
-        the larger leftover side is minimized, ie:
-        pick the FreeRectangle where max(Fw - Iw, Fh - Ih)
-        is the smallest.
-        """
-        best_rect = None
-        best_longside = float('inf')
-        rotated = False
-        for rect in self.freerects:
-            if not self._item_fits_rect(item, rect):
-                continue
-            longside = max(rect.width-item.width,
-                           rect.height-item.height)
-            if ((longside < best_longside) or
-                (longside == best_longside and
-                rect.y < best_y)):
-                best_rect = rect
-                best_longside = longside
-
-        if self.rotation:
-            for rect in self.freerects:
-                if not self._item_fits_rect(item, rect, rotation=True):
-                    continue
-                longside = max(rect.width-item.width,
-                           rect.height-item.height)
-                if ((longside < best_longside) or
-                    (longside == best_longside and
-                    rect.y < best_rect.y)):
-                    best_rect = rect
-                    best_longside = longside
-                    rotated = True
-
-        if best_rect:
-            if rotated:
-                item.rotate()
-            item.x, item.y = best_rect.x, best_rect.y
-            self.items.append(item)
-            self.free_area -= item.area
-            maximals = self.split_rectangle(best_rect, item)
-            self.freerects.remove(best_rect)
-            self.freerects += maximals
-            itemBounds = self.item_bounds(item)
-
-            self.prune_overlaps(itemBounds)
-            return True
-        return False
-
-
-    def worst_shortside(self, item: Item) -> bool:
-        """
-        Pack Item into a FreeRectangle such that
-        the smaller leftover side is maximized, ie:
-        pick the FreeRectangle where min(Fw - Iw, Fh - Ih)
-        is the greatest.
-        """
-        worst_rect = None
-        worst_shortside = float('inf')
-        rotated = False
-        for rect in self.freerects:
-            if not self._item_fits_rect(item, rect):
-                continue
-            shortside = min(rect.width-item.width,
-                            rect.height-item.height)
-            if ((shortside > worst_shortside) or 
-                (shortside == worst_shortside and 
-                 rect.y > worst_rect.y)):
-                worst_rect = rect
-                worst_shortside = shortside
-                rotated = False
-
-        if self.rotation:
-            for rect in self.freerects:
-                if not self._item_fits_rect(item, rect, rotation=True):
-                    continue
-                shortside = min(rect.width-item.width,
-                                rect.height-item.height)
-                if ((shortside > worst_shortside) or 
-                    (shortside == worst_shortside and 
-                     rect.y > worst_rect.y)):
-                    worst_rect = rect
-                    worst_shortside = shortside
-                    rotated = True
-
-        if worst_rect:
-            if rotated:
-                item.rotate()
-            item.x, item.y = worst_rect.x, worst_rect.y
-            self.items.append(item)
-            self.free_area -= item.area
-            maximals = self.split_rectangle(worst_rect, item)
-            self.freerects.remove(worst_rect)
-            self.freerects += maximals
-            itemBounds = self.item_bounds(item)
-
-            self.prune_overlaps(itemBounds)
-            return True
-        return False
-
-
-    def worst_longside(self, item: Item) -> bool:
-        """
-        Pack Item into a FreeRectangle such that
-        the larger leftover side is maximized, ie:
-        pick the FreeRectangle where max(Fw - Iw, Fh - Ih)
-        is the greatest.
-        """
-        worst_rect = None
-        worst_longside = float('inf')
-        rotated = False
-        for rect in self.freerects:
-            if not self._item_fits_rect(item, rect):
-                continue
-            longside = max(rect.width-item.width,
-                           rect.height-item.height)
-            if ((longside > worst_longside) or
-                (longside == worst_longside and
-                rect.y > worst_y)):
-                worst_rect = rect
-                worst_longside = longside
-
-        if self.rotation:
-            for rect in self.freerects:
-                if not self._item_fits_rect(item, rect, rotation=True):
-                    continue
-                longside = max(rect.width-item.width,
-                           rect.height-item.height)
-                if ((longside > worst_longside) or
-                    (longside == worst_longside and
-                    rect.y > worst_rect.y)):
-                    worst_rect = rect
-                    worst_longside = longside
-                    rotated = True
-
-        if worst_rect:
-            if rotated:
-                item.rotate()
-            item.x, item.y = worst_rect.x, worst_rect.y
-            self.items.append(item)
-            self.free_area -= item.area
-            maximals = self.split_rectangle(worst_rect, item)
-            self.freerects.remove(worst_rect)
-            self.freerects += maximals
-            itemBounds = self.item_bounds(item)
-
-            self.prune_overlaps(itemBounds)
-            return True
-        return False
-
-
-    def worst_area(self, item: Item) -> bool:
-        """
-        Insert item into rectangle with largest
-        area
-        """
-        worst_rect = None
-        worst_area = float('inf')
-        rotated = False
-        for rect in self.freerects:
-            if not self._item_fits_rect(item, rect):
-                continue
-            area = rect.width*rect.height 
-            if ((area > worst_area) or
-                (area == worst_area and
-                rect.y > worst_rect.y)):
-                worst_rect = rect
-                worst_area = area
-                rotated = False
-
-        if self.rotation:
-            for rect in self.freerects:
-                if not self._item_fits_rect(item, rect, rotation=True):
-                    continue
-                area = rect.width*rect.height 
-                if ((area > worst_area) or
-                    (area == worst_area and
-                    rect.y > worst_rect.y)):
-                    worst_rect = rect
-                    worst_area = area
-                    rotated = True
-
-        if worst_rect:
-            if rotated:
-                item.rotate()
-            item.x, item.y = worst_rect.x, worst_rect.y
-            self.items.append(item)
-            self.free_area -= item.area
-            maximals = self.split_rectangle(worst_rect, item)
-            self.freerects.remove(worst_rect)
-            self.freerects += maximals
-            itemBounds = self.item_bounds(item)
-
-            self.prune_overlaps(itemBounds)
-            return True
-        return False
-
-
-    def best_bottomleft(self, item: Item) -> bool:
-        """
-        Pack Item into a FreeRectangle such that
-        the item's top coordinate will be minimized. 
-        If multiple FreeRectangles result in minimal 
-        top heights, then choose then one with the 
-        smallest x
-        """
-        best_rect = None
-        best_topy = float('inf')
-        rotated = False
-        for rect in self.freerects:
-            if not self._item_fits_rect(item, rect):
-                continue
-            topy = item.height + rect.y  
-            if ((topy == best_topy and rect.x < best_rect.x) or # type: ignore
-                 topy < best_topy): 
-                best_rect = rect
-                best_topy = topy
-
-        if self.rotation:
-            for rect in self.freerects:
-                if not self._item_fits_rect(item, rect, rotation=True):
-                    continue
-                topy = item.height + rect.y  
-                if ((topy == best_topy and rect.x < best_rect.x) or
-                     topy < best_topy):
-                    best_rect = rect
-                    best_topy = topy
-                    rotated = True
-
-        if best_rect:
-            if rotated:
-                item.rotate()
-            item.x, item.y = best_rect.x, best_rect.y
-            self.items.append(item)
-            self.free_area -= item.area
-            maximals = self.split_rectangle(best_rect, item)
-            self.freerects.remove(best_rect)
-            self.freerects += maximals
-            itemBounds = self.item_bounds(item)
-
-            self.prune_overlaps(itemBounds)
-            return True
-        return False
-
     
     @staticmethod
-    def common_interval_length(Xstart: int, Xend: int,
-                               Ystart: int, Yend: int) -> int:
-        """
-        Returns the length of perimiter shared by two
-        rectangles
-        """
-        if Xend < Ystart or Yend < Xstart:
-            return 0
-        return min(Xend, Yend) - max(Xstart, Ystart)
+    def _rect_score(rect: FreeRectangle, item: Item) -> None:
+        pass
 
-    
-    def contact_point(self, item: Item) -> bool:
-        """
-        Pack Item into a FreeRectangle such that
-        the permiter of Item that is touching either
-        the bin edge or another packed item is
-        maximized.
-        """
-        best_rect = None
-        best_perim = -1
-        rotated = False
+
+    def _find_best_score(self, item: Item):
+        rects = []
         for rect in self.freerects:
-            if not self._item_fits_rect(item, rect):
-                continue
-
-            perim = 0
-            if rect.x == 0 or rect.x + item.width == self.x:
-                perim += item.height
-            if rect.y == 0 or rect.y + item.height == self.y:
-                perim += item.width
-
-            for itm in self.items:
-                if (itm.x == rect.x+rect.width or
-                    itm.x+itm.width == rect.x):
-                    perim += self.common_interval_length(itm.y, itm.y+itm.height, rect.y, rect.y+item.height)
-                if (itm.y == rect.y+rect.height or
-                    item.y+itm.height == rect.y):
-                    perim += self.common_interval_length(itm.x, itm.x+itm.width, rect.x, rect.x+item.width)
-            if perim > best_perim:
-                best_rect = rect
-                best_perim = perim
-
-        if self.rotation:
-            for rect in self.freerects:
-                if not self._item_fits_rect(item, rect, rotation=True):
-                    continue
-                perim = 0
-                if rect.x == 0 or rect.x + item.width == self.x:
-                    perim += item.height
-                if rect.y == 0 or rect.y + item.height == self.y:
-                    perim += item.width
-                for itm in self.items:
-                    if (itm.x == rect.x+rect.width or
-                        itm.x+itm.width == rect.x):
-                        perim += self.common_interval_length(itm.y, itm.y+itm.height, rect.y, rect.y+item.height)
-                    if (itm.y == rect.y+rect.height or
-                        item.y+itm.height == rect.y):
-                        perim += self.common_interval_length(itm.x, itm.x+itm.width, rect.x, rect.x+item.width)
-                if perim > best_perim:
-                    best_rect = rect
-                    best_perim = perim
-                    rotated = True
-
-        if best_rect:
-            if rotated:
-                item.rotate()
-            item.x, item.y = best_rect.x, best_rect.y
-            self.items.append(item)
-            self.free_area -= item.area
-            maximals = self.split_rectangle(best_rect, item)
-            self.freerects.remove(best_rect)
-            self.freerects += maximals
-            itemBounds = self.item_bounds(item)
-
-            self.prune_overlaps(itemBounds)
-            return True
-        return False
+            if self._item_fits_rect(item, rect):
+                rects.append((self._rect_score(rect, item), rect, False))
+            if self._item_fits_rect(item, rect, rotation=True):
+                rects.append((self._rect_score(rect, item), rect, True))
+        try:
+            score, rect, rot = min(rects, key=lambda x: x[0])
+            return score, rect, rot
+        except ValueError:
+            return None, None, False
 
 
     def insert(self, item: Item, heuristic: str = 'best_area') -> bool:
         """
         Public method for selecting heuristic and inserting item
         """
-        if heuristic == 'best_shortside':
-            return self.best_shortside(item)
-        elif heuristic == 'best_longside':
-            return self.best_longside(item)
-        elif heuristic == 'best_area':
-            return self.best_area(item)
-        elif heuristic == 'worst_shortside':
-            return self.worst_shortside(item)
-        elif heuristic == 'worst_longside':
-            return self.worst_longside(item)
-        elif heuristic == 'worst_area':
-            return self.worst_area(item)
-        elif heuristic == 'bottom_left':
-            return self.best_bottomleft(item)
-        elif heuristic == 'contact_point':
-            return self.contact_point(item)
-        else:
-            return False
+        _, best_rect, rotated = self._find_best_score(item)
+
+        if best_rect:
+            if rotated:
+                item.rotate()
+            item.x, item.y = best_rect.x, best_rect.y
+            self.items.append(item)
+            self.free_area -= item.area
+            maximals = self.split_rectangle(best_rect, item)
+            self.freerects.remove(best_rect)
+            self.freerects += maximals
+            itemBounds = self.item_bounds(item)
+
+            self.prune_overlaps(itemBounds)
+            return True
+        return False
 
 
     def bin_stats(self) -> dict:
@@ -682,3 +275,75 @@ class MaximalRectangle:
             }
 
         return stats
+
+
+class MaxRectsBAF(MaximalRectangle):
+    @staticmethod
+    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+        return rect.area-item.area
+        
+
+class MaxRectsBSSF(MaximalRectangle):
+    @staticmethod
+    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+        return min(rect.width-item.width, rect.height-item.height)
+
+
+class MaxRectsBLSF(MaximalRectangle):
+    @staticmethod
+    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+        return max(rect.width-item.width, rect.height-item.height)
+
+
+class MaxRectsWAF(MaximalRectangle):
+    @staticmethod
+    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+        return 0 - (rect.area-item.area)
+        
+
+class MaxRectsWSSF(MaximalRectangle):
+    @staticmethod
+    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+        return 0 - min(rect.width-item.width, rect.height-item.height)
+
+
+class MaxRectsWLSF(MaximalRectangle):
+    @staticmethod
+    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+        return 0 - max(rect.width-item.width, rect.height-item.height)
+
+
+class MaxRectsBL(MaximalRectangle):
+    @staticmethod
+    def _rect_score(rect: FreeRectangle, item: Item) -> int:
+        return rect.y + rect.height + item.height
+
+
+class MaxRectsCP(MaximalRectangle):
+    @staticmethod
+    def _common_interval_length(Xstart: int, Xend: int,
+                               Ystart: int, Yend: int) -> int:
+        """
+        Returns the length of perimiter shared by two
+        rectangles
+        """
+        if Xend < Ystart or Yend < Xstart:
+            return 0
+        return min(Xend, Yend) - max(Xstart, Ystart)
+
+
+    def _rect_score(self, rect: FreeRectangle, item: Item) -> int:
+        perim = 0
+        if rect.x == 0 or rect.x + item.width == self.x:
+            perim += item.height
+        if rect.y == 0 or rect.y + item.height == self.y:
+            perim += item.width
+
+        for itm in self.items:
+            if (itm.x == rect.x+rect.width or
+                itm.x+itm.width == rect.x):
+                perim += self._common_interval_length(itm.y, itm.y+itm.height, rect.y, rect.y+item.height)
+            if (itm.y == rect.y+rect.height or
+                item.y+itm.height == rect.y):
+                perim += self._common_interval_length(itm.x, itm.x+itm.width, rect.x, rect.x+item.width)
+        return 0 - perim

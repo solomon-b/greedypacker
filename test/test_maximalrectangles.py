@@ -153,7 +153,7 @@ class StaticMethods(BaseTestCase):
 
 class BestArea(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaximalRectangle(8, 4)
+        self.M = maximal_rectangles.MaxRectsBAF(8, 4)
 
 
     def tearDown(self):
@@ -167,7 +167,7 @@ class BestArea(BaseTestCase):
         """
         I = item.Item(9, 4)
         F0 = maximal_rectangles.FreeRectangle(8, 4, 0, 0)
-        self.M.best_area(I)
+        self.M.insert(I)
         self.assertCountEqual(self.M.freerects, [F0])
 
     def testTwoItemInsert(self):
@@ -179,8 +179,8 @@ class BestArea(BaseTestCase):
         I2 = item.Item(4, 2)
         F0 = maximal_rectangles.FreeRectangle(6, 2, 2, 0)
         F1 = maximal_rectangles.FreeRectangle(4, 4, 4, 0)
-        self.M.best_area(I)
-        self.M.best_area(I2)
+        self.M.insert(I)
+        self.M.insert(I2)
         with self.subTest():
             self.assertCountEqual(self.M.freerects, [F0, F1])
         with self.subTest():
@@ -195,7 +195,7 @@ class BestArea(BaseTestCase):
 
 class BestShortside(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaximalRectangle(8, 4)
+        self.M = maximal_rectangles.MaxRectsBSSF(8, 4)
 
 
     def tearDown(self):
@@ -209,7 +209,7 @@ class BestShortside(BaseTestCase):
         """
         I = item.Item(9, 4)
         F0 = maximal_rectangles.FreeRectangle(8, 4, 0, 0)
-        self.M.best_shortside(I)
+        self.M.insert(I)
         self.assertCountEqual(self.M.freerects, [F0])
 
     def testTwoItemInsert(self):
@@ -222,8 +222,8 @@ class BestShortside(BaseTestCase):
         F0 = maximal_rectangles.FreeRectangle(7, 1, 1, 0)
         F1 = maximal_rectangles.FreeRectangle(8, 1, 0, 3)
         F2 = maximal_rectangles.FreeRectangle(6, 4, 2, 0)
-        self.M.best_shortside(I)
-        self.M.best_shortside(I2)
+        self.M.insert(I)
+        self.M.insert(I2)
         with self.subTest():
             self.assertCountEqual(self.M.freerects, [F0, F1, F2])
         with self.subTest():
@@ -238,7 +238,7 @@ class BestShortside(BaseTestCase):
 
 class BestLongside(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaximalRectangle(8, 4)
+        self.M = maximal_rectangles.MaxRectsBLSF(8, 4)
 
 
     def tearDown(self):
@@ -252,7 +252,7 @@ class BestLongside(BaseTestCase):
         """
         I = item.Item(9, 4)
         F0 = maximal_rectangles.FreeRectangle(8, 4, 0, 0)
-        self.M.best_shortside(I)
+        self.M.insert(I)
         self.assertCountEqual(self.M.freerects, [F0])
 
     def testTwoItemInsert(self):
@@ -265,8 +265,8 @@ class BestLongside(BaseTestCase):
         F0 = maximal_rectangles.FreeRectangle(5, 4, 3, 0)
         F1 = maximal_rectangles.FreeRectangle(1, 3, 0, 1)
         F2 = maximal_rectangles.FreeRectangle(8, 2, 0, 2)
-        self.M.best_longside(I)
-        self.M.best_longside(I2)
+        self.M.insert(I)
+        self.M.insert(I2)
         with self.subTest():
             self.assertCountEqual(self.M.freerects, [F0, F1, F2])
         with self.subTest():
@@ -281,7 +281,7 @@ class BestLongside(BaseTestCase):
 
 class BestBottomLeft(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaximalRectangle(8, 4)
+        self.M = maximal_rectangles.MaxRectsBL(8, 4)
 
 
     def tearDown(self):
@@ -295,7 +295,7 @@ class BestBottomLeft(BaseTestCase):
         """
         I = item.Item(9, 4)
         F0 = maximal_rectangles.FreeRectangle(8, 4, 0, 0)
-        self.M.best_shortside(I)
+        self.M.insert(I)
         self.assertCountEqual(self.M.freerects, [F0])
 
     def testThreeItemInsert(self):
@@ -308,9 +308,9 @@ class BestBottomLeft(BaseTestCase):
         I3 = item.Item(1, 1)
         F0 = maximal_rectangles.FreeRectangle(8, 2, 0, 2)
         F1 = maximal_rectangles.FreeRectangle(3, 3, 1, 1)
-        self.M.best_bottomleft(I)
-        self.M.best_bottomleft(I2)
-        self.M.best_bottomleft(I3)
+        self.M.insert(I)
+        self.M.insert(I2)
+        self.M.insert(I3)
         with self.subTest():
             self.assertCountEqual(self.M.freerects, [F0, F1])
         with self.subTest():
@@ -328,7 +328,7 @@ class BestBottomLeft(BaseTestCase):
 
 class ContactPoint(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaximalRectangle(8, 4)
+        self.M = maximal_rectangles.MaxRectsCP(8, 4)
 
 
     def tearDown(self):
@@ -342,7 +342,7 @@ class ContactPoint(BaseTestCase):
         """
         I = item.Item(9, 4)
         F0 = maximal_rectangles.FreeRectangle(8, 4, 0, 0)
-        self.M.best_shortside(I)
+        self.M.insert(I)
         self.assertCountEqual(self.M.freerects, [F0])
 
     def testThreeItemInsert(self):
@@ -355,9 +355,9 @@ class ContactPoint(BaseTestCase):
         I3 = item.Item(1, 1)
         F0 = maximal_rectangles.FreeRectangle(8, 2, 0, 2)
         F1 = maximal_rectangles.FreeRectangle(3, 4, 5, 0)
-        self.M.contact_point(I)
-        self.M.contact_point(I2)
-        self.M.contact_point(I3)
+        self.M.insert(I)
+        self.M.insert(I2)
+        self.M.insert(I3)
         with self.subTest():
             self.assertCountEqual(self.M.freerects, [F0, F1])
         with self.subTest():
@@ -375,11 +375,11 @@ class ContactPoint(BaseTestCase):
 
 class RotationTests(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaximalRectangle(8, 4, rotation=True)
+        pass
 
 
     def tearDown(self):
-        del self.M
+        pass
 
 
     def testBestAreaRotated(self):
@@ -387,10 +387,11 @@ class RotationTests(BaseTestCase):
         Item too Big
         Rotation = False
         """
+        M = maximal_rectangles.MaxRectsBAF(8, 4, rotation=True)
         I = item.Item(4, 8)
-        self.M.best_area(I)
+        M.insert(I)
         with self.subTest():
-            self.assertEqual(self.M.freerects, [])
+            self.assertEqual(M.freerects, [])
         with self.subTest():
             self.assertEqual(I.rotated, True)
         
@@ -400,10 +401,11 @@ class RotationTests(BaseTestCase):
         Item too Big
         Rotation = False
         """
+        M = maximal_rectangles.MaxRectsBSSF(8, 4, rotation=True)
         I = item.Item(4, 8)
-        self.M.best_shortside(I)
+        M.insert(I)
         with self.subTest():
-            self.assertEqual(self.M.freerects, [])
+            self.assertEqual(M.freerects, [])
         with self.subTest():
             self.assertEqual(I.rotated, True)
 
@@ -413,10 +415,11 @@ class RotationTests(BaseTestCase):
         Item too Big
         Rotation = False
         """
+        M = maximal_rectangles.MaxRectsBLSF(8, 4, rotation=True)
         I = item.Item(4, 8)
-        self.M.best_longside(I)
+        M.insert(I)
         with self.subTest():
-            self.assertEqual(self.M.freerects, [])
+            self.assertEqual(M.freerects, [])
         with self.subTest():
             self.assertEqual(I.rotated, True)
 
@@ -426,10 +429,11 @@ class RotationTests(BaseTestCase):
         Item too Big
         Rotation = False
         """
+        M = maximal_rectangles.MaxRectsBL(8, 4, rotation=True)
         I = item.Item(4, 8)
-        self.M.best_bottomleft(I)
+        M.insert(I)
         with self.subTest():
-            self.assertEqual(self.M.freerects, [])
+            self.assertEqual(M.freerects, [])
         with self.subTest():
             self.assertEqual(I.rotated, True)
 
@@ -439,17 +443,18 @@ class RotationTests(BaseTestCase):
         Item too Big
         Rotation = False
         """
+        M = maximal_rectangles.MaximalRectangle(8, 4, rotation=True)
         I = item.Item(4, 8)
-        self.M.contact_point(I)
+        M.insert(I, heuristic='contact_point')
         with self.subTest():
-            self.assertEqual(self.M.freerects, [])
+            self.assertEqual(M.freerects, [])
         with self.subTest():
             self.assertEqual(I.rotated, True)
 
 
 class Insert(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaximalRectangle(8, 4, rotation=True)
+        self.M = maximal_rectangles.MaxRectsBAF(8, 4, rotation=True)
 
 
     def tearDown(self):

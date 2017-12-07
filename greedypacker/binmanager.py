@@ -143,10 +143,32 @@ class BinManager:
             elif self.heuristic == 'worst_longside':
                 return guillotine.GuillotineWLSF(self.bin_width, self.bin_height, self.rotation,
                                          self.rectangle_merge, self.split_heuristic)
+            else:
+                raise ValueError('Error: No such Heuristic')
+
         elif self.algorithm == 'shelf':
             return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+
         elif self.algorithm == 'maximal_rectangle':
-            return maximal_rectangles.MaximalRectangle(self.bin_width, self.bin_height, self.rotation)
+            if self.heuristic == 'best_area':
+                return maximal_rectangles.MaxRectsBAF(self.bin_width, self.bin_height, self.rotation)
+            elif self.heuristic == 'best_shortside':
+                return maximal_rectangles.MaxRectsBSSF(self.bin_width, self.bin_height, self.rotation)
+            elif self.heuristic == 'best_longside':
+                return maximal_rectangles.MaxRectsBLSF(self.bin_width, self.bin_height, self.rotation)
+            if self.heuristic == 'worst_area':
+                return maximal_rectangles.MaxRectsWAF(self.bin_width, self.bin_height, self.rotation)
+            elif self.heuristic == 'worst_shortside':
+                return maximal_rectangles.MaxRectsWSSF(self.bin_width, self.bin_height, self.rotation)
+            elif self.heuristic == 'worst_longside':
+                return maximal_rectangles.MaxRectsWLSF(self.bin_width, self.bin_height, self.rotation)
+            elif self.heuristic == 'bottom_left':
+                return maximal_rectangles.MaxRectsBL(self.bin_width, self.bin_height, self.rotation)
+            elif self.heuristic == 'contact_point':
+                return maximal_rectangles.MaxRectsCP(self.bin_width, self.bin_height, self.rotation)
+            else:
+                raise ValueError('Error: No such Heuristic')
+
         elif self.algorithm == 'skyline':
             return skyline.Skyline(self.bin_width, self.bin_height, self.rotation)
         raise ValueError('Error: No such Algorithm')
@@ -199,7 +221,7 @@ class BinManager:
             if best_bin:
                 return best_bin.insert(item, self.heuristic)
 
-        if self.algorithm == 'guillotine':
+        if self.algorithm == 'guillotine' or self.algorithm == 'maximal_rectangle':
             best_bin = None
             best_score = float('inf')
             for binn in self.bins:
@@ -209,26 +231,26 @@ class BinManager:
                     best_bin = binn
             return binn.insert(item)
                 
-        if self.algorithm == 'maximal_rectangle':
-            best_rect = None 
-            best_bin_index = None 
-            for i, binn in enumerate(self.bins):
-                best_in_bin = None
-                for rect in binn.freerects:
-                    if binn._item_fits_rect(item, rect):
-                        best_in_bin = rect
-                        break
-                if not best_in_bin:
-                    continue
-                if not best_rect:
-                    best_rect = best_in_bin
-                    best_bin_index = i
-                elif best_in_bin.area < best_rect.area:
-                    best_rect = best_in_bin
-                    best_bin_index = i
+        #if self.algorithm == 'maximal_rectangle':
+        #    best_rect = None 
+        #    best_bin_index = None 
+        #    for i, binn in enumerate(self.bins):
+        #        best_in_bin = None
+        #        for rect in binn.freerects:
+        #            if binn._item_fits_rect(item, rect):
+        #                best_in_bin = rect
+        #                break
+        #        if not best_in_bin:
+        #            continue
+        #        if not best_rect:
+        #            best_rect = best_in_bin
+        #            best_bin_index = i
+        #        elif best_in_bin.area < best_rect.area:
+        #            best_rect = best_in_bin
+        #            best_bin_index = i
 
-            if best_rect:
-                return self.bins[i].insert(item, self.heuristic)
+        #    if best_rect:
+        #        return self.bins[i].insert(item, self.heuristic)
 
         if self.algorithm == 'shelf':
             best_area = float('inf')
