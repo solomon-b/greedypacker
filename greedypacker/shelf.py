@@ -153,22 +153,6 @@ class Sheet:
         self.wastemap.rectangle_merge()
 
 
-    def next_fit(self, item: Item) -> bool:
-        open_shelf = self.shelves[-1]
-        if self._item_fits_shelf(item, open_shelf):
-            self._add_to_shelf(item, open_shelf)
-            return True
-        return False
-
-
-    def first_fit(self, item: Item) -> bool:
-        for shelf in self.shelves:
-            if self._item_fits_shelf(item, shelf):
-                self._add_to_shelf(item, shelf)
-                return True
-        return False
-
-
     @staticmethod
     def _score(shelf: Shelf, item: Item) -> int:
         pass
@@ -301,9 +285,9 @@ class ShelfFF(Sheet):
         if self.shelves:
             for shelf in self.shelves:
                 if self._item_fits_shelf(item, shelf):
-                    return (0, open_shelf, False)
-                if self.rotation and self._item_fits_shelf(item, open_shelf, True):
-                    return (0, open_shelf, True)
+                    return (0, shelf, False)
+                if self.rotation and self._item_fits_shelf(item, shelf, True):
+                    return (0, shelf, True)
         return (0, None, False)
 
 

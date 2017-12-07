@@ -340,7 +340,7 @@ class NextFitNoRotation(BaseTestCase):
 
 class FirstFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.Sheet(8, 4)
+        self.sheet = shelf.ShelfFF(8, 4)
 
 
     def tearDown(self):
@@ -352,7 +352,7 @@ class FirstFit(BaseTestCase):
         Single item insertion doesn't use a heuristic
         """
         ITEM = item.Item(6, 2)
-        self.sheet.insert(ITEM, heuristic='first_fit')
+        self.sheet.insert(ITEM)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
             correct.insert(ITEM)
@@ -372,8 +372,8 @@ class FirstFit(BaseTestCase):
         """
         ITEM = item.Item(3, 2)
         ITEM2 = item.Item(3, 2)
-        self.sheet.insert(ITEM, heuristic='first_fit')
-        self.sheet.insert(ITEM2, heuristic='first_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
             correct.insert(ITEM)
@@ -393,8 +393,8 @@ class FirstFit(BaseTestCase):
         """
         ITEM = item.Item(3, 2)
         ITEM2 = item.Item(6, 2)
-        self.sheet.insert(ITEM, heuristic='first_fit')
-        self.sheet.insert(ITEM2, heuristic='first_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
             correct.insert(ITEM)
@@ -418,8 +418,8 @@ class FirstFit(BaseTestCase):
         """
         ITEM = item.Item(3, 2)
         ITEM2 = item.Item(6, 3)
-        self.sheet.insert(ITEM, heuristic='first_fit')
-        res = self.sheet.insert(ITEM2, heuristic='first_fit')
+        self.sheet.insert(ITEM)
+        res = self.sheet.insert(ITEM2)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
             correct.insert(ITEM)
@@ -441,9 +441,9 @@ class FirstFit(BaseTestCase):
         ITEM = item.Item(5, 2)
         ITEM2 = item.Item(4, 2)
         ITEM3 = item.Item(2, 2)
-        self.sheet.insert(ITEM, heuristic='first_fit')
-        self.sheet.insert(ITEM2, heuristic='first_fit')
-        self.sheet.insert(ITEM3, heuristic='first_fit')
+        self.sheet.insert(ITEM)
+        self.sheet.insert(ITEM2)
+        self.sheet.insert(ITEM3)
         with self.subTest():
             correct = shelf.Shelf(8, 2, 0)
             correct.insert(ITEM)
