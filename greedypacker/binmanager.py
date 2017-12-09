@@ -227,23 +227,17 @@ class BinManager:
         if not item_fits:
             raise ValueError("Error! item too big for bin")
 
-        if self.algorithm == 'skyline':
-            best_bin = None
-            best_y = float('inf')
+        if self.algorithm == 'maximal_rectangle' or self.algorithm == 'skyline':
+            scores = []
             for binn in self.bins:
-                for i, seg in enumerate(binn.skyline):
-                    fits, y = binn._check_fit(item.width, item.height, i)
-                    if fits and y < best_y:
-                        best_y = y
-                        best_bin = binn
-                    fits, y = binn._check_fit(item.height, item.width, i)
-                    if fits and y < best_y:
-                        best_y = y
-                        best_bin = binn
-            if best_bin:
-                return best_bin.insert(item, self.heuristic)
+                s, _, _ = binn._find_best_score(item)[:3]
+                if s:
+                    scores.append((s, binn))
+            if scores:
+                _, best_bin = min(scores, key=lambda x: x[0])
+                return best_bin.insert(item)
 
-        if self.algorithm == 'guillotine' or self.algorithm == 'maximal_rectangle' or self.algorithm == 'shelf':
+        if self.algorithm == 'guillotine'  or self.algorithm == 'shelf':
             best_bin = None
             best_score = float('inf')
             for binn in self.bins:
@@ -254,8 +248,9 @@ class BinManager:
             return binn.insert(item)
                 
 
-        self.bins.append(self._bin_factory())
-        self.bins[-1].insert(item, self.heuristic)
+        new_bin = self._bin_factory()
+        new_bin.insert(item, self.heuristic)
+        self.bins.append(new_bin)
         return True
 
 

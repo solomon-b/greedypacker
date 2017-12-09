@@ -278,48 +278,56 @@ class MaximalRectangle:
 
 
 class MaxRectsBAF(MaximalRectangle):
+    """ Best Area Fit """
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return rect.area-item.area
+        return rect.area-item.area, min(rect.width-item.width, rect.height-item.height)
         
 
 class MaxRectsBSSF(MaximalRectangle):
+    """ Best Short Side Fit """
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return min(rect.width-item.width, rect.height-item.height)
+        return min(rect.width-item.width, rect.height-item.height), max(rect.width-item.width, rect.height-item.height)
 
 
 class MaxRectsBLSF(MaximalRectangle):
+    """ Best Long Side Fit """
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return max(rect.width-item.width, rect.height-item.height)
+        return max(rect.width-item.width, rect.height-item.height), min(rect.width-item.width, rect.height-item.height)
 
 
 class MaxRectsWAF(MaximalRectangle):
+    """ Worst Area Fit """
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return 0 - (rect.area-item.area)
+        return (0 - (rect.area-item.area)), (0 - min(rect.width-item.width, rect.height-item.height))
         
 
 class MaxRectsWSSF(MaximalRectangle):
+    """ Worst Short Side Fit """
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return 0 - min(rect.width-item.width, rect.height-item.height)
+        return (0 - min(rect.width-item.width, rect.height-item.height)), 0 - max(rect.width-item.width, rect.height-item.height)
 
 
 class MaxRectsWLSF(MaximalRectangle):
+    """ Worst Long Side Fit """
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return 0 - max(rect.width-item.width, rect.height-item.height)
+        return (0 - max(rect.width-item.width, rect.height-item.height)), (0 - min(rect.width-item.width, rect.height-item.height))
 
 
 class MaxRectsBL(MaximalRectangle):
+    """ Bottom Left """
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return rect.y + rect.height + item.height
+        return rect.y + item.height, rect.x
 
 
 class MaxRectsCP(MaximalRectangle):
+    """ Contact Point """
     @staticmethod
     def _common_interval_length(Xstart: int, Xend: int,
                                Ystart: int, Yend: int) -> int:
@@ -346,4 +354,4 @@ class MaxRectsCP(MaximalRectangle):
             if (itm.y == rect.y+rect.height or
                 item.y+itm.height == rect.y):
                 perim += self._common_interval_length(itm.x, itm.x+itm.width, rect.x, rect.x+item.width)
-        return 0 - perim
+        return (0 - perim), min(rect.width-item.width, rect.height-item.height)

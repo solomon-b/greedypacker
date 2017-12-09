@@ -133,25 +133,29 @@ Out[8]: [Sheet(width=8, height=4, shelves=[{'y': 2, 'x': 8, 'available_width': 0
 * best_shortside:
   Choose a FreeRectangle (F) where the shorter remainder side after
   inserted the Item (I) is minimized. ie, choose the FreeRectangle
-  where min(Fw - Iw, Fh - Ih) is smallest.
+  where min(Fw - Iw, Fh - Ih) is smallest. Ties are broken with 
+  `best_long`.
 * best_longside:
   Choose a FreeRectangle (F) where the longer remainder side after
   inserted the Item (I) is minimized. ie, choose the FreeRectangle
-  where max(Fw - Iw, Fh - Ih) is smallest.
+  where max(Fw - Iw, Fh - Ih) is smallest. Ties are broken with
+  `best_shortside`.
 * best_area:
   Choose the FreeRectangle with the smallest area that still fits
-  the Item.
+  the Item. Ties are broken with `best_shortside`.
 * worst_shortside:
   Choose a FreeRectangle (F) where the shorter remainder side after
   inserted the Item (I) is minimized. ie, choose the FreeRectangle
-  where min(Fw - Iw, Fh - Ih) is largest.
+  where min(Fw - Iw, Fh - Ih) is largest. Ties are broken with 
+  `worst_long_side`.
 * worst_longside:
   Choose a FreeRectangle (F) where the longer remainder side after
   inserted the Item (I) is minimized. ie, choose the FreeRectangle
-  where max(Fw - Iw, Fh - Ih) is largest.
+  where max(Fw - Iw, Fh - Ih) is largest. Ties are broken with
+  `worst_shortside`.
 * worst_area:
   Choose the FreeRectangle with the largest area that still fits
-  the Item.
+  the Item. Ties are broken with `worst_shortside`.
 
 #### Additional Maximal Rectangle Heuristic Choices
 Maximal Rectangles uses all the Guillotine heuristics plus the
@@ -163,14 +167,14 @@ following:
 * contact_point:
   Choose the FreeRectangle where the maximum amount of the Item's
   perimiter is touching either occupied space or the edges of
-  the bin.
+  the bin. Ties are brokwn with `best_shortside`.
 
 #### Skyline Heuristics
 * bottom_left:
   see Maximal Rectangle bottom_left above.
 * best_fit:
   place the item such that the amount of space lost to wastemap
-  is minimized.
+  is minimized. Ties are broken with `bottom_left`.
 
 #### Optional Optimizations:
 
