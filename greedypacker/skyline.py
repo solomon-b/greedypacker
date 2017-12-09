@@ -190,8 +190,8 @@ class Skyline:
                     score = self._score(segment, item, y=y, i=i, rotation=True)
                     segs.append((score, segment, y, True))
         try:
-            _score, seg, rot, y = min(segs, key=lambda x: x[0])
-            return _score, seg, y, rot
+            _score, seg, y, rot = min(segs, key=lambda x: x[0])
+            return _score, seg, rot, y
         except ValueError:
             return None, None, None, False
 
