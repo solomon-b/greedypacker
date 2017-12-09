@@ -10,7 +10,7 @@ from .util import stdout_redirect
 
 class Methods(BaseTestCase):
     def setUp(self):
-        self.S = skyline.SkylineBL(8, 4)
+        self.S = skyline.SkylineBF(8, 4)
 
 
     def tearDown(self):
@@ -23,7 +23,7 @@ class Methods(BaseTestCase):
         """
         I = item.Item(4, 1, CornerPoint=[0,0])
         S = skyline.SkylineSegment(0, 0, 4) 
-        res = self.S.clip_segment(S, I)
+        res = self.S._clip_segment(S, I)
 
         self.assertEqual(res, [])
 
@@ -34,7 +34,7 @@ class Methods(BaseTestCase):
         """
         I = item.Item(4, 1, CornerPoint=[2,0])
         S = skyline.SkylineSegment(0, 0, 4) 
-        res = self.S.clip_segment(S, I)
+        res = self.S._clip_segment(S, I)
 
         self.assertEqual(res, [skyline.SkylineSegment(0,0,2)])
 
@@ -45,7 +45,7 @@ class Methods(BaseTestCase):
         """
         I = item.Item(4, 1, CornerPoint=[0,0])
         S = skyline.SkylineSegment(2, 0, 4) 
-        res = self.S.clip_segment(S, I)
+        res = self.S._clip_segment(S, I)
 
         self.assertEqual(res, [skyline.SkylineSegment(4,0,2)])
 
@@ -56,7 +56,7 @@ class Methods(BaseTestCase):
         """
         I = item.Item(2, 1, CornerPoint=[2,0])
         S = skyline.SkylineSegment(0, 0, 6) 
-        res = self.S.clip_segment(S, I)
+        res = self.S._clip_segment(S, I)
 
         self.assertCountEqual(res, [skyline.SkylineSegment(0, 0, 2), skyline.SkylineSegment(4,0,2)])
 
@@ -70,7 +70,7 @@ class Methods(BaseTestCase):
         S1 = skyline.SkylineSegment(0, 2, 2)
         S2 = skyline.SkylineSegment(2, 0, 6)
 
-        res = self.S.update_segment(self.S.skyline[0], 0, I)
+        res = self.S._update_segment(self.S.skyline[0], 0, I)
         self.assertCountEqual(res, [S1, S2])
 
     
@@ -83,7 +83,7 @@ class Methods(BaseTestCase):
         S3 = skyline.SkylineSegment(0, 0, 8)
         self.S.skyline.pop()
         self.S.skyline.update([S1, S2])
-        self.S.merge_segments()
+        self.S._merge_segments()
         self.assertEqual(self.S.skyline, [S3])
 
 
@@ -97,7 +97,7 @@ class Methods(BaseTestCase):
         S4 = skyline.SkylineSegment(0, 0, 8)
         self.S.skyline.pop()
         self.S.skyline.update([S1, S2, S3])
-        self.S.merge_segments()
+        self.S._merge_segments()
         self.assertEqual(self.S.skyline, [S4])
         
 
@@ -110,7 +110,7 @@ class Methods(BaseTestCase):
         S2 = skyline.SkylineSegment(2, 0, 6)
         self.S.skyline.pop()
         self.S.skyline.extend([S1, S2])
-        self.assertEqual(self.S.check_fit(I.width, I.height, 0), (True, 1))
+        self.assertEqual(self.S._check_fit(I.width, I.height, 0), (True, 1))
 
 
     def testCheckFitFalse(self):
@@ -122,7 +122,7 @@ class Methods(BaseTestCase):
         S2 = skyline.SkylineSegment(1, 3, 7)
         self.S.skyline.pop()
         self.S.skyline.extend([S1, S2])
-        self.assertEqual(self.S.check_fit(I.width, I.height, 1), (False, None))
+        self.assertEqual(self.S._check_fit(I.width, I.height, 1), (False, None))
 
     
     def testCalcWaste(self):

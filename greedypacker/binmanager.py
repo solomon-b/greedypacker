@@ -232,11 +232,11 @@ class BinManager:
             best_y = float('inf')
             for binn in self.bins:
                 for i, seg in enumerate(binn.skyline):
-                    fits, y = binn.check_fit(item.width, item.height, i)
+                    fits, y = binn._check_fit(item.width, item.height, i)
                     if fits and y < best_y:
                         best_y = y
                         best_bin = binn
-                    fits, y = binn.check_fit(item.height, item.width, i)
+                    fits, y = binn._check_fit(item.height, item.width, i)
                     if fits and y < best_y:
                         best_y = y
                         best_bin = binn
