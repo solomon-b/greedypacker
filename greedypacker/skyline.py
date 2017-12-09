@@ -190,7 +190,7 @@ class Skyline:
                     score = self._score(segment, item, y=y, i=i, rotation=True)
                     segs.append((score, segment, y, True))
         try:
-            _score, seg, y, rot = min(segs, key=lambda x: x[0])
+            _score, seg, rot, y = min(segs, key=lambda x: x[0])
             return _score, seg, y, rot
         except ValueError:
             return None, None, None, False
@@ -208,7 +208,7 @@ class Skyline:
                 self.free_area -= item.width * item.height
                 return True
 
-        _, best_seg, best_y, rotation = self._find_best_score(item)
+        _, best_seg, rotation, best_y = self._find_best_score(item)
         if best_seg:
             if rotation:
                 item.rotate()
