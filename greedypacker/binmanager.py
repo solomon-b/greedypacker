@@ -227,7 +227,7 @@ class BinManager:
         if not item_fits:
             raise ValueError("Error! item too big for bin")
 
-        if self.algorithm == 'maximal_rectangle' or self.algorithm == 'skyline':
+        if self.algorithm == 'maximal_rectangle' or self.algorithm == 'skyline' or self.algorithm == 'guillotine':
             scores = []
             for binn in self.bins:
                 s, _, _ = binn._find_best_score(item)[:3]
@@ -237,7 +237,7 @@ class BinManager:
                 _, best_bin = min(scores, key=lambda x: x[0])
                 return best_bin.insert(item)
 
-        if self.algorithm == 'guillotine'  or self.algorithm == 'shelf':
+        if self.algorithm == 'shelf':
             best_bin = None
             best_score = float('inf')
             for binn in self.bins:

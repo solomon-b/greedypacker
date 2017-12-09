@@ -219,34 +219,34 @@ class Guillotine:
 class GuillotineBAF(Guillotine):
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return rect.area-item.area
+        return rect.area-item.area, min(rect.width-item.width, rect.height-item.height)
         
 
 class GuillotineBSSF(Guillotine):
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return min(rect.width-item.width, rect.height-item.height)
+        return min(rect.width-item.width, rect.height-item.height), max(rect.width-item.width, rect.height-item.height)
 
 
 class GuillotineBLSF(Guillotine):
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return max(rect.width-item.width, rect.height-item.height)
+        return max(rect.width-item.width, rect.height-item.height), min(rect.width-item.width, rect.height-item.height)
 
 
 class GuillotineWAF(Guillotine):
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return 0 - (rect.area-item.area)
+        return (0 - (rect.area-item.area)), (0 - min(rect.width-item.width, rect.height-item.height))
         
 
 class GuillotineWSSF(Guillotine):
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return 0 - min(rect.width-item.width, rect.height-item.height)
+        return (0 - min(rect.width-item.width, rect.height-item.height)), (0 - max(rect.width-item.width, rect.height-item.height))
 
 
 class GuillotineWLSF(Guillotine):
     @staticmethod
     def _score(rect: FreeRectangle, item: Item) -> int:
-        return 0 - max(rect.width-item.width, rect.height-item.height)
+        return (0 - max(rect.width-item.width, rect.height-item.height)), (0 - min(rect.width-item.width, rect.height-item.height))
