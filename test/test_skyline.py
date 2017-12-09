@@ -10,7 +10,7 @@ from .util import stdout_redirect
 
 class Methods(BaseTestCase):
     def setUp(self):
-        self.S = skyline.Skyline(8, 4)
+        self.S = skyline.SkylineBL(8, 4)
 
 
     def tearDown(self):
@@ -153,9 +153,9 @@ class Methods(BaseTestCase):
         I2 = item.Item(3, 3)
         I3 = item.Item(2, 2)
 
-        self.S.insert(I0, 'bottom_left')
-        self.S.insert(I1, 'bottom_left')
-        self.S.insert(I2, 'bottom_left')
+        self.S.insert(I0)
+        self.S.insert(I1)
+        self.S.insert(I2)
 
         wasted_area = self.S.calc_waste(0, I3, 2)
         self.assertEqual(wasted_area, 0)
@@ -163,7 +163,7 @@ class Methods(BaseTestCase):
 
 class BottomLeft(BaseTestCase):
     def setUp(self):
-        self.S = skyline.Skyline(8, 5)
+        self.S = skyline.SkylineBL(8, 5)
 
 
     def tearDown(self):
@@ -175,7 +175,7 @@ class BottomLeft(BaseTestCase):
         Single Item Fits
         """
         I = item.Item(2, 2)
-        self.S.insert(I, 'bottom_left')
+        self.S.insert(I)
         S1 = skyline.SkylineSegment(0, 2, 2)
         S2 = skyline.SkylineSegment(2, 0, 6)
         self.assertCountEqual(self.S.skyline, [S1, S2])
@@ -191,11 +191,11 @@ class BottomLeft(BaseTestCase):
         I2 = item.Item(3, 3)
         I3 = item.Item(3, 2)
         I4 = item.Item(4, 2)
-        self.S.insert(I0, 'bottom_left')
-        self.S.insert(I1, 'bottom_left')
-        self.S.insert(I2, 'bottom_left')
-        self.S.insert(I3, 'bottom_left')
-        self.S.insert(I4, 'bottom_left')
+        self.S.insert(I0)
+        self.S.insert(I1)
+        self.S.insert(I2)
+        self.S.insert(I3)
+        self.S.insert(I4)
         S0 = skyline.SkylineSegment(0, 4, 3)
         S1 = skyline.SkylineSegment(7, 0, 1)
         with self.subTest():
@@ -206,7 +206,8 @@ class BottomLeft(BaseTestCase):
 
 class BestFit(BaseTestCase):
     def setUp(self):
-        self.S = skyline.Skyline(8, 5)
+        self.S = skyline.SkylineBF(8, 5)
+        self.S.rotation = True
 
 
     def tearDown(self):
@@ -218,7 +219,7 @@ class BestFit(BaseTestCase):
         Single Item Fits
         """
         I = item.Item(2, 2)
-        self.S.insert(I, 'best_fit')
+        self.S.insert(I)
         S1 = skyline.SkylineSegment(0, 2, 2)
         S2 = skyline.SkylineSegment(2, 0, 6)
         self.assertCountEqual(self.S.skyline, [S1, S2])
@@ -233,14 +234,16 @@ class BestFit(BaseTestCase):
         I2 = item.Item(3, 3)
         I3 = item.Item(3, 2)
         I4 = item.Item(4, 2)
-        self.S.insert(I0, 'best_fit')
-        self.S.insert(I1, 'best_fit')
-        self.S.insert(I2, 'best_fit')
-        self.S.insert(I3, 'best_fit')
-        self.S.insert(I4, 'best_fit')
+        self.S.insert(I0)
+        self.S.insert(I1)
+        self.S.insert(I2)
+        self.S.insert(I3)
+        self.S.insert(I4)
 
-        S0 = skyline.SkylineSegment(0, 2, 3)
-        S1 = skyline.SkylineSegment(7, 3, 1)
+        
+
+        S0 = skyline.SkylineSegment(0, 2, 2)
+        S1 = skyline.SkylineSegment(2, 4, 2)
         with self.subTest():
             self.assertCountEqual(self.S.skyline, [S1, S0])
         with self.subTest():
@@ -249,17 +252,17 @@ class BestFit(BaseTestCase):
 
 class WasteMap(BaseTestCase):
     def setUp(self):
-        self.S = skyline.Skyline(8, 5)
+        self.S = skyline.SkylineBL(8, 5)
         I0 = item.Item(2, 2)
         I1 = item.Item(2, 1)
         I2 = item.Item(3, 3)
         I3 = item.Item(3, 2)
         I4 = item.Item(4, 2)
-        self.S.insert(I0, 'bottom_left')
-        self.S.insert(I1, 'bottom_left')
-        self.S.insert(I2, 'bottom_left')
-        self.S.insert(I3, 'bottom_left')
-        self.S.insert(I4, 'bottom_left')
+        self.S.insert(I0)
+        self.S.insert(I1)
+        self.S.insert(I2)
+        self.S.insert(I3)
+        self.S.insert(I4)
 
     def tearDown(self):
         del self.S

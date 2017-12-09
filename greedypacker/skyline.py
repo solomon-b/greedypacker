@@ -5,8 +5,6 @@ Skyline 2D Bin Algorithm
 Solomon Bothwell
 ssbothwell@gmail.com
 """
-import operator
-import typing
 from typing import List, NamedTuple, Tuple
 from sortedcontainers import SortedList
 
@@ -180,14 +178,17 @@ class Skyline:
             
 
     def calc_waste(self, seg_index: int,
-                   item: Item, y: int) -> int:
+                   item: Item, y: int, rotation: bool = False) -> int:
         """
         Returns the total wasted area if item is
         inserted above segment
         """
         wasted_area = 0
         item_left = self.skyline[seg_index].x
-        item_right = item_left + item.width
+        if not rotation:
+            item_right = item_left + item.width
+        else:
+            item_right = item_left + item.height
         for seg in self.skyline[seg_index:]:
             if seg.x >= item_right or seg.x + seg.width <= item_left:
                 break
@@ -238,7 +239,7 @@ class Skyline:
     def find_pos_bf(self, item: Item) -> SkylineSegment:
         """
         Find the best location for item using
-        bottom_left heuristic.
+        bottom_fit heuristic.
         returns segment and height to place item.
         """
         best_height = float('inf')
@@ -256,21 +257,43 @@ class Skyline:
                     item.height+y < best_height)):
                     best_seg = segment
                     best_height = item.height + y
+                    best_waste = wasted_area
                     best_width = segment.width
                     best_y = y
                     rotation = False
             if self.rotation:
                 fits, y = self.check_fit(item.height, item.width, i)
                 if fits:
+                    wasted_area = self.calc_waste(i, item, y, rotation = True)
                     if (wasted_area < best_waste or
                         (wasted_area == best_waste and
                         item.width+y < best_height)):
                         best_seg = segment
                         best_height = item.height + y
                         best_width = segment.width
+                        best_waste = wasted_area
                         best_y = y
                         rotation = True
         return (best_seg, best_y, rotation)
+
+
+    def _find_best_score(self, item: Item) -> Tuple[int, SkylineSegment, int, bool]:
+        segs = []
+        for i, segment in enumerate(self.skyline):
+            fits, y = self.check_fit(item.width, item.height, i)
+            if fits: 
+                score = self._score(segment, item, y, i)
+                segs.append((score, segment, y, False))
+            if self.rotation:
+                fits, y = self.check_fit(item.height, item.width, i)
+                if fits:
+                    score = self._score(segment, item, y=y, i=i, rotation=True)
+                    segs.append((score, segment, y, True))
+        try:
+            _score, seg, y, rot = min(segs, key=lambda x: x[0])
+            return _score, seg, y, rot
+        except ValueError:
+            return None, None, None, False
 
 
     def insert(self, item: Item,
@@ -284,13 +307,8 @@ class Skyline:
                 self.items.append(item)
                 self.free_area -= item.width * item.height
                 return True
-        if heuristic == 'bottom_left' or heuristic == 'default':
-            best_seg, best_y, rotation = self.find_pos_bl(item)
-        elif heuristic == 'best_fit':
-            best_seg, best_y, rotation = self.find_pos_bf(item)
-        else:
-            return
 
+        _, best_seg, best_y, rotation = self._find_best_score(item)
         if best_seg:
             if rotation:
                 item.rotate()
@@ -317,3 +335,19 @@ class Skyline:
             }
 
         return stats
+
+
+class SkylineBL(Skyline):
+    """ Bottom Left """
+    def _score(self, seg: SkylineSegment, item: Item, y, i, rotation=False) -> Tuple[int, int]:
+        if rotation:
+            return item.width + y, seg.width
+        return item.height + y, seg.width 
+    
+
+class SkylineBF(Skyline):
+    """ Best Fit """
+    def _score(self, seg: SkylineSegment, item: Item, y, i, rotation=False) -> Tuple[int, int]:
+        if rotation:
+            return (self.calc_waste(i, item, y, rotation = True), item.width + y)
+        return (self.calc_waste(i, item, y), item.height + y)

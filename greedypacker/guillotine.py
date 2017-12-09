@@ -174,7 +174,7 @@ class Guillotine:
         for rect in self.freerects:
             if self._item_fits_rect(item, rect):
                 rects.append((self._score(rect, item), rect, False))
-            if self._item_fits_rect(item, rect, rotation=True):
+            if self.rotation and self._item_fits_rect(item, rect, rotation=True):
                 rects.append((self._score(rect, item), rect, True))
         try:
             _score, rect, rot = min(rects, key=lambda x: x[0])

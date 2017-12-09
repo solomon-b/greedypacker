@@ -73,6 +73,7 @@ class BestBinFit(BaseTestCase):
     def testItemTooBig(self):
         M = greedypacker.BinManager(8, 4,
                                     pack_algo='skyline',
+                                    heuristic='bottom_left',
                                     bin_algo='bin_best_fit')
         I = greedypacker.Item(10,20)
         with self.assertRaises(ValueError):
@@ -230,7 +231,8 @@ class BestBinFit(BaseTestCase):
         """
         M = greedypacker.BinManager(10, 5,
                                pack_algo='skyline',
-                               bin_algo="bin_best_fit",
+                               bin_algo='bin_best_fit',
+                               heuristic='bottom_left',
                                sorting=True,
                                rotation=True)
 
@@ -409,6 +411,7 @@ class BinFirstFit(BaseTestCase):
         """
         M = greedypacker.BinManager(10, 5,
                                pack_algo='skyline',
+                               heuristic='bottom_left',
                                bin_algo="bin_first_fit",
                                sorting=True,
                                rotation=True)

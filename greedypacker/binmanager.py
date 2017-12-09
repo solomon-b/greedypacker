@@ -187,7 +187,12 @@ class BinManager:
                 raise ValueError('Error: No such Heuristic')
 
         elif self.algorithm == 'skyline':
-            return skyline.Skyline(self.bin_width, self.bin_height, self.rotation)
+            if self.heuristic == 'bottom_left':
+                return skyline.SkylineBL(self.bin_width, self.bin_height, self.rotation)
+            elif self.heuristic == 'best_fit':
+                return skyline.SkylineBF(self.bin_width, self.bin_height, self.rotation)
+            else:
+                raise ValueError('Error: No such Heuristic')
         raise ValueError('Error: No such Algorithm')
 
 
