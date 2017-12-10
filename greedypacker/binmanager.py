@@ -125,26 +125,28 @@ class BinManager:
         heuristic, and dimensions
         """
         if self.algorithm == 'guillotine':
-            if self.heuristic == 'best_area':
-                return guillotine.GuillotineBAF(self.bin_width, self.bin_height, self.rotation,
+                return guillotine.Guillotine(self.bin_width, self.bin_height, self.rotation, self.heuristic,
                                          self.rectangle_merge, self.split_heuristic)
-            elif self.heuristic == 'best_shortside':
-                return guillotine.GuillotineBSSF(self.bin_width, self.bin_height, self.rotation,
-                                         self.rectangle_merge, self.split_heuristic)
-            elif self.heuristic == 'best_longside':
-                return guillotine.GuillotineBLSF(self.bin_width, self.bin_height, self.rotation,
-                                         self.rectangle_merge, self.split_heuristic)
-            if self.heuristic == 'worst_area':
-                return guillotine.GuillotineWAF(self.bin_width, self.bin_height, self.rotation,
-                                         self.rectangle_merge, self.split_heuristic)
-            elif self.heuristic == 'worst_shortside':
-                return guillotine.GuillotineWSSF(self.bin_width, self.bin_height, self.rotation,
-                                         self.rectangle_merge, self.split_heuristic)
-            elif self.heuristic == 'worst_longside':
-                return guillotine.GuillotineWLSF(self.bin_width, self.bin_height, self.rotation,
-                                         self.rectangle_merge, self.split_heuristic)
-            else:
-                raise ValueError('Error: No such Heuristic')
+            #if self.heuristic == 'best_area':
+            #    return guillotine.GuillotineBAF(self.bin_width, self.bin_height, self.rotation,
+            #                             self.rectangle_merge, self.split_heuristic)
+            #elif self.heuristic == 'best_shortside':
+            #    return guillotine.GuillotineBSSF(self.bin_width, self.bin_height, self.rotation,
+            #                             self.rectangle_merge, self.split_heuristic)
+            #elif self.heuristic == 'best_longside':
+            #    return guillotine.GuillotineBLSF(self.bin_width, self.bin_height, self.rotation,
+            #                             self.rectangle_merge, self.split_heuristic)
+            #if self.heuristic == 'worst_area':
+            #    return guillotine.GuillotineWAF(self.bin_width, self.bin_height, self.rotation,
+            #                             self.rectangle_merge, self.split_heuristic)
+            #elif self.heuristic == 'worst_shortside':
+            #    return guillotine.GuillotineWSSF(self.bin_width, self.bin_height, self.rotation,
+            #                             self.rectangle_merge, self.split_heuristic)
+            #elif self.heuristic == 'worst_longside':
+            #    return guillotine.GuillotineWLSF(self.bin_width, self.bin_height, self.rotation,
+            #                             self.rectangle_merge, self.split_heuristic)
+            #else:
+            #    raise ValueError('Error: No such Heuristic')
 
         elif self.algorithm == 'shelf':
             if self.heuristic == 'best_area_fit':

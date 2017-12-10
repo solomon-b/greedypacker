@@ -10,7 +10,7 @@ from .util import stdout_redirect
 
 class BestShortSide(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.GuillotineBSSF(8, 4, rotation=False)
+        self.BIN = guillotine.Guillotine(8, 4, rotation=False, heuristic='best_shortside')
         self.freeRectangle = guillotine.FreeRectangle
         
 
@@ -82,7 +82,7 @@ class BestShortSide(BaseTestCase):
 
 class BestLongSide(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.GuillotineBLSF(10, 5, rotation=False)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False, heuristic='best_longside')
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -156,7 +156,7 @@ class BestLongSide(BaseTestCase):
 
 class BestAreaFit(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.GuillotineBAF(10, 5, rotation=False)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False, heuristic='best_area')
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -230,7 +230,7 @@ class BestAreaFit(BaseTestCase):
 
 class WorstLongSide(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.GuillotineWLSF(8, 4, rotation=False)
+        self.BIN = guillotine.Guillotine(8, 4, rotation=False, heuristic='worst_longside')
         self.freeRectangle = guillotine.FreeRectangle
         
 
@@ -304,7 +304,7 @@ class WorstLongSide(BaseTestCase):
 
 class WorstShortSide(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.GuillotineWSSF(8, 4, rotation=False)
+        self.BIN = guillotine.Guillotine(8, 4, rotation=False, heuristic='worst_shortside')
         self.freeRectangle = guillotine.FreeRectangle
         
 
@@ -379,7 +379,7 @@ class WorstShortSide(BaseTestCase):
 
 class WorstAreaFit(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.GuillotineWAF(10, 5, rotation=False)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False, heuristic='worst_area')
         self.freeRectangle = guillotine.FreeRectangle
 
 
@@ -453,7 +453,7 @@ class WorstAreaFit(BaseTestCase):
 
 class RectMerge(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.GuillotineBAF(10, 5, rotation=False)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False, heuristic='best_area')
         self.freeRectangle = guillotine.FreeRectangle
         self.BIN.rMerge = True
 
@@ -479,7 +479,7 @@ class RectMerge(BaseTestCase):
 
 class BinStats(BaseTestCase):
     def setUp(self):
-        self.BIN = guillotine.GuillotineBAF(10, 5, rotation=False)
+        self.BIN = guillotine.Guillotine(10, 5, rotation=False, heuristic='best_area')
 
 
     def tearDown(self):
