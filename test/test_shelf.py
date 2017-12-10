@@ -513,9 +513,9 @@ class BestHeightFit(BaseTestCase):
         self.sheet.insert(ITEM2)
         self.sheet.insert(ITEM3)
         with self.subTest():
-            self.assertCountEqual(self.sheet.shelves[0].items, [ITEM, ITEM3])
+            self.assertCountEqual(self.sheet.shelves[0].items, [ITEM])
         with self.subTest():
-            self.assertCountEqual(self.sheet.shelves[1].items, [ITEM2])
+            self.assertCountEqual(self.sheet.shelves[1].items, [ITEM2, ITEM3])
         with self.subTest():
             correct = [ITEM, ITEM2, ITEM3]
             self.assertCountEqual(self.sheet.items, correct)

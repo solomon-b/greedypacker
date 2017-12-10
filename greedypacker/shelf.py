@@ -68,7 +68,7 @@ class Sheet:
 
 
     def __repr__(self) -> str:
-        return "Sheet(width=%s, height=%s, shelves=%s)" % (self.x, self.y, str(self.shelves))
+        return "Sheet(width=%s, height=%s, available_height=%s, shelves=%s)" % (self.x, self.y, self.available_height, str(self.shelves))
 
 
     def _create_shelf(self, item: Item) -> bool:
@@ -162,14 +162,25 @@ class Sheet:
         """
         Score all the shelves and return the best
         one in a tuple with its score and if the item
-        needs to be rotated
+        needs to be rotated. If the bin has no shelves
+        and the item fits the available space, then
+        give it a max score (0) with no shelves.
         """
         shelves = []
+        if not self.shelves:
+            return 0, None, False
         for shelf in self.shelves:
             if self._item_fits_shelf(item, shelf):
                 shelves.append((self._score(shelf, item), shelf, False))
             if self._item_fits_shelf(item, shelf, rotation=True):
                 shelves.append((self._score(shelf, item), shelf, True))
+
+        # Give max score if item fits sheet but there are no shelves
+        if not shelves and self.available_height >= item.height:
+            shelves.append(((0, 0), None, False))
+        if not shelves and self.available_height >= item.width and self.rotation:
+            shelves.append(((0, 0), None, True))
+
         try:
             _score, shelf, rot = min(shelves, key=lambda x: x[0])
             return _score, shelf, rot
@@ -241,42 +252,42 @@ class ShelfBAF(Sheet):
     """ Best Area Fit """
     @staticmethod
     def _score(shelf: Shelf, item: Item) -> int:
-        return (shelf.available_width - item.width)*shelf.y
+        return (shelf.available_width - item.width)*shelf.y, shelf.available_width - item.width
 
 
 class ShelfBHF(Sheet):
     """ Best Height Fit """
     @staticmethod
     def _score(shelf: Shelf, item: Item) -> int:
-        return shelf.y - item.height
+        return shelf.y - item.height, shelf.available_width - item.width
 
 
 class ShelfBWF(Sheet):
     """ Best Width Fit """
     @staticmethod
     def _score(shelf: Shelf, item: Item) -> int:
-        return shelf.available_width - item.width
+        return shelf.available_width - item.width, shelf.y - item.height
 
 
 class ShelfWAF(Sheet):
     """ Worst Area Fit """
     @staticmethod
     def _score(shelf: Shelf, item: Item) -> int:
-        return 0 - ((shelf.available_width - item.width)*shelf.y)
+        return (0 - ((shelf.available_width - item.width)*shelf.y)), (0 - (shelf.available_width - item.width))
 
 
 class ShelfWHF(Sheet):
     """ Worst Height Fit """
     @staticmethod
     def _score(shelf: Shelf, item: Item) -> int:
-        return 0 - (shelf.y - item.height)
+        return (0 - (shelf.y - item.height)), (0 - (shelf.available_width - item.width))
 
 
 class ShelfWWF(Sheet):
     """ Worst Width Fit """
     @staticmethod
     def _score(shelf: Shelf, item: Item) -> int:
-        return 0 - (shelf.available_width - item.width)
+        return (0 - (shelf.available_width - item.width)), (0 - (shelf.y - item.height))
 
 
 class ShelfFF(Sheet):

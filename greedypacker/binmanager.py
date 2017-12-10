@@ -164,7 +164,7 @@ class BinManager:
             elif self.heuristic == 'first_fit':
                 return shelf.ShelfFF(self.bin_width, self.bin_height, self.rotation, self.wastemap)
             else:
-                return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap)
+                raise ValueError('Error: No such Heuristic')
 
         elif self.algorithm == 'maximal_rectangle':
             if self.heuristic == 'best_area':
@@ -227,26 +227,14 @@ class BinManager:
         if not item_fits:
             raise ValueError("Error! item too big for bin")
 
-        if self.algorithm == 'maximal_rectangle' or self.algorithm == 'skyline' or self.algorithm == 'guillotine':
-            scores = []
-            for binn in self.bins:
-                s, _, _ = binn._find_best_score(item)[:3]
-                if s:
-                    scores.append((s, binn))
-            if scores:
-                _, best_bin = min(scores, key=lambda x: x[0])
-                return best_bin.insert(item)
-
-        if self.algorithm == 'shelf':
-            best_bin = None
-            best_score = float('inf')
-            for binn in self.bins:
-                s, _, _ = binn._find_best_score(item)
-                if s and s < best_score:
-                    best_score = s
-                    best_bin = binn
-            return binn.insert(item)
-                
+        scores = []
+        for binn in self.bins:
+            s, _, _ = binn._find_best_score(item)[:3]
+            if s is not None:
+                scores.append((s, binn))
+        if scores:
+            _, best_bin = min(scores, key=lambda x: x[0])
+            return best_bin.insert(item)
 
         new_bin = self._bin_factory()
         new_bin.insert(item, self.heuristic)

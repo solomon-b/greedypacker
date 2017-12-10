@@ -209,6 +209,7 @@ class BestBinFit(BaseTestCase):
         M.add_items(ITEM, ITEM2, ITEM3)
         M.execute()
         correct = [ITEM, ITEM2, ITEM3]
+
         with self.subTest():
             self.assertEqual(M.items, correct)
         with self.subTest():
