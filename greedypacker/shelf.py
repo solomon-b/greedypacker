@@ -5,7 +5,7 @@ Shelf Style 2D Bin Algorithm and Data Structure
 Solomon Bothwell
 ssbothwell@gmail.com
 """
-from functools import reduce
+#from functools import reduce
 from typing import List, Tuple
 from .item import Item
 from . import guillotine
@@ -53,7 +53,8 @@ class Sheet:
     Sheet class represents a sheet of material to be subdivided.
     Sheets hold a list of rows which hold a list of items.
     """
-    def __init__(self, x: int, y: int, rotation: bool = True, wastemap: bool = False) -> None:
+    def __init__(self, x: int, y: int, rotation: bool = True, 
+                 wastemap: bool = False, heuristic: str = 'best_area_fit') -> None:
         self.x = x
         self.y = y
         self.available_height = self.y
@@ -66,6 +67,24 @@ class Sheet:
         if self.use_waste_map:
             self.wastemap = guillotine.Guillotine(0, 0, rotation = self.rotation, heuristic='best_area')
 
+        if heuristic == 'best_width_fit':
+            self._score = scoreBWF
+        elif heuristic == 'best_height_fit':
+            self._score = scoreBHF
+        elif heuristic == 'best_area_fit':
+            self._score = scoreBAF
+        elif heuristic == 'worst_width_fit':
+            self._score = scoreWWF
+        elif heuristic == 'worst_height_fit':
+            self._score = scoreWHF
+        elif heuristic == 'worst_area_fit':
+            self._score = scoreWAF
+        elif heuristic == 'next_fit':
+            pass
+        elif heuristic == 'first_fit':
+            pass
+        else:
+            raise ValueError('No such heuristic!')
 
     def __repr__(self) -> str:
         return "Sheet(width=%s, height=%s, available_height=%s, shelves=%s)" % (self.x, self.y, self.available_height, str(self.shelves))
@@ -151,11 +170,6 @@ class Sheet:
         shelf.available_width = 0
         # Merge rectangles in wastemap
         self.wastemap.rectangle_merge()
-
-
-    @staticmethod
-    def _score(shelf: Shelf, item: Item) -> int:
-        pass
 
 
     def _find_best_score(self, item: Item) -> Tuple[int, Shelf, bool]:
@@ -248,46 +262,34 @@ class Sheet:
         return stats
 
 
-class ShelfBAF(Sheet):
+def scoreBAF(shelf: Shelf, item: Item) -> Tuple[int, int]:
     """ Best Area Fit """
-    @staticmethod
-    def _score(shelf: Shelf, item: Item) -> int:
-        return (shelf.available_width - item.width)*shelf.y, shelf.available_width - item.width
+    return (shelf.available_width - item.width)*shelf.y, shelf.available_width - item.width
 
 
-class ShelfBHF(Sheet):
+def scoreBHF(shelf: Shelf, item: Item) -> Tuple[int, int]:
     """ Best Height Fit """
-    @staticmethod
-    def _score(shelf: Shelf, item: Item) -> int:
-        return shelf.y - item.height, shelf.available_width - item.width
+    return shelf.y - item.height, shelf.available_width - item.width
 
 
-class ShelfBWF(Sheet):
+def scoreBWF(shelf: Shelf, item: Item) -> Tuple[int, int]:
     """ Best Width Fit """
-    @staticmethod
-    def _score(shelf: Shelf, item: Item) -> int:
-        return shelf.available_width - item.width, shelf.y - item.height
+    return shelf.available_width - item.width, shelf.y - item.height
 
 
-class ShelfWAF(Sheet):
+def scoreWAF(shelf: Shelf, item: Item) -> Tuple[int, int]:
     """ Worst Area Fit """
-    @staticmethod
-    def _score(shelf: Shelf, item: Item) -> int:
-        return (0 - ((shelf.available_width - item.width)*shelf.y)), (0 - (shelf.available_width - item.width))
+    return (0 - ((shelf.available_width - item.width)*shelf.y)), (0 - (shelf.available_width - item.width))
 
 
-class ShelfWHF(Sheet):
+def scoreWHF(shelf: Shelf, item: Item) -> Tuple[int, int]:
     """ Worst Height Fit """
-    @staticmethod
-    def _score(shelf: Shelf, item: Item) -> int:
-        return (0 - (shelf.y - item.height)), (0 - (shelf.available_width - item.width))
+    return (0 - (shelf.y - item.height)), (0 - (shelf.available_width - item.width))
 
 
-class ShelfWWF(Sheet):
+def scoreWWF(shelf: Shelf, item: Item) -> Tuple[int, int]:
     """ Worst Width Fit """
-    @staticmethod
-    def _score(shelf: Shelf, item: Item) -> int:
-        return (0 - (shelf.available_width - item.width)), (0 - (shelf.y - item.height))
+    return (0 - (shelf.available_width - item.width)), (0 - (shelf.y - item.height))
 
 
 class ShelfFF(Sheet):

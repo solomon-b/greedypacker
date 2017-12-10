@@ -465,7 +465,7 @@ class FirstFit(BaseTestCase):
 
 class BestWidthFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.ShelfBWF(8, 4)
+        self.sheet = shelf.Sheet(8, 4, heuristic='best_width_fit')
 
 
     def tearDown(self):
@@ -495,7 +495,7 @@ class BestWidthFit(BaseTestCase):
 
 class BestHeightFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.ShelfBHF(8, 4)
+        self.sheet = shelf.Sheet(8, 4, heuristic='best_height_fit')
 
 
     def tearDown(self):
@@ -525,7 +525,7 @@ class BestHeightFit(BaseTestCase):
 
 class BestAreaFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.ShelfBWF(8, 4)
+        self.sheet = shelf.Sheet(8, 4, heuristic='best_area_fit')
 
 
     def tearDown(self):
@@ -564,7 +564,7 @@ class BestAreaFit(BaseTestCase):
 
 class WorstWidthFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.ShelfWWF(8, 4)
+        self.sheet = shelf.Sheet(8, 4, heuristic='worst_width_fit')
 
 
     def tearDown(self):
@@ -602,7 +602,7 @@ class WorstWidthFit(BaseTestCase):
 
 class WorstHeightFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.ShelfWHF(8, 5)
+        self.sheet = shelf.Sheet(8, 5, heuristic='worst_height_fit')
 
 
     def tearDown(self):
@@ -639,7 +639,7 @@ class WorstHeightFit(BaseTestCase):
 
 class WorstAreaFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.ShelfWAF(8, 4)
+        self.sheet = shelf.Sheet(8, 4, heuristic='worst_area_fit')
 
 
     def tearDown(self):

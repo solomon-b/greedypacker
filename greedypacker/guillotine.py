@@ -8,7 +8,7 @@ ssbothwell@gmail.com
 import operator
 import typing
 import bisect
-from typing import List
+from typing import List, Tuple
 from functools import reduce
 from collections import namedtuple
 from sortedcontainers import SortedListWithKey # type: ignore
@@ -134,7 +134,7 @@ class Guillotine:
         return self._split_along_axis(freeRect, item, split)
 
 
-    def _add_item(self, item: Item, x: int, y: int, rotate: bool = False) -> bool:
+    def _add_item(self, item: Item, x: int, y: int, rotate: bool = False) -> None:
         """ Helper method for adding items to the bin """
         if rotate:
             item.rotate()
@@ -228,25 +228,31 @@ class Guillotine:
         return stats
 
 
-def scoreBAF(rect: FreeRectangle, item: Item) -> int:
+def scoreBAF(rect: FreeRectangle, item: Item) -> Tuple[int, int]:
+    """ Best Area Fit """
     return rect.area-item.area, min(rect.width-item.width, rect.height-item.height)
         
 
-def scoreBSSF(rect: FreeRectangle, item: Item) -> int:
+def scoreBSSF(rect: FreeRectangle, item: Item) -> Tuple[int, int]:
+    """ Best Shortside Fit """
     return min(rect.width-item.width, rect.height-item.height), max(rect.width-item.width, rect.height-item.height)
 
 
-def scoreBLSF(rect: FreeRectangle, item: Item) -> int:
+def scoreBLSF(rect: FreeRectangle, item: Item) -> Tuple[int, int]:
+    """ Best Longside Fit """
     return max(rect.width-item.width, rect.height-item.height), min(rect.width-item.width, rect.height-item.height)
 
 
-def scoreWAF(rect: FreeRectangle, item: Item) -> int:
+def scoreWAF(rect: FreeRectangle, item: Item) -> Tuple[int, int]:
+    """ Worst Area Fit """
     return (0 - (rect.area-item.area)), (0 - min(rect.width-item.width, rect.height-item.height))
         
 
-def scoreWSSF(rect: FreeRectangle, item: Item) -> int:
+def scoreWSSF(rect: FreeRectangle, item: Item) -> Tuple[int, int]:
+    """ Worst Shortside Fit """
     return (0 - min(rect.width-item.width, rect.height-item.height)), (0 - max(rect.width-item.width, rect.height-item.height))
 
 
-def scoreWLSF(rect: FreeRectangle, item: Item) -> int:
+def scoreWLSF(rect: FreeRectangle, item: Item) -> Tuple[int, int]:
+    """ Worst Longside Fit """
     return (0 - max(rect.width-item.width, rect.height-item.height)), (0 - min(rect.width-item.width, rect.height-item.height))
