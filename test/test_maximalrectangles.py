@@ -153,7 +153,7 @@ class StaticMethods(BaseTestCase):
 
 class BestArea(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaxRectsBAF(8, 4)
+        self.M = maximal_rectangles.MaximalRectangle(8, 4, heuristic='best_area')
 
 
     def tearDown(self):
@@ -195,7 +195,7 @@ class BestArea(BaseTestCase):
 
 class BestShortside(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaxRectsBSSF(8, 4)
+        self.M = maximal_rectangles.MaximalRectangle(8, 4, heuristic='best_shortside')
 
 
     def tearDown(self):
@@ -238,7 +238,7 @@ class BestShortside(BaseTestCase):
 
 class BestLongside(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaxRectsBLSF(8, 4)
+        self.M = maximal_rectangles.MaximalRectangle(8, 4, heuristic='best_longside')
 
 
     def tearDown(self):
@@ -281,7 +281,7 @@ class BestLongside(BaseTestCase):
 
 class BestBottomLeft(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaxRectsBL(8, 4)
+        self.M = maximal_rectangles.MaximalRectangle(8, 4, heuristic='bottom_left')
 
 
     def tearDown(self):
@@ -328,7 +328,7 @@ class BestBottomLeft(BaseTestCase):
 
 class ContactPoint(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaxRectsCP(8, 4)
+        self.M = maximal_rectangles.MaxRectsCP(8, 4, heuristic='contact_point')
 
 
     def tearDown(self):
@@ -387,7 +387,7 @@ class RotationTests(BaseTestCase):
         Item too Big
         Rotation = False
         """
-        M = maximal_rectangles.MaxRectsBAF(8, 4, rotation=True)
+        M = maximal_rectangles.MaximalRectangle(8, 4, rotation=True, heuristic='best_area')
         I = item.Item(4, 8)
         M.insert(I)
         with self.subTest():
@@ -401,7 +401,7 @@ class RotationTests(BaseTestCase):
         Item too Big
         Rotation = False
         """
-        M = maximal_rectangles.MaxRectsBSSF(8, 4, rotation=True)
+        M = maximal_rectangles.MaximalRectangle(8, 4, rotation=True, heuristic='best_shortside')
         I = item.Item(4, 8)
         M.insert(I)
         with self.subTest():
@@ -415,7 +415,7 @@ class RotationTests(BaseTestCase):
         Item too Big
         Rotation = False
         """
-        M = maximal_rectangles.MaxRectsBLSF(8, 4, rotation=True)
+        M = maximal_rectangles.MaximalRectangle(8, 4, rotation=True, heuristic='best_longside')
         I = item.Item(4, 8)
         M.insert(I)
         with self.subTest():
@@ -429,7 +429,7 @@ class RotationTests(BaseTestCase):
         Item too Big
         Rotation = False
         """
-        M = maximal_rectangles.MaxRectsBL(8, 4, rotation=True)
+        M = maximal_rectangles.MaximalRectangle(8, 4, rotation=True, heuristic='bottom_left')
         I = item.Item(4, 8)
         M.insert(I)
         with self.subTest():
@@ -454,7 +454,7 @@ class RotationTests(BaseTestCase):
 
 class Insert(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaxRectsBAF(8, 4, rotation=True)
+        self.M = maximal_rectangles.MaximalRectangle(8, 4, rotation=True, heuristic='best_area')
 
 
     def tearDown(self):

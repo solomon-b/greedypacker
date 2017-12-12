@@ -239,7 +239,8 @@ class Skyline:
 
 class SkylineBL(Skyline):
     """ Bottom Left """
-    def _score(self, seg: SkylineSegment, item: Item, y, i, rotation=False) -> Tuple[int, int]:
+    @staticmethod
+    def _score(seg: SkylineSegment, item: Item, y, i, rotation=False) -> Tuple[int, int]:
         if rotation:
             return item.width + y, seg.width
         return item.height + y, seg.width 

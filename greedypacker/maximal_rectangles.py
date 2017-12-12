@@ -22,12 +22,31 @@ class FreeRectangle(typing.NamedTuple('FreeRectangle', [('width', int), ('height
 class MaximalRectangle:
     def __init__(self, x: int = 8,
                  y: int = 4,
-                 rotation: bool = True) -> None:
+                 rotation: bool = True,
+                 heuristic: str = 'best_area') -> None:
         self.x = x
         self.y = y
         self.area = self.x * self.y
         self.free_area = self.area
 
+        if heuristic == 'best_area':
+            self._score = scoreBAF
+        elif heuristic == 'best_shortside':
+            self._score = scoreBSSF
+        elif heuristic == 'best_longside':
+            self._score = scoreBLSF
+        elif heuristic == 'worst_area':
+            self._score = scoreWAF
+        elif heuristic == 'worst_shortside':
+            self._score = scoreWSSF
+        elif heuristic == 'worst_longside':
+            self._score = scoreWLSF
+        elif heuristic == 'bottom_left':
+            self._score = scoreBL
+        elif heuristic == 'contact_point':
+            pass
+        else:
+            raise ValueError('No such heuristic!')
 
         if x == 0 or y == 0:
             self.freerects = [] # type: List[FreeRectangle]
@@ -220,11 +239,6 @@ class MaximalRectangle:
         self._remove_redundent()
 
     
-    @staticmethod
-    def _score(rect: FreeRectangle, item: Item) -> None:
-        pass
-
-
     def _find_best_score(self, item: Item):
         rects = []
         for rect in self.freerects:
@@ -277,53 +291,39 @@ class MaximalRectangle:
         return stats
 
 
-class MaxRectsBAF(MaximalRectangle):
+def scoreBAF(rect: FreeRectangle, item: Item) -> int:
     """ Best Area Fit """
-    @staticmethod
-    def _score(rect: FreeRectangle, item: Item) -> int:
-        return rect.area-item.area, min(rect.width-item.width, rect.height-item.height)
+    return rect.area-item.area, min(rect.width-item.width, rect.height-item.height)
         
 
-class MaxRectsBSSF(MaximalRectangle):
+def scoreBSSF(rect: FreeRectangle, item: Item) -> int:
     """ Best Short Side Fit """
-    @staticmethod
-    def _score(rect: FreeRectangle, item: Item) -> int:
-        return min(rect.width-item.width, rect.height-item.height), max(rect.width-item.width, rect.height-item.height)
+    return min(rect.width-item.width, rect.height-item.height), max(rect.width-item.width, rect.height-item.height)
 
 
-class MaxRectsBLSF(MaximalRectangle):
+def scoreBLSF(rect: FreeRectangle, item: Item) -> int:
     """ Best Long Side Fit """
-    @staticmethod
-    def _score(rect: FreeRectangle, item: Item) -> int:
-        return max(rect.width-item.width, rect.height-item.height), min(rect.width-item.width, rect.height-item.height)
+    return max(rect.width-item.width, rect.height-item.height), min(rect.width-item.width, rect.height-item.height)
 
 
-class MaxRectsWAF(MaximalRectangle):
+def scoreWAF(rect: FreeRectangle, item: Item) -> int:
     """ Worst Area Fit """
-    @staticmethod
-    def _score(rect: FreeRectangle, item: Item) -> int:
-        return (0 - (rect.area-item.area)), (0 - min(rect.width-item.width, rect.height-item.height))
+    return (0 - (rect.area-item.area)), (0 - min(rect.width-item.width, rect.height-item.height))
         
 
-class MaxRectsWSSF(MaximalRectangle):
+def scoreWSSF(rect: FreeRectangle, item: Item) -> int:
     """ Worst Short Side Fit """
-    @staticmethod
-    def _score(rect: FreeRectangle, item: Item) -> int:
-        return (0 - min(rect.width-item.width, rect.height-item.height)), 0 - max(rect.width-item.width, rect.height-item.height)
+    return (0 - min(rect.width-item.width, rect.height-item.height)), 0 - max(rect.width-item.width, rect.height-item.height)
 
 
-class MaxRectsWLSF(MaximalRectangle):
+def scoreWLSF(rect: FreeRectangle, item: Item) -> int:
     """ Worst Long Side Fit """
-    @staticmethod
-    def _score(rect: FreeRectangle, item: Item) -> int:
-        return (0 - max(rect.width-item.width, rect.height-item.height)), (0 - min(rect.width-item.width, rect.height-item.height))
+    return (0 - max(rect.width-item.width, rect.height-item.height)), (0 - min(rect.width-item.width, rect.height-item.height))
 
 
-class MaxRectsBL(MaximalRectangle):
+def scoreBL(rect: FreeRectangle, item: Item) -> int:
     """ Bottom Left """
-    @staticmethod
-    def _score(rect: FreeRectangle, item: Item) -> int:
-        return rect.y + item.height, rect.x
+    return rect.y + item.height, rect.x
 
 
 class MaxRectsCP(MaximalRectangle):

@@ -136,24 +136,10 @@ class BinManager:
                 return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap, self.heuristic)
 
         elif self.algorithm == 'maximal_rectangle':
-            if self.heuristic == 'best_area':
-                return maximal_rectangles.MaxRectsBAF(self.bin_width, self.bin_height, self.rotation)
-            elif self.heuristic == 'best_shortside':
-                return maximal_rectangles.MaxRectsBSSF(self.bin_width, self.bin_height, self.rotation)
-            elif self.heuristic == 'best_longside':
-                return maximal_rectangles.MaxRectsBLSF(self.bin_width, self.bin_height, self.rotation)
-            if self.heuristic == 'worst_area':
-                return maximal_rectangles.MaxRectsWAF(self.bin_width, self.bin_height, self.rotation)
-            elif self.heuristic == 'worst_shortside':
-                return maximal_rectangles.MaxRectsWSSF(self.bin_width, self.bin_height, self.rotation)
-            elif self.heuristic == 'worst_longside':
-                return maximal_rectangles.MaxRectsWLSF(self.bin_width, self.bin_height, self.rotation)
-            elif self.heuristic == 'bottom_left':
-                return maximal_rectangles.MaxRectsBL(self.bin_width, self.bin_height, self.rotation)
-            elif self.heuristic == 'contact_point':
-                return maximal_rectangles.MaxRectsCP(self.bin_width, self.bin_height, self.rotation)
+            if self.heuristic == 'contact_point':
+                return maximal_rectangles.MaxRectsCP(self.bin_width, self.bin_height, self.rotation, 'contact_point')
             else:
-                raise ValueError('Error: No such Heuristic')
+                return maximal_rectangles.MaximalRectangle(self.bin_width, self.bin_height, self.rotation, self.heuristic)
 
         elif self.algorithm == 'skyline':
             if self.heuristic == 'bottom_left':
