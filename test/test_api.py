@@ -413,7 +413,7 @@ class BinFirstFit(BaseTestCase):
         M = greedypacker.BinManager(10, 5,
                                pack_algo='skyline',
                                heuristic='bottom_left',
-                               bin_algo="bin_first_fit",
+                               bin_algo='bin_first_fit',
                                sorting=True,
                                rotation=True)
 

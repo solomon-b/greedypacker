@@ -21,7 +21,8 @@ class Skyline:
     def __init__(self, width: int = 8,
                  height: int = 4,
                  rotation: bool = True,
-                 wastemap: bool = True) -> None:
+                 wastemap: bool = True,
+                 heuristic: str = 'bottom_left') -> None:
         self.width = width
         self.height = height
         starting_segment = SkylineSegment(0, 0, width)
@@ -33,6 +34,14 @@ class Skyline:
         self.use_waste_map = wastemap
         if self.use_waste_map:
             self.wastemap = guillotine.Guillotine(0, 0, rotation = self.rotation, heuristic='best_area')
+
+        self.heuristic = heuristic
+        if heuristic == 'bottom_left':
+            self._score = scoreBL
+        elif heuristic == 'best_fit':
+            self._score = scoreBF
+        else:
+            raise ValueError('No such heuristic!')
 
 
     def __repr__(self) -> str:
@@ -182,12 +191,12 @@ class Skyline:
         for i, segment in enumerate(self.skyline):
             fits, y = self._check_fit(item.width, item.height, i)
             if fits: 
-                score = self._score(segment, item, y, i)
+                score = self._score(self.skyline, item, y, i)
                 segs.append((score, segment, y, False))
             if self.rotation:
                 fits, y = self._check_fit(item.height, item.width, i)
                 if fits:
-                    score = self._score(segment, item, y=y, i=i, rotation=True)
+                    score = self._score(self.skyline, item, y, i, rotation=True)
                     segs.append((score, segment, y, True))
         try:
             _score, seg, y, rot = min(segs, key=lambda x: x[0])
@@ -237,40 +246,45 @@ class Skyline:
         return stats
 
 
-class SkylineBL(Skyline):
+def scoreBL(segs: List[SkylineSegment], item: Item, y: int, i: int, rotation=False) -> Tuple[int, int]:
     """ Bottom Left """
-    @staticmethod
-    def _score(seg: SkylineSegment, item: Item, y, i, rotation=False) -> Tuple[int, int]:
-        if rotation:
-            return item.width + y, seg.width
-        return item.height + y, seg.width 
-    
+    seg = segs[i]
+    if rotation:
+        return item.width + y, seg.width
+    return item.height + y, seg.width 
 
-class SkylineBF(Skyline):
+
+def calc_waste(segs: List[SkylineSegment],
+               item: Item,
+               y: int,
+               i: int,
+               rotation: bool = False) -> int:
+    """
+    Returns the total wasted area if item is
+    inserted above segment
+    """
+    wasted_area = 0
+    item_left = segs[i].x
+    if not rotation:
+        item_right = item_left + item.width
+    else:
+        item_right = item_left + item.height
+    for seg in segs[i:]:
+        if seg.x >= item_right or seg.x + seg.width <= item_left:
+            break
+        left_side = seg.x
+        right_side = min(item_right, seg.x + seg.width)
+        wasted_area += (right_side - left_side) * (y - seg.y)
+    return wasted_area
+
+
+def scoreBF(segs: List[SkylineSegment],
+            item: Item, 
+            y: int,
+            i: int,
+            rotation=False) -> Tuple[int, int]:
     """ Best Fit """
-    def calc_waste(self, seg_index: int,
-                   item: Item, y: int, rotation: bool = False) -> int:
-        """
-        Returns the total wasted area if item is
-        inserted above segment
-        """
-        wasted_area = 0
-        item_left = self.skyline[seg_index].x
-        if not rotation:
-            item_right = item_left + item.width
-        else:
-            item_right = item_left + item.height
-        for seg in self.skyline[seg_index:]:
-            if seg.x >= item_right or seg.x + seg.width <= item_left:
-                break
-            left_side = seg.x
-            right_side = min(item_right, seg.x + seg.width)
-            wasted_area += (right_side - left_side) * (y - seg.y)
-        
-        return wasted_area
 
-
-    def _score(self, seg: SkylineSegment, item: Item, y, i, rotation=False) -> Tuple[int, int]:
-        if rotation:
-            return (self.calc_waste(i, item, y, rotation = True), item.width + y)
-        return (self.calc_waste(i, item, y), item.height + y)
+    if rotation:
+        return (calc_waste(segs, item, y, i, rotation=True), item.width + y)
+    return (calc_waste(segs, item, y, i, rotation=False), item.height + y)

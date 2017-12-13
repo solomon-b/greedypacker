@@ -10,7 +10,7 @@ from .util import stdout_redirect
 
 class Methods(BaseTestCase):
     def setUp(self):
-        self.S = skyline.SkylineBF(8, 4)
+        self.S = skyline.Skyline(8, 4, heuristic='best_fit')
 
 
     def tearDown(self):
@@ -140,7 +140,7 @@ class Methods(BaseTestCase):
         self.S.insert(I2, 'bottom_left')
         self.S.insert(I3, 'bottom_left')
 
-        wasted_area = self.S.calc_waste(0, I4, 3)
+        wasted_area = skyline.calc_waste(self.S.skyline, I4, 3, 0)
         self.assertEqual(wasted_area, 2)
 
 
@@ -157,13 +157,13 @@ class Methods(BaseTestCase):
         self.S.insert(I1)
         self.S.insert(I2)
 
-        wasted_area = self.S.calc_waste(0, I3, 2)
+        wasted_area = skyline.calc_waste(self.S.skyline, I3, 2, 0)
         self.assertEqual(wasted_area, 0)
 
 
 class BottomLeft(BaseTestCase):
     def setUp(self):
-        self.S = skyline.SkylineBL(8, 5)
+        self.S = skyline.Skyline(8, 5, heuristic='bottom_left')
 
 
     def tearDown(self):
@@ -206,7 +206,7 @@ class BottomLeft(BaseTestCase):
 
 class BestFit(BaseTestCase):
     def setUp(self):
-        self.S = skyline.SkylineBF(8, 5)
+        self.S = skyline.Skyline(8, 5, heuristic='best_fit')
         self.S.rotation = True
 
 
@@ -252,7 +252,7 @@ class BestFit(BaseTestCase):
 
 class WasteMap(BaseTestCase):
     def setUp(self):
-        self.S = skyline.SkylineBL(8, 5)
+        self.S = skyline.Skyline(8, 5, heuristic='bottom_left')
         I0 = item.Item(2, 2)
         I1 = item.Item(2, 1)
         I2 = item.Item(3, 3)

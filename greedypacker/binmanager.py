@@ -142,12 +142,7 @@ class BinManager:
                 return maximal_rectangles.MaximalRectangle(self.bin_width, self.bin_height, self.rotation, self.heuristic)
 
         elif self.algorithm == 'skyline':
-            if self.heuristic == 'bottom_left':
-                return skyline.SkylineBL(self.bin_width, self.bin_height, self.rotation)
-            elif self.heuristic == 'best_fit':
-                return skyline.SkylineBF(self.bin_width, self.bin_height, self.rotation)
-            else:
-                raise ValueError('Error: No such Heuristic')
+            return skyline.Skyline(self.bin_width, self.bin_height, self.rotation, self.wastemap, self.heuristic)
         raise ValueError('Error: No such Algorithm')
 
 
