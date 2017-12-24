@@ -13,6 +13,10 @@ Packing."](http://clb.demon.fi/files/RectangleBinPack.pdf)
 This library is intended for offline packing. All algorithms
 heuristics and optimizations from Jukka's article are included.
 
+A web demo made with Flask and ReactJS is available ["here"](https://ssbothwell.github.io/greedypacker-react/)
+Packing performance varies drastically with different combinations of optimizations and
+datasets, so its important to under the settings and test a variety of them.
+
 
 ### Example Usage:
 ```
