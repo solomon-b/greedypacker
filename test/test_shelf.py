@@ -9,7 +9,7 @@ from .util import stdout_redirect
 
 class WasteMap(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.ShelfNF(8, 4, rotation=True, wastemap=True)
+        self.sheet = shelf.Sheet(8, 4, heuristic='next_fit', rotation=True, wastemap=True)
 
 
     def tearDown(self):
@@ -155,7 +155,7 @@ class shelfObject(BaseTestCase):
 
 class NextFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.ShelfNF(8, 4)
+        self.sheet = shelf.Sheet(8, 4, heuristic='next_fit')
         self.sheet.rotation = True
 
 
@@ -254,7 +254,7 @@ class NextFit(BaseTestCase):
 
 class NextFitNoRotation(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.ShelfNF(8, 4)
+        self.sheet = shelf.Sheet(8, 4, heuristic='next_fit')
         self.sheet.rotation = False
 
     def tearDown(self):
@@ -340,7 +340,7 @@ class NextFitNoRotation(BaseTestCase):
 
 class FirstFit(BaseTestCase):
     def setUp(self):
-        self.sheet = shelf.ShelfFF(8, 4)
+        self.sheet = shelf.Sheet(8, 4, heuristic="first_fit")
 
 
     def tearDown(self):

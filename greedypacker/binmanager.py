@@ -125,15 +125,10 @@ class BinManager:
         heuristic, and dimensions
         """
         if self.algorithm == 'guillotine':
-                return guillotine.Guillotine(self.bin_width, self.bin_height, self.rotation, self.heuristic,
+            return guillotine.Guillotine(self.bin_width, self.bin_height, self.rotation, self.heuristic,
                                          self.rectangle_merge, self.split_heuristic)
         elif self.algorithm == 'shelf':
-            if self.heuristic == 'next_fit':
-                return shelf.ShelfNF(self.bin_width, self.bin_height, self.rotation, self.wastemap, 'next_fit')
-            elif self.heuristic == 'first_fit':
-                return shelf.ShelfFF(self.bin_width, self.bin_height, self.rotation, self.wastemap, 'first_fit')
-            else:
-                return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap, self.heuristic)
+            return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap, self.heuristic)
 
         elif self.algorithm == 'maximal_rectangle':
             return maximal_rectangles.MaximalRectangle(self.bin_width, self.bin_height, self.rotation, self.heuristic)

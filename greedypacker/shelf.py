@@ -80,9 +80,9 @@ class Sheet:
         elif heuristic == 'worst_area_fit':
             self._score = scoreWAF
         elif heuristic == 'next_fit':
-            pass
+            self._score = scoreNF
         elif heuristic == 'first_fit':
-            pass
+            self._score = scoreFF
         else:
             raise ValueError('No such heuristic!')
 
@@ -185,9 +185,9 @@ class Sheet:
             return 0, None, False
         for shelf in self.shelves:
             if self._item_fits_shelf(item, shelf):
-                shelves.append((self._score(shelf, item), shelf, False))
+                shelves.append((self._score(shelf, item, self), shelf, False))
             if self._item_fits_shelf(item, shelf, rotation=True):
-                shelves.append((self._score(shelf, item), shelf, True))
+                shelves.append((self._score(shelf, item, self), shelf, True))
 
         # Give max score if item fits sheet but there are no shelves
         if not shelves and self.available_height >= item.height:
@@ -262,55 +262,53 @@ class Sheet:
         return stats
 
 
-def scoreBAF(shelf: Shelf, item: Item) -> Tuple[int, int]:
+def scoreBAF(shelf: Shelf, item: Item, self=None) -> Tuple[int, int]:
     """ Best Area Fit """
     return (shelf.available_width - item.width)*shelf.y, shelf.available_width - item.width
 
 
-def scoreBHF(shelf: Shelf, item: Item) -> Tuple[int, int]:
+def scoreBHF(shelf: Shelf, item: Item, self=None) -> Tuple[int, int]:
     """ Best Height Fit """
     return shelf.y - item.height, shelf.available_width - item.width
 
 
-def scoreBWF(shelf: Shelf, item: Item) -> Tuple[int, int]:
+def scoreBWF(shelf: Shelf, item: Item, self=None) -> Tuple[int, int]:
     """ Best Width Fit """
     return shelf.available_width - item.width, shelf.y - item.height
 
 
-def scoreWAF(shelf: Shelf, item: Item) -> Tuple[int, int]:
+def scoreWAF(shelf: Shelf, item: Item, self=None) -> Tuple[int, int]:
     """ Worst Area Fit """
     return (0 - ((shelf.available_width - item.width)*shelf.y)), (0 - (shelf.available_width - item.width))
 
 
-def scoreWHF(shelf: Shelf, item: Item) -> Tuple[int, int]:
+def scoreWHF(shelf: Shelf, item: Item, self=None) -> Tuple[int, int]:
     """ Worst Height Fit """
     return (0 - (shelf.y - item.height)), (0 - (shelf.available_width - item.width))
 
 
-def scoreWWF(shelf: Shelf, item: Item) -> Tuple[int, int]:
+def scoreWWF(shelf: Shelf, item: Item, self=None) -> Tuple[int, int]:
     """ Worst Width Fit """
     return (0 - (shelf.available_width - item.width)), (0 - (shelf.y - item.height))
 
 
-class ShelfFF(Sheet):
+def scoreFF(shelf: Shelf, item: Item, self=None) -> Tuple[int, Shelf, bool]:
     """ First Fit """
-    def _find_best_score(self, item: Item) -> Tuple[int, Shelf, bool]:
-        if self.shelves:
-            for shelf in self.shelves:
-                if self._item_fits_shelf(item, shelf):
-                    return (0, shelf, False)
-                if self.rotation and self._item_fits_shelf(item, shelf, True):
-                    return (0, shelf, True)
-        return (0, None, False)
+    if self.shelves:
+        for shelf in self.shelves:
+            if self._item_fits_shelf(item, shelf):
+                return (0, shelf, False)
+            if self.rotation and self._item_fits_shelf(item, shelf, True):
+                return (0, shelf, True)
+    return (0, None, False)
 
 
-class ShelfNF(Sheet):
+def scoreNF(shelf: Shelf, item: Item, self=None) -> Tuple[int, Shelf, bool]:
     """ Next Fit """
-    def _find_best_score(self, item: Item) -> Tuple[int, Shelf, bool]:
-        if self.shelves:
-            open_shelf = self.shelves[-1]
-            if self._item_fits_shelf(item, open_shelf):
-                return (0, open_shelf, False)
-            if self.rotation and self._item_fits_shelf(item, open_shelf, True):
-                return (0, open_shelf, True)
-        return (0, None, False)
+    if self.shelves:
+        open_shelf = self.shelves[-1]
+        if self._item_fits_shelf(item, open_shelf):
+            return (0, open_shelf, False)
+        if self.rotation and self._item_fits_shelf(item, open_shelf, True):
+            return (0, open_shelf, True)
+    return (0, None, False)
