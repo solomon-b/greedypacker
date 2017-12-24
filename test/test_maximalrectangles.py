@@ -328,7 +328,7 @@ class BestBottomLeft(BaseTestCase):
 
 class ContactPoint(BaseTestCase):
     def setUp(self):
-        self.M = maximal_rectangles.MaxRectsCP(8, 4, heuristic='contact_point')
+        self.M = maximal_rectangles.MaximalRectangle(8, 4, heuristic='contact_point')
 
 
     def tearDown(self):

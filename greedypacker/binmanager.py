@@ -136,10 +136,7 @@ class BinManager:
                 return shelf.Sheet(self.bin_width, self.bin_height, self.rotation, self.wastemap, self.heuristic)
 
         elif self.algorithm == 'maximal_rectangle':
-            if self.heuristic == 'contact_point':
-                return maximal_rectangles.MaxRectsCP(self.bin_width, self.bin_height, self.rotation, 'contact_point')
-            else:
-                return maximal_rectangles.MaximalRectangle(self.bin_width, self.bin_height, self.rotation, self.heuristic)
+            return maximal_rectangles.MaximalRectangle(self.bin_width, self.bin_height, self.rotation, self.heuristic)
 
         elif self.algorithm == 'skyline':
             return skyline.Skyline(self.bin_width, self.bin_height, self.rotation, self.wastemap, self.heuristic)

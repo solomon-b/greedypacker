@@ -44,7 +44,7 @@ class MaximalRectangle:
         elif heuristic == 'bottom_left':
             self._score = scoreBL
         elif heuristic == 'contact_point':
-            pass
+            self._score = scoreCP
         else:
             raise ValueError('No such heuristic!')
 
@@ -243,9 +243,9 @@ class MaximalRectangle:
         rects = []
         for rect in self.freerects:
             if self._item_fits_rect(item, rect):
-                rects.append((self._score(rect, item), rect, False))
+                rects.append((self._score(rect, item, self), rect, False))
             if self._item_fits_rect(item, rect, rotation=True):
-                rects.append((self._score(rect, item), rect, True))
+                rects.append((self._score(rect, item, self), rect, True))
         try:
             _score, rect, rot = min(rects, key=lambda x: x[0])
             return _score, rect, rot
@@ -291,67 +291,64 @@ class MaximalRectangle:
         return stats
 
 
-def scoreBAF(rect: FreeRectangle, item: Item) -> int:
+def scoreBAF(rect: FreeRectangle, item: Item, self) -> int:
     """ Best Area Fit """
     return rect.area-item.area, min(rect.width-item.width, rect.height-item.height)
         
 
-def scoreBSSF(rect: FreeRectangle, item: Item) -> int:
+def scoreBSSF(rect: FreeRectangle, item: Item, self) -> int:
     """ Best Short Side Fit """
     return min(rect.width-item.width, rect.height-item.height), max(rect.width-item.width, rect.height-item.height)
 
 
-def scoreBLSF(rect: FreeRectangle, item: Item) -> int:
+def scoreBLSF(rect: FreeRectangle, item: Item, self) -> int:
     """ Best Long Side Fit """
     return max(rect.width-item.width, rect.height-item.height), min(rect.width-item.width, rect.height-item.height)
 
 
-def scoreWAF(rect: FreeRectangle, item: Item) -> int:
+def scoreWAF(rect: FreeRectangle, item: Item, self) -> int:
     """ Worst Area Fit """
     return (0 - (rect.area-item.area)), (0 - min(rect.width-item.width, rect.height-item.height))
         
 
-def scoreWSSF(rect: FreeRectangle, item: Item) -> int:
+def scoreWSSF(rect: FreeRectangle, item: Item, self) -> int:
     """ Worst Short Side Fit """
     return (0 - min(rect.width-item.width, rect.height-item.height)), 0 - max(rect.width-item.width, rect.height-item.height)
 
 
-def scoreWLSF(rect: FreeRectangle, item: Item) -> int:
+def scoreWLSF(rect: FreeRectangle, item: Item, self) -> int:
     """ Worst Long Side Fit """
     return (0 - max(rect.width-item.width, rect.height-item.height)), (0 - min(rect.width-item.width, rect.height-item.height))
 
 
-def scoreBL(rect: FreeRectangle, item: Item) -> int:
+def scoreBL(rect: FreeRectangle, item: Item, self) -> int:
     """ Bottom Left """
     return rect.y + item.height, rect.x
 
 
-class MaxRectsCP(MaximalRectangle):
+def common_interval_length(Xstart: int, Xend: int,
+                           Ystart: int, Yend: int) -> int:
+    """
+    Returns the length of perimiter shared by two
+    rectangles
+    """
+    if Xend < Ystart or Yend < Xstart:
+        return 0
+    return min(Xend, Yend) - max(Xstart, Ystart)
+
+def scoreCP(rect: FreeRectangle, item: Item, self) -> int:
     """ Contact Point """
-    @staticmethod
-    def _common_interval_length(Xstart: int, Xend: int,
-                               Ystart: int, Yend: int) -> int:
-        """
-        Returns the length of perimiter shared by two
-        rectangles
-        """
-        if Xend < Ystart or Yend < Xstart:
-            return 0
-        return min(Xend, Yend) - max(Xstart, Ystart)
+    perim = 0
+    if rect.x == 0 or rect.x + item.width == self.x:
+        perim += item.height
+    if rect.y == 0 or rect.y + item.height == self.y:
+        perim += item.width
 
-
-    def _score(self, rect: FreeRectangle, item: Item) -> int:
-        perim = 0
-        if rect.x == 0 or rect.x + item.width == self.x:
-            perim += item.height
-        if rect.y == 0 or rect.y + item.height == self.y:
-            perim += item.width
-
-        for itm in self.items:
-            if (itm.x == rect.x+rect.width or
-                itm.x+itm.width == rect.x):
-                perim += self._common_interval_length(itm.y, itm.y+itm.height, rect.y, rect.y+item.height)
-            if (itm.y == rect.y+rect.height or
-                item.y+itm.height == rect.y):
-                perim += self._common_interval_length(itm.x, itm.x+itm.width, rect.x, rect.x+item.width)
-        return (0 - perim), min(rect.width-item.width, rect.height-item.height)
+    for itm in self.items:
+        if (itm.x == rect.x+rect.width or
+            itm.x+itm.width == rect.x):
+            perim += common_interval_length(itm.y, itm.y+itm.height, rect.y, rect.y+item.height)
+        if (itm.y == rect.y+rect.height or
+            item.y+itm.height == rect.y):
+            perim += common_interval_length(itm.x, itm.x+itm.width, rect.x, rect.x+item.width)
+    return (0 - perim), min(rect.width-item.width, rect.height-item.height)
