@@ -10,7 +10,7 @@ setup(
   license = 'Apache2',
   url = 'https://github.com/ssbothwell/BinPack',
   install_requires = [ 'sortedcontainers'],
-  download_url = 'https://github.com/ssbothwell/BinPack/archive/0.3.3.tar.gz',
+  download_url = 'https://github.com/ssbothwell/greedypacker/archive/v0.4.tar.gz',
   keywords = ['binpacking', 'algorithm', 'greedy', 'library'],
   classifiers = [],
   python_requires='>=3',
