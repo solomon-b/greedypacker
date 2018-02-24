@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
   name = 'greedypacker',
   packages = ['greedypacker'],
-  version = '0.3.3',
+  version = '0.4',
   description = 'A two dimensional binpacking library',
   author = 'Solomon Bothwell',
   author_email = 'ssbothwell@gmail.com',
