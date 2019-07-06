@@ -114,7 +114,8 @@ def render_bin(binpack: g.BinManager, save: bool = False) -> None:
 
 
 if __name__ == '__main__':
-    M = g.BinManager(10, 6, pack_algo='maximal_rectangle', heuristic='bottom_left', rotation=False, sorting=False, wastemap=False)
+    #M = g.BinManager(10, 6, pack_algo='maximal_rectangle', heuristic='bottom_left', rotation=False, sorting=False, wastemap=False)
+    M = g.BinManager(10, 6, pack_algo='guillotine', heuristic='best_shortside', rotation=False, sorting=False)
     guillotine = [g.Item(2,3), g.Item(2,2), g.Item(2,1), g.Item(2,3), g.Item(2,2), g.Item(3,2)]
     maximal = [g.Item(2,3), g.Item(3,3), g.Item(4,1), g.Item(2,3), g.Item(2,2), g.Item(1,2)]
     shelf = [g.Item(2,3), g.Item(2,2), g.Item(2,1), g.Item(3,2), g.Item(1,1), g.Item(6,3), g.Item(3,2), g.Item(3,2), g.Item(4,2), g.Item(4,1)]
@@ -122,4 +123,4 @@ if __name__ == '__main__':
     M.add_items(*maximal)
     M.execute()
     print(M.bins)
-    render_bin(M, save=True)
+    #render_bin(M, save=True)

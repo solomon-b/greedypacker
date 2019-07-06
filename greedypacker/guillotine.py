@@ -27,8 +27,8 @@ class Guillotine:
                  y: int = 4,
                  rotation: bool = True,
                  heuristic: str = 'best_area_fit',
-                 rectangle_merge: bool=True,
-                 split_heuristic: str='default') -> None:
+                 rectangle_merge: bool = True,
+                 split_heuristic: str = 'default') -> None:
         self.x = x
         self.y = y
         self.area = self.x * self.y
