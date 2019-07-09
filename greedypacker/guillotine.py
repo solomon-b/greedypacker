@@ -53,9 +53,9 @@ class Guillotine:
 
         if x == 0 or y == 0:
             #self.freerects = [] # type: List[FreeRectangle]
-            self.freerects = SortedListWithKey(iterable=None, key=lambda x: x.area, load=1000)
+            self.freerects = SortedListWithKey(iterable=None, key=lambda x: x.area)
         else:
-            self.freerects = SortedListWithKey([FreeRectangle(self.x, self.y, 0, 0)], key=lambda x: x.area, load=1000)
+            self.freerects = SortedListWithKey([FreeRectangle(self.x, self.y, 0, 0)], key=lambda x: x.area)
         self.items = [] # type: List[Item]
         self.rotation = rotation
 
