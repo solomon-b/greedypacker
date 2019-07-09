@@ -109,7 +109,7 @@ class Methods(BaseTestCase):
         S1 = skyline.SkylineSegment(0, 1, 2)
         S2 = skyline.SkylineSegment(2, 0, 6)
         self.S.skyline.pop()
-        self.S.skyline.extend([S1, S2])
+        self.S.skyline.update([S1, S2])
         self.assertEqual(self.S._check_fit(I.width, I.height, 0), (True, 1))
 
 
@@ -121,7 +121,7 @@ class Methods(BaseTestCase):
         S1 = skyline.SkylineSegment(0, 0, 1)
         S2 = skyline.SkylineSegment(1, 3, 7)
         self.S.skyline.pop()
-        self.S.skyline.extend([S1, S2])
+        self.S.skyline.update([S1, S2])
         self.assertEqual(self.S._check_fit(I.width, I.height, 1), (False, None))
 
     
