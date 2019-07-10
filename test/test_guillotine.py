@@ -41,7 +41,7 @@ class BestShortSide(BaseTestCase):
         F1 = self.freeRectangle(2, 2, 1, 0)
         ITEM = item.Item(1, 1)
 
-        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area)
         self.BIN.insert(ITEM)
 
         with self.subTest():
@@ -66,7 +66,7 @@ class BestShortSide(BaseTestCase):
         ITEM = item.Item(1, 2)
         
         self.BIN.rotation = True
-        self.BIN.freerects = SortedListWithKey([F0], key=lambda x: x.area, load=1000)
+        self.BIN.freerects = SortedListWithKey([F0], key=lambda x: x.area)
         self.BIN.insert(ITEM)
 
         with self.subTest():
@@ -113,7 +113,7 @@ class BestLongSide(BaseTestCase):
         F1 = self.freeRectangle(2, 1, 1, 0)
         ITEM = item.Item(1, 1)
 
-        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area)
         self.BIN.insert(ITEM)
 
         with self.subTest():
@@ -186,8 +186,8 @@ class BestAreaFit(BaseTestCase):
         F0 = self.freeRectangle(2, 2, 0, 0)
         F1 = self.freeRectangle(3, 3, 2, 0)
         ITEM = item.Item(1, 1)
-        
-        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
+
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area)
         self.BIN.insert(ITEM)
         with self.subTest():
             correct = [self.freeRectangle(2, 1, 0, 1),
@@ -261,7 +261,7 @@ class WorstLongSide(BaseTestCase):
         F1 = self.freeRectangle(2, 1, 1, 0)
         ITEM = item.Item(1, 1)
 
-        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area)
         self.BIN.insert(ITEM)
 
         with self.subTest():
@@ -335,7 +335,7 @@ class WorstShortSide(BaseTestCase):
         F1 = self.freeRectangle(2, 2, 1, 0)
         ITEM = item.Item(1, 1)
 
-        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area)
         self.BIN.insert(ITEM)
 
         with self.subTest():
@@ -409,8 +409,8 @@ class WorstAreaFit(BaseTestCase):
         F0 = self.freeRectangle(2, 2, 0, 0)
         F1 = self.freeRectangle(3, 3, 2, 0)
         ITEM = item.Item(1, 1)
-        
-        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area, load=1000)
+
+        self.BIN.freerects = SortedListWithKey([F0, F1], key=lambda x: x.area)
         self.BIN.insert(ITEM)
         with self.subTest():
             correct = [self.freeRectangle(2, 2, 0, 0),
